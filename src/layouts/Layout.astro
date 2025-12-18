@@ -13,6 +13,7 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={Astro.url.href} />
     <meta
       name="description"
       content="Gil Neto - AI Engineer & Architect based in Lisbon. Specializing in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering."
@@ -25,6 +26,71 @@ const { title } = Astro.props;
       rel="stylesheet"
     />
     <title>{title}</title>
+
+    <!-- Open Graph & Twitter Card -->
+    <meta property="og:title" content={title} />
+    <meta
+      property="og:description"
+      content="Gil Neto - AI Engineer & Architect based in Lisbon. Specializing in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta
+      property="og:image"
+      content={new URL("/og-image.png", Astro.url).href}
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta
+      name="twitter:description"
+      content="Gil Neto - AI Engineer & Architect based in Lisbon. Specializing in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering."
+    />
+    <meta
+      name="twitter:image"
+      content={new URL("/og-image.png", Astro.url).href}
+    />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Gil Neto",
+        url: Astro.url.href,
+        jobTitle: "AI Engineer & Architect",
+        knowsAbout: [
+          "Artificial Intelligence",
+          "Multi-Agent Systems",
+          "LLM Orchestration",
+          "Scalable Product Engineering",
+          "TypeScript",
+          "Python",
+          "Flask",
+          "FastAPI",
+          "Tailwind",
+          "Astro",
+          "NextJS",
+          "Gemini",
+          "ReactJS",
+          "Node.js",
+          "AWS",
+          "GCP",
+        ],
+        alumniOf: "Link Consulting",
+        worksFor: {
+          "@type": "Organization",
+          name: "Opplane",
+        },
+        sameAs: [
+          "https://github.com/gilneto8",
+          "https://linkedin.com/in/gil-neto",
+        ],
+        location: {
+          "@type": "Place",
+          name: "Lisbon, PT",
+        },
+      })}
+    />
   </head>
   <body class="font-sans antialiased relative">
     <div class="fixed inset-0 z-0">
