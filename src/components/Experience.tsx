@@ -81,8 +81,8 @@ export default function Experience() {
                 {exp.highlights && (
                   <ul className="text-[var(--text-secondary)] mb-4 space-y-2">
                     {exp.highlights.map((h, i) => (
-                      <li key={i} className="flex gap-3">
-                        <span className="text-[var(--accent-primary)] mt-1">→</span>
+                      <li key={i} className="flex items-baseline gap-3">
+                        <span className="text-[var(--accent-primary)]">→</span>
                         <span>{h}</span>
                       </li>
                     ))}

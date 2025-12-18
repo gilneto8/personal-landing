@@ -54,41 +54,90 @@ const { title } = Astro.props;
       type="application/ld+json"
       set:html={JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "Person",
-        name: "Gil Neto",
-        url: Astro.url.href,
-        jobTitle: "AI Engineer & Architect",
-        knowsAbout: [
-          "Artificial Intelligence",
-          "Multi-Agent Systems",
-          "LLM Orchestration",
-          "Scalable Product Engineering",
-          "TypeScript",
-          "Python",
-          "Flask",
-          "FastAPI",
-          "Tailwind",
-          "Astro",
-          "NextJS",
-          "Gemini",
-          "ReactJS",
-          "Node.js",
-          "AWS",
-          "GCP",
+        "@graph": [
+          {
+            "@type": "Person",
+            name: "Gil Neto",
+            url: Astro.url.href,
+            jobTitle: "AI Engineer & Architect",
+            knowsAbout: [
+              "Artificial Intelligence",
+              "Multi-Agent Systems",
+              "LLM Orchestration",
+              "Scalable Product Engineering",
+              "TypeScript",
+              "Python",
+              "Flask",
+              "FastAPI",
+              "Tailwind",
+              "Astro",
+              "NextJS",
+              "Gemini",
+              "ReactJS",
+              "Node.js",
+              "AWS",
+              "GCP",
+            ],
+            alumniOf: "Link Consulting",
+            worksFor: {
+              "@type": "Organization",
+              name: "Opplane",
+            },
+            sameAs: [
+              "https://github.com/gilneto8",
+              "https://linkedin.com/in/gil-neto",
+            ],
+            location: {
+              "@type": "Place",
+              name: "Lisbon, PT",
+            },
+          },
+          {
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Who are you?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I'm Gil Neto, an Developer-made-architect & AI Engineer based in Lisbon. Passionate about music, books, and technology, I am, at my core, a programmer who believes in keeping the mood light during crunch time and fostering a transparent, energetic team culture.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What are your core specializations?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I specialize in building scalable products, with a newfound love for AI. My core focus right now is on Multi-Agent Systems, LLM Orchestration, and integration AI solutions into robust, production-ready applications.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What's your primary tech stack?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "My expertise spans across core languages (Typescript and Python) and frameworks (React, Next.js, Node.js, Flask, FastAPI), cloud infrastructure (AWS, GCP, Docker) and now AI (LangChain, Gemini).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What kind of roles are you interested in?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I am actively seeking to explore more roles related to AI, where I can leverage both my background in software architecture and my motivation in AI, to build innovative products from the ground up.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What is your technical philosophy?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "I thrive on solving complex problems, from architecting scalable backend services to developing sophisticated AI models. I am objective-driven, aiming for high-quality standards while respecting delivery timelines, and I constantly seek new knowledge.",
+                },
+              },
+            ],
+          },
         ],
-        alumniOf: "Link Consulting",
-        worksFor: {
-          "@type": "Organization",
-          name: "Opplane",
-        },
-        sameAs: [
-          "https://github.com/gilneto8",
-          "https://linkedin.com/in/gil-neto",
-        ],
-        location: {
-          "@type": "Place",
-          name: "Lisbon, PT",
-        },
       })}
     />
   </head>
