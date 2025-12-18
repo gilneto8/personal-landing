@@ -34,4 +34,4 @@ sudo ./deploy.sh
 - React - UI components
 - TypeScript - Type safety
 - Tailwind CSS - Styling
-- Framer Motion - Animations EOF
+- Framer Motion - Animations
