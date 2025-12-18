@@ -27,7 +27,7 @@ Output is in `dist/` folder.
 
 ```bash
 npm run build
-sudo rm-rf /var/www/landing/*
+sudo rm -rf /var/www/landing/*
 sudo cp -r dist/* /var/www/landing/
 ```
 
