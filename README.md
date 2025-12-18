@@ -26,9 +26,7 @@ Output is in `dist/` folder.
 ## Deploy to Production
 
 ```bash
-npm run build
-sudo rm -rf /var/www/landing/*
-sudo cp -r dist/* /var/www/landing/
+sudo ./deploy.sh
 ```
 
 ## Tech Stack
