@@ -59,3 +59,34 @@ body {
   background-color: var(--accent-primary);
   color: var(--bg-primary);
 }
+
+/* FAQ card accent colors */
+.faq-card--accent-primary {
+  border-left-color: var(--accent-primary);
+}
+.faq-card--accent-secondary {
+  border-left-color: var(--accent-secondary);
+}
+.faq-card--accent-warm {
+  border-left-color: var(--accent-warm);
+}
+
+.faq-number--accent-primary {
+  color: var(--accent-primary);
+}
+.faq-number--accent-secondary {
+  color: var(--accent-secondary);
+}
+.faq-number--accent-warm {
+  color: var(--accent-warm);
+}
+
+.faq-arrow--accent-primary {
+  color: var(--accent-primary);
+}
+.faq-arrow--accent-secondary {
+  color: var(--accent-secondary);
+}
+.faq-arrow--accent-warm {
+  color: var(--accent-warm);
+}
