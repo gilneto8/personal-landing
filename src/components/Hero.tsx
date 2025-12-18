@@ -18,8 +18,11 @@ export default function Hero() {
         <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-4">
           GIL NETO
         </h1>
-        <p className="text-xl md:text-2xl text-neutral-400 mb-8">
-          Senior Software Engineer
+        <p className="text-xl md:text-2xl text-neutral-400 mb-2">
+          AI Engineer & Architect
+        </p>
+        <p className="text-md md:text-lg text-neutral-400 mb-8">
+          Specialized in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering.
         </p>
       </motion.div>
 

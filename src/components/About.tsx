@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 
 const skills = {
+  'AI & Machine Learning': ['Multi-Agent Systems', 'LLM Orchestration', 'LangChain', 'Gemini', 'Vector Databases', 'Prompt Engineering'],
   'Core Languages': ['TypeScript', 'Python', 'JavaScript', 'Rust', 'SQL'],
   'Frameworks & Runtime': ['ReactJS', 'Next.js', 'Node.js', 'Nest.js', 'Flask'],
   'Cloud & Infrastructure': ['AWS Lambda', 'CloudWatch', 'Kafka', 'PostgreSQL', 'Docker', 'Git'],
@@ -21,11 +22,13 @@ export default function About() {
         
         <div className="grid md:grid-cols-2 gap-12">
           <p className="text-neutral-300 leading-relaxed">
-            Passionate about music, books, and technology. I am, at my core, a programmer who believes in 
-            keeping the mood light during crunch time, fostering a transparent and energetic (sometimes goofy) 
-            team culture. Professionally, I am objective-driven, aiming for high-quality standards while 
-            respecting delivery timelines. I constantly seek new knowledge, whether through books, tech threads, 
-            or exploring new music.
+            Passionate about music, books, and technology, I am, at my core, a programmer who 
+            believes in keeping the mood light during crunch time, fostering a transparent and 
+            energetic (sometimes goofy) team culture, while thriving on solving complex problems, 
+            from architecting scalable backend services to developing sophisticated AI models. 
+            I am objective-driven, aiming for high-quality standards while respecting delivery 
+            timelines, and I constantly seek new knowledge, whether in technology, music, or 
+            literature.
           </p>
           
           <div className="space-y-6">

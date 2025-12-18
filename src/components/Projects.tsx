@@ -14,7 +14,7 @@ const projects = [
   {
     title: 'Bloodwork Analysis Engine',
     description: 'Developed a secure platform for analyzing bloodwork results using LLMs. Built a personalized recommendation engine for health insights and supplementation advice using a laboratory\'s supplement inventory.',
-    tech: ['ReactJS', 'Node.js', 'Next.js', 'TypeScript', 'Tailwind', 'LLMs'],
+    tech: ['ReactJS', 'Node.js', 'Typescript', 'Next.js', 'Gemini API', 'Fine-tuning'],
   },
 ];
 
@@ -39,10 +39,12 @@ export default function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-700 transition-colors"
+              className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-700 transition-colors flex flex-col"
             >
-              <h3 className="font-semibold text-lg mb-3">{project.title}</h3>
-              <p className="text-neutral-400 text-sm mb-4">{project.description}</p>
+              <div className="flex-grow">
+                <h3 className="font-semibold text-lg mb-3">{project.title}</h3>
+                <p className="text-neutral-400 text-sm mb-4">{project.description}</p>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {project.tech.map((t) => (
                   <span key={t} className="text-xs bg-neutral-800 px-2 py-1 rounded">{t}</span>
