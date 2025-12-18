@@ -12,7 +12,7 @@ const experiences = [
       'Architected a scalable logging and monitoring system for AI services using AWS CloudWatch and Grafana.',
       'Mentored a team of developers, fostering best practices in both software and AI engineering.',
     ],
-    tech: ['Python', 'Flask', 'Kafka', 'AWS Lambda', 'AWS CloudWatch', 'Grafana', 'PostgreSQL'],
+    tech: ['Python', 'Flask', 'Kafka', 'LangChain', 'AWS Lambda', 'AWS CloudWatch', 'Grafana', 'PostgreSQL'],
   },
   {
     period: '3/2020 – 4/2021',
