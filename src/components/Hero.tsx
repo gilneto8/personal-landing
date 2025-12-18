@@ -40,8 +40,8 @@ export default function Hero() {
         transition={{ delay: 0.3, duration: 0.6 }}
         className="flex flex-wrap gap-4 text-sm text-[var(--text-secondary)] mb-12"
       >
-        <a href="mailto:gilneto8@gmail.com" className="hover:text-[var(--accent-primary)] transition-colors flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)]">
-          <Mail size={16} className="text-[var(--accent-secondary)]" /> gilneto8@gmail.com
+        <a href="mailto:gilneto8.work@gmail.com" className="hover:text-[var(--accent-primary)] transition-colors flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)]">
+          <Mail size={16} className="text-[var(--accent-secondary)]" /> gilneto8.work@gmail.com
         </a>
         <a href="https://github.com/gilneto8" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent-primary)] transition-colors flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)]">
           <Github size={16} className="text-[var(--text-primary)]" /> GitHub

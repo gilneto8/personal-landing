@@ -20,7 +20,7 @@ export default function Footer() {
         </div>
         
         <a
-          href="mailto:gilneto8@gmail.com"
+          href="mailto:gilneto8.work@gmail.com"
           className="group bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-3 font-mono font-bold uppercase tracking-wider hover:shadow-[4px_4px_0_var(--accent-secondary)] transition-all border-2 border-[var(--accent-primary)]"
         >
           Get in touch <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
