@@ -43,18 +43,21 @@ const experiences = [
 
 export default function Experience() {
   return (
-    <section id="experience" className="px-6 md:px-12 lg:px-24 py-20">
+    <section id="experience" className="px-6 md:px-12 lg:px-24 py-20 border-t-2 border-[var(--border-muted)]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-sm font-bold bg-white text-black px-2 py-1 inline-block mb-12">
-          EXPERIENCE
-        </h2>
+        <div className="flex items-center gap-4 mb-12">
+          <h2 className="text-sm font-mono font-bold bg-[var(--accent-secondary)] text-[var(--bg-primary)] px-3 py-1.5 uppercase tracking-wider">
+            Experience
+          </h2>
+          <div className="flex-1 h-[2px] bg-[var(--border-muted)]" />
+        </div>
 
-        <div className="space-y-12">
+        <div className="space-y-0">
           {experiences.map((exp, index) => (
             <motion.div
               key={index}
@@ -62,26 +65,38 @@ export default function Experience() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="grid md:grid-cols-[150px_1fr] gap-4 md:gap-8"
+              className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-[var(--border-muted)] last:border-b-0"
             >
-              <div className="text-sm text-neutral-500">{exp.period}</div>
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-mono text-[var(--accent-primary)] uppercase tracking-wider">
+                  {exp.period}
+                </span>
+                <span className="text-sm font-mono text-[var(--text-muted)]">
+                  @ {exp.company}
+                </span>
+              </div>
               <div>
-                <div className="flex flex-wrap items-baseline gap-2 mb-2">
-                  <h3 className="font-semibold text-lg">{exp.title}</h3>
-                  <span className="text-neutral-500">{exp.company}</span>
-                </div>
-                <p className="text-neutral-400 mb-3">{exp.description}</p>
+                <h3 className="font-bold text-lg text-[var(--text-primary)] mb-2">{exp.title}</h3>
+                <p className="text-[var(--text-secondary)] mb-4 leading-relaxed">{exp.description}</p>
                 {exp.highlights && (
-                  <ul className="list-disc list-inside text-neutral-400 mb-3 space-y-1">
+                  <ul className="text-[var(--text-secondary)] mb-4 space-y-2">
                     {exp.highlights.map((h, i) => (
-                      <li key={i}>{h}</li>
+                      <li key={i} className="flex gap-3">
+                        <span className="text-[var(--accent-primary)] mt-1">→</span>
+                        <span>{h}</span>
+                      </li>
                     ))}
                   </ul>
                 )}
                 {exp.tech.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 pt-2">
                     {exp.tech.map((t) => (
-                      <span key={t} className="text-xs text-neutral-500 italic">{t}</span>
+                      <span 
+                        key={t} 
+                        className="text-xs px-2 py-1 border border-[var(--border-muted)] text-[var(--text-muted)] font-mono"
+                      >
+                        {t}
+                      </span>
                     ))}
                   </div>
                 )}
