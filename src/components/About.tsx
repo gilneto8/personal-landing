@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 
-const accentClasses = [
-  'accent-primary',
-  'accent-secondary',
-  'accent-warm',
-  'accent-primary',
-  'accent-secondary',
+const accentColors = [
+  'var(--accent-primary)',
+  'var(--accent-secondary)',
+  'var(--accent-warm)',
+  'var(--accent-primary)',
+  'var(--accent-secondary)',
 ];
 
 const faqData = [
@@ -49,19 +49,27 @@ export default function About() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {faqData.map((faq, index) => (
-            <div 
+            <motion.div 
               key={index}
-              className={`faq-card faq-card--${accentClasses[index]} border-2 border-[var(--border-muted)] border-l-4 p-6 relative group hover:shadow-[4px_4px_0_var(--border-muted)] transition-all`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.4 }}
+              className="border-2 border-[var(--border-muted)] p-6 relative group hover:shadow-[4px_4px_0_var(--border-muted)] transition-all"
+              style={{ borderLeftColor: accentColors[index], borderLeftWidth: '4px' }}
             >
-              <span className={`faq-number faq-number--${accentClasses[index]} absolute -top-3 right-4 px-2 text-xs font-mono uppercase tracking-wider bg-[var(--bg-primary)]`}>
+              <span 
+                className="absolute -top-3 right-4 px-2 text-xs font-mono uppercase tracking-wider"
+                style={{ color: accentColors[index], backgroundColor: 'var(--bg-primary)' }}
+              >
                 0{index + 1}
               </span>
               <h3 className="font-bold text-lg text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                <span className={`faq-arrow faq-arrow--${accentClasses[index]} flex-shrink-0`}>→</span>
+                <span className="flex-shrink-0" style={{ color: accentColors[index] }}>→</span>
                 <span>{faq.question}</span>
               </h3>
               <p className="text-[var(--text-secondary)] leading-relaxed text-sm">{faq.answer}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>
