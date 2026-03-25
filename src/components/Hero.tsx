@@ -1,17 +1,10 @@
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, MapPin } from 'lucide-react';
 
-const sections = [
-  { id: 'about', label: 'About' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'contact', label: 'Contact' },
-];
-
 export default function Hero() {
   return (
     <section className="min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 py-20 pb-32 md:pb-20 relative">
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -20,20 +13,21 @@ export default function Hero() {
         {/* Status badge */}
         <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 border-2 border-[var(--accent-primary)] text-[var(--accent-primary)] text-xs font-mono uppercase tracking-wider">
           <span className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" />
-          Open to opportunities
+          Open to remote opportunities
         </div>
-        
+
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[var(--text-primary)]">
           GIL NETO
         </h1>
         <p className="text-xl md:text-2xl text-[var(--accent-primary)] font-semibold mb-2 font-mono">
-          AI Engineer & Architect
+          Full-Stack Architect & Product Engineer
         </p>
-        <p className="text-md md:text-lg text-[var(--text-secondary)] mb-8 max-w-xl">
-          Specialized in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering.
+        <p className="text-md md:text-lg text-[var(--text-secondary)] mb-8 max-w-2xl leading-relaxed">
+          I architect, deploy, and maintain end-to-end systems — from Next.js products to containerized Hetzner infrastructure. Specializing in B2B utilities that eliminate operational bottlenecks.
         </p>
       </motion.div>
 
+      {/* Contact chips */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -54,24 +48,28 @@ export default function Hero() {
         </span>
       </motion.div>
 
-      <motion.nav
+      {/* Primary CTAs */}
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.6 }}
-        className="flex flex-wrap gap-3"
+        className="flex flex-wrap gap-4"
       >
-        {sections.map((section, index) => (
-          <a
-            key={section.id}
-            href={`#${section.id}`}
-            className="group text-sm font-mono uppercase tracking-wider border-2 border-[var(--border-muted)] px-5 py-3 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all hover:shadow-[4px_4px_0_var(--accent-primary)]"
-          >
-            <span className="text-[var(--text-muted)] mr-2">0{index + 1}</span>
-            {section.label}
-          </a>
-        ))}
-      </motion.nav>
+        <a
+          href="#projects"
+          className="group bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-3 font-mono font-bold uppercase tracking-wider hover:shadow-[4px_4px_0_var(--accent-secondary)] transition-all border-2 border-[var(--accent-primary)] text-sm"
+        >
+          View My Work <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+        <a
+          href="mailto:gilneto8.work@gmail.com"
+          className="group px-6 py-3 font-mono font-bold uppercase tracking-wider border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all hover:shadow-[4px_4px_0_var(--accent-primary)] text-sm text-[var(--text-secondary)]"
+        >
+          Let's Talk <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+      </motion.div>
 
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

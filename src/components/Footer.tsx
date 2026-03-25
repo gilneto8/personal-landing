@@ -13,20 +13,22 @@ export default function Footer() {
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-3 h-3 bg-[var(--accent-primary)] animate-pulse" />
-            <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)]">Available for work</span>
+            <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)]">Available for remote work</span>
           </div>
-          <h2 className="text-3xl font-black mb-2 text-[var(--text-primary)]">Let's connect</h2>
-          <p className="text-[var(--text-secondary)]">Always open to interesting conversations and opportunities.</p>
+          <h2 className="text-3xl font-black mb-2 text-[var(--text-primary)]">Let's build something.</h2>
+          <p className="text-[var(--text-secondary)] max-w-md">
+            Open to senior full-stack or infrastructure-focused roles. If you have a hard problem that needs end-to-end ownership, let's talk.
+          </p>
         </div>
-        
+
         <a
           href="mailto:gilneto8.work@gmail.com"
-          className="group bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-3 font-mono font-bold uppercase tracking-wider hover:shadow-[4px_4px_0_var(--accent-secondary)] transition-all border-2 border-[var(--accent-primary)]"
+          className="group bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-3 font-mono font-bold uppercase tracking-wider hover:shadow-[4px_4px_0_var(--accent-secondary)] transition-all border-2 border-[var(--accent-primary)] flex-shrink-0"
         >
-          Get in touch <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
+          Start a conversation <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
         </a>
       </motion.div>
-      
+
       <div className="mt-16 pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
         <p className="font-mono text-[var(--text-muted)]">© 2025 Gil Neto. All rights reserved.</p>
         <div className="flex gap-6 text-[var(--text-secondary)]">

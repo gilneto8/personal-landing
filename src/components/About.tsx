@@ -4,31 +4,24 @@ const accentColors = [
   'var(--accent-primary)',
   'var(--accent-secondary)',
   'var(--accent-warm)',
-  'var(--accent-primary)',
-  'var(--accent-secondary)',
 ];
 
-const faqData = [
+const philosophy = [
   {
-    question: "Who are you?",
-    answer: "I'm Gil Neto, an Developer-made-architect & AI Engineer based in Lisbon. Passionate about music, books, and technology, I am, at my core, a programmer who believes in keeping the mood light during crunch time and fostering a transparent, energetic team culture."
+    title: 'Infrastructure-First',
+    body: 'I believe in owning the full stack. From Nginx reverse proxies and Redis queues to centralized observability with Better Stack, I build backends that don\'t wake me up at 3 AM. Everything containerized. Everything reproducible.',
+    tags: ['Docker', 'Nginx PM', 'Redis', 'Better Stack', 'VPS'],
   },
   {
-    question: "What are your core specializations?",
-    answer: "I specialize in building scalable products, with a newfound love for AI. My core focus right now is on Multi-Agent Systems, LLM Orchestration, and integration AI solutions into robust, production-ready applications."
+    title: 'AI-Leveraged Execution',
+    body: 'I use AI coding agents heavily to eliminate boilerplate and accelerate delivery — which means I spend my time on system architecture, database design, and complex API integrations rather than scaffolding. High velocity without cutting corners.',
+    tags: ['AI Agents', 'n8n', 'Gemini', 'Automation'],
   },
   {
-    question: "What's your primary tech stack?",
-    answer: "My expertise spans across core languages (Typescript and Python) and frameworks (React, Next.js, Node.js, Flask, FastAPI), cloud infrastructure (AWS, GCP, Docker) and now AI (LangChain, Gemini)."
+    title: 'Business Logic First',
+    body: 'Code is a tool to solve business friction. I focus on building stateless, low-liability utilities with high operational impact — products that earn their keep. Scope is sacred; complexity is a liability.',
+    tags: ['B2B SaaS', 'API Design', 'Operational Impact'],
   },
-  {
-    question: "What kind of roles are you interested in?",
-    answer: "I am actively seeking to explore more roles related to AI, where I can leverage both my background in software architecture and my motivation in AI, to build innovative products from the ground up."
-  },
-  {
-    question: "What is your technical philosophy?",
-    answer: "I thrive on solving complex problems, from architecting scalable backend services to developing sophisticated AI models. I am objective-driven, aiming for high-quality standards while respecting delivery timelines, and I constantly seek new knowledge."
-  }
 ];
 
 export default function About() {
@@ -42,23 +35,23 @@ export default function About() {
       >
         <div className="flex items-center gap-4 mb-12">
           <h2 className="text-sm font-mono font-bold bg-[var(--accent-primary)] text-[var(--bg-primary)] px-3 py-1.5 uppercase tracking-wider">
-            About
+            Philosophy
           </h2>
           <div className="flex-1 h-[2px] bg-[var(--border-muted)]" />
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {faqData.map((faq, index) => (
-            <motion.div 
+        <div className="grid md:grid-cols-3 gap-6">
+          {philosophy.map((item, index) => (
+            <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.4 }}
-              className="border-2 border-[var(--border-muted)] p-6 relative group hover:shadow-[4px_4px_0_var(--border-muted)] transition-all"
+              className="border-2 border-[var(--border-muted)] p-6 relative group hover:shadow-[4px_4px_0_var(--border-muted)] transition-all flex flex-col"
               style={{ borderLeftColor: accentColors[index], borderLeftWidth: '4px' }}
             >
-              <span 
+              <span
                 className="absolute -top-3 right-4 px-2 text-xs font-mono uppercase tracking-wider"
                 style={{ color: accentColors[index], backgroundColor: 'var(--bg-primary)' }}
               >
@@ -66,9 +59,19 @@ export default function About() {
               </span>
               <h3 className="font-bold text-lg text-[var(--text-primary)] mb-3 flex items-center gap-2">
                 <span className="flex-shrink-0" style={{ color: accentColors[index] }}>→</span>
-                <span>{faq.question}</span>
+                <span>{item.title}</span>
               </h3>
-              <p className="text-[var(--text-secondary)] leading-relaxed text-sm">{faq.answer}</p>
+              <p className="text-[var(--text-secondary)] leading-relaxed text-sm mb-4 flex-grow">{item.body}</p>
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-[var(--border-muted)]">
+                {item.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-xs px-2 py-1 bg-[var(--bg-secondary)] border border-[var(--border-muted)] text-[var(--text-muted)] font-mono"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           ))}
         </div>
