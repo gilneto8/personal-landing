@@ -1,0 +1,226 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection, render } from "astro:content";
+import "../../styles/global.css";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/^\d+_/, "") },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const canonical =
+  post.data.canonical ??
+  new URL(`/blog/${post.id.replace(/^\d+_/, "")}`, Astro.site ?? Astro.url)
+    .href;
+
+const blogPostingJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  author: { "@id": "https://gil-neto.com/#gil" },
+  publisher: { "@id": "https://gil-neto.com/#gil" },
+  mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+  url: canonical,
+  keywords: post.data.tags.join(", "),
+  inLanguage: "en",
+};
+---
+
+<Layout
+  title={`${post.data.title} — Gil Neto`}
+  description={post.data.description}
+  type="article"
+  ogImage={post.data.cover ?? "/og-image.png"}
+>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(blogPostingJsonLd)}
+  />
+
+  <main class="px-6 md:px-12 lg:px-20 py-20 max-w-5xl mx-auto">
+    <div class="mb-12">
+      <a
+        href="/blog"
+        class="text-sm font-mono text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
+        >← All writing</a
+      >
+    </div>
+
+    <article>
+      <header class="mb-12">
+        <div class="flex flex-wrap gap-2 mb-4">
+          {
+            post.data.tags.map((t: string) => (
+              <span class="text-xs px-2 py-1 bg-[var(--bg-secondary)] border border-[var(--border-muted)] text-[var(--text-muted)] font-mono uppercase tracking-wider">
+                {t}
+              </span>
+            ))
+          }
+        </div>
+        <h1
+          class="text-4xl md:text-5xl font-black tracking-tight mb-6 text-[var(--text-primary)] leading-tight"
+        >
+          {post.data.title}
+        </h1>
+        <div
+          class="flex items-center gap-4 text-sm font-mono text-[var(--text-muted)]"
+        >
+          <time datetime={post.data.pubDate.toISOString()}>
+            {
+              post.data.pubDate.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            }
+          </time>
+          <span>·</span>
+          <span>Gil Neto</span>
+        </div>
+      </header>
+
+      <div class="prose-content text-[var(--text-secondary)] leading-relaxed">
+        <Content />
+      </div>
+    </article>
+
+    <footer
+      class="mt-20 pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+    >
+      <div>
+        <p
+          class="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)] mb-1"
+        >
+          Available for work
+        </p>
+        <p class="text-[var(--text-secondary)]">
+          Senior IC, staff, fractional CTO, or contract. Remote-first, EU
+          timezones.
+        </p>
+      </div>
+      <a
+        href="mailto:gilneto8.work@gmail.com"
+        class="bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-3 font-mono font-bold uppercase tracking-wider text-sm hover:shadow-[4px_4px_0_var(--accent-secondary)] transition-all border-2 border-[var(--accent-primary)]"
+        >Email Gil →</a
+      >
+    </footer>
+  </main>
+</Layout>
+
+<style is:global>
+  .prose-content {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    max-width: 70ch;
+  }
+  @media (min-width: 1024px) {
+    .prose-content {
+      max-width: 75ch;
+    }
+  }
+  .prose-content h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+  .prose-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+  }
+  .prose-content p {
+    margin-bottom: 1.25rem;
+  }
+  .prose-content ul,
+  .prose-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+  .prose-content ul {
+    list-style-type: disc;
+  }
+  .prose-content ol {
+    list-style-type: decimal;
+  }
+  .prose-content li {
+    margin-bottom: 0.5rem;
+  }
+  .prose-content a {
+    color: var(--accent-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose-content a:hover {
+    text-decoration-thickness: 2px;
+  }
+  .prose-content code {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-muted);
+    padding: 0.125rem 0.375rem;
+    font-size: 0.9em;
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .prose-content pre {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-muted);
+    border-left: 4px solid var(--accent-primary);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin-bottom: 1.25rem;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .prose-content pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+  .prose-content blockquote {
+    border-left: 4px solid var(--accent-secondary);
+    padding-left: 1.25rem;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .prose-content hr {
+    border: 0;
+    border-top: 2px solid var(--border-muted);
+    margin: 3rem 0;
+  }
+  .prose-content strong {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+  .prose-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.25rem;
+    font-size: 0.95em;
+  }
+  .prose-content th,
+  .prose-content td {
+    border: 1px solid var(--border-muted);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .prose-content th {
+    background: var(--bg-secondary);
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+</style>

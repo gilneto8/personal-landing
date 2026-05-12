@@ -3,9 +3,20 @@ import NetworkBackground from "../components/NetworkBackground";
 
 interface Props {
   title: string;
+  description?: string;
+  ogImage?: string;
+  type?: "website" | "article";
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = "Senior engineer with 12 years' experience. Founder-Engineer based in Lisbon, building B2B utilities end-to-end on a single Hetzner VPS. Open to senior IC, staff, fractional CTO, and contract roles.",
+  ogImage = "/og-image.png",
+  type = "website",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
 ---
 
 <!doctype html>
@@ -13,10 +24,13 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="canonical" href={Astro.url.href} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="description" content={description} />
+    <meta name="author" content="Gil Neto" />
     <meta
-      name="description"
-      content="Gil Neto - AI Engineer & Architect based in Lisbon. Specializing in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering."
+      name="keywords"
+      content="founder-engineer, fractional CTO, senior full-stack architect, systems architect, B2B SaaS, Next.js, TypeScript, Python, Temporal, Hetzner, Lisbon, EU remote, hire"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -42,28 +56,19 @@ const { title } = Astro.props;
     <title>{title}</title>
 
     <!-- Open Graph & Twitter Card -->
+    <meta property="og:site_name" content="Gil Neto" />
     <meta property="og:title" content={title} />
-    <meta
-      property="og:description"
-      content="Gil Neto - AI Engineer & Architect based in Lisbon. Specializing in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url.href} />
-    <meta
-      property="og:image"
-      content={new URL("/og-image.png", Astro.url).href}
-    />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    <meta
-      name="twitter:description"
-      content="Gil Neto - AI Engineer & Architect based in Lisbon. Specializing in Multi-Agent Systems, LLM Orchestration, and Scalable Product Engineering."
-    />
-    <meta
-      name="twitter:image"
-      content={new URL("/og-image.png", Astro.url).href}
-    />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
+    <!-- JSON-LD: Person + WebSite + FAQ -->
     <script
       type="application/ld+json"
       set:html={JSON.stringify({
@@ -71,82 +76,130 @@ const { title } = Astro.props;
         "@graph": [
           {
             "@type": "Person",
+            "@id": "https://gil-neto.com/#gil",
             name: "Gil Neto",
-            url: Astro.url.href,
-            jobTitle: "AI Engineer & Architect",
+            url: "https://gil-neto.com",
+            jobTitle: "Founder-Engineer & Full-Stack Architect",
+            description:
+              "Senior engineer with 12 years' experience building and operating B2B utilities end-to-end. Currently running three products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Augur (GRC tooling, EU data residency), and Koa (PDF extraction engine).",
+            email: "gilneto8.work@gmail.com",
+            telephone: "+351914847254",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Lisbon",
+              addressCountry: "PT",
+            },
             knowsAbout: [
-              "Artificial Intelligence",
-              "Multi-Agent Systems",
-              "LLM Orchestration",
-              "Scalable Product Engineering",
+              "Software Architecture",
+              "B2B SaaS",
+              "Full-Stack Development",
+              "Systems Architecture",
+              "Infrastructure Engineering",
               "TypeScript",
               "Python",
+              "Next.js",
+              "React",
+              "Node.js",
+              "Nest.js",
+              "Fastify",
               "Flask",
               "FastAPI",
-              "Tailwind",
-              "Astro",
-              "NextJS",
-              "Gemini",
-              "ReactJS",
-              "Node.js",
+              "Temporal",
+              "PostgreSQL",
+              "MongoDB",
+              "Redis",
+              "BullMQ",
+              "Kafka",
+              "Docker",
+              "Nginx",
+              "Hetzner",
               "AWS",
               "GCP",
+              "Stripe",
+              "OAuth 2.0",
+              "Open Banking",
+              "PSD2",
+              "LLM Integration",
             ],
-            alumniOf: "Link Consulting",
-            worksFor: {
-              "@type": "Organization",
-              name: "Opplane",
+            alumniOf: {
+              "@type": "CollegeOrUniversity",
+              name: "Faculdade de Ciências e Tecnologia - Universidade Nova de Lisboa",
             },
+            seeks: [
+              "Senior IC roles",
+              "Staff engineer roles",
+              "Fractional CTO engagements",
+              "Contract engagements",
+            ],
             sameAs: [
               "https://github.com/gilneto8",
-              "https://linkedin.com/in/gil-neto",
+              "https://www.linkedin.com/in/gil-neto-7b44946a",
+              "https://dev.to/gilneto8",
             ],
-            location: {
+            workLocation: {
               "@type": "Place",
-              name: "Lisbon, PT",
+              name: "Lisbon, Portugal · Remote (EU)",
             },
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://gil-neto.com/#website",
+            url: "https://gil-neto.com",
+            name: "Gil Neto — Founder-Engineer & Full-Stack Architect",
+            description:
+              "Portfolio and writings of Gil Neto, a Lisbon-based founder-engineer building B2B utilities end-to-end.",
+            inLanguage: "en",
+            publisher: { "@id": "https://gil-neto.com/#gil" },
           },
           {
             "@type": "FAQPage",
             mainEntity: [
               {
                 "@type": "Question",
-                name: "Who are you?",
+                name: "Who is Gil Neto?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I'm Gil Neto, an Developer-made-architect & AI Engineer based in Lisbon. Passionate about music, books, and technology, I am, at my core, a programmer who believes in keeping the mood light during crunch time and fostering a transparent, energetic team culture.",
+                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a Founder-Engineer building and operating B2B utilities solo, from infrastructure to UI. Currently running three products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Augur (GRC tooling for EU-regulated buyers), and Koa (deterministic PDF extraction engine).",
                 },
               },
               {
                 "@type": "Question",
-                name: "What are your core specializations?",
+                name: "What kind of roles is Gil Neto open to?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I specialize in building scalable products, with a newfound love for AI. My core focus right now is on Multi-Agent Systems, LLM Orchestration, and integration AI solutions into robust, production-ready applications.",
+                  text: "Senior individual contributor, staff engineer, fractional CTO, and contract engagements. Remote-first across EU timezones, based in Lisbon.",
                 },
               },
               {
                 "@type": "Question",
-                name: "What's your primary tech stack?",
+                name: "What is Gil Neto's primary tech stack?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "My expertise spans across core languages (Typescript and Python) and frameworks (React, Next.js, Node.js, Flask, FastAPI), cloud infrastructure (AWS, GCP, Docker) and now AI (LangChain, Gemini).",
+                  text: "TypeScript, Python, and SQL as primary languages. Next.js, React, Node.js, Nest.js, Fastify, Flask, and Temporal for runtime. Docker, Nginx, Hetzner, PostgreSQL, MongoDB, Redis, BullMQ, Kafka on AWS and GCP for infrastructure. Integrations with Stripe, OAuth 2.0, Open Banking (PSD2), Brevo, and Umami.",
                 },
               },
               {
                 "@type": "Question",
-                name: "What kind of roles are you interested in?",
+                name: "What is Gil Neto's technical philosophy?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I am actively seeking to explore more roles related to AI, where I can leverage both my background in software architecture and my motivation in AI, to build innovative products from the ground up.",
+                  text: "Infrastructure-first: own the boundary from DNS to UI, everything containerized and reproducible. AI-augmented execution: leverage coding agents to eliminate boilerplate and focus on architecture and business logic. Scope discipline: build stateless, low-liability utilities with operational impact, and kill projects fast when market signal is wrong.",
                 },
               },
               {
                 "@type": "Question",
-                name: "What is your technical philosophy?",
+                name: "What products has Gil Neto shipped?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "I thrive on solving complex problems, from architecting scalable backend services to developing sophisticated AI models. I am objective-driven, aiming for high-quality standards while respecting delivery timelines, and I constantly seek new knowledge.",
+                  text: "Three live products on a single Hetzner CCX23 VPS: Kelaro (kelaro.io) — accounting-automation SaaS in closed beta; Augur (tryaugur.eu) — GRC tooling for AI governance with EU data residency; Koa — a deterministic PDF bank-statement extraction engine powering Kelaro. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Where is Gil Neto based and what languages does he speak?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Available for remote work across EU timezones.",
                 },
               },
             ],

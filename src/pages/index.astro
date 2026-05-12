@@ -5,18 +5,23 @@ import About from "../components/About";
 import Experience from "../components/Experience";
 import Projects from "../components/Projects";
 import Stack from "../components/Stack";
+import Writing from "../components/Writing.astro";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import "../styles/global.css";
 ---
 
-<Layout title="Gil Neto | Full-Stack Architect & Product Engineer">
+<Layout
+  title="Gil Neto — Founder-Engineer & Full-Stack Architect · Lisbon / EU Remote"
+  description="Senior engineer, 12 years. Founder-Engineer in Lisbon shipping B2B utilities end-to-end on a single Hetzner VPS. Open to senior IC, staff, fractional CTO, and contract roles."
+>
   <main>
     <Hero client:load />
     <About client:visible />
     <Experience client:visible />
     <Projects client:visible />
     <Stack client:visible />
+    <Writing />
     <Footer client:visible />
     <ScrollToTop client:load />
   </main>
