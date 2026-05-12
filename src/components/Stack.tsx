@@ -2,24 +2,24 @@ import { motion } from 'framer-motion';
 
 const stackGroups = [
   {
-    label: 'Frontend',
+    label: 'Languages',
     color: 'var(--accent-primary)',
-    items: ['Next.js (App Router)', 'React', 'TypeScript', 'Tailwind CSS'],
+    items: ['TypeScript', 'Python', 'SQL'],
   },
   {
-    label: 'Backend & Auth',
+    label: 'Frameworks & Runtime',
     color: 'var(--accent-secondary)',
-    items: ['Node.js', 'Python', 'Supabase', 'OAuth 2.0'],
+    items: ['Next.js', 'React', 'Node.js', 'Nest.js', 'Fastify', 'Flask', 'Temporal'],
   },
   {
-    label: 'Infrastructure & DevOps',
+    label: 'Infrastructure & Cloud',
     color: 'var(--accent-warm)',
-    items: ['Docker', 'Nginx Proxy Manager', 'Hetzner VPS', 'Redis', 'BullMQ', 'PM2'],
+    items: ['Docker', 'Nginx', 'Hetzner', 'Kafka', 'PostgreSQL', 'MongoDB', 'Redis', 'BullMQ', 'AWS', 'GCP'],
   },
   {
     label: 'Integrations',
     color: 'var(--accent-primary)',
-    items: ['Stripe Connect', 'ZeptoMail', 'n8n', 'Open Banking APIs'],
+    items: ['Stripe', 'OAuth 2.0', 'Open Banking (PSD2)', 'Brevo', 'Umami'],
   },
 ];
 

@@ -3,30 +3,33 @@ import { motion } from 'framer-motion';
 const projects = [
   {
     title: 'Kelaro',
-    status: 'Closed Beta',
-    statusColor: 'var(--accent-secondary)',
-    tagline: 'Pre-Accounting Middleware for Fractional CFOs',
-    description: 'B2B financial middleware that automates the extraction of unstructured bank PDFs and live open-banking feeds into pristine, accountant-ready datasets. Built for the fractional CFO market where data quality is non-negotiable.',
-    infra: 'Next.js backend with PM2 process management. Complex OAuth 2.0 flows overcoming strict GCP and Azure Entra ID enterprise tenant restrictions. Secure server-side document parsing pipeline.',
-    tech: ['Next.js', 'TypeScript', 'OAuth 2.0', 'GCP', 'Azure Entra ID', 'PM2', 'PDF Parsing'],
-  },
-  {
-    title: 'Alerta-AT',
-    status: 'Live',
+    status: 'Live · Closed Beta',
     statusColor: 'var(--accent-primary)',
-    tagline: 'High-Availability Downtime Alert Engine',
-    description: 'A resilient webhook engine delivering real-time downtime alerts for the Portuguese Tax Authority (AT) portal. Architected to absorb massive traffic spikes during the April tax filing season without degradation.',
-    infra: 'Fully Dockerized architecture with health checks and container restart policies. Strict transactional email deliverability via ZeptoMail API. Automated hard-bounce and unsubscribe webhook processing to maintain 99%+ sender reputation.',
-    tech: ['Docker', 'Node.js', 'ZeptoMail API', 'Webhooks', 'TypeScript'],
+    url: 'https://kelaro.io',
+    tagline: 'Accounting-Automation SaaS',
+    description: 'B2B SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via an internal engine (Koa) orchestrated by Temporal, and emits accountant-ready datasets. Active pilots: PT chartered accountant + NL.',
+    infra: 'Next.js + Postgres 16 + Temporal workflows on Hetzner. Stripe integration with founder-discount pipeline (coupons, promo codes, 30-day trial). Admin dashboard for Users / Waitlist / Promo Codes / MRR. OAuth 2.0 against GCP and Azure Entra ID enterprise tenants.',
+    tech: ['Next.js', 'TypeScript', 'Temporal', 'PostgreSQL', 'Stripe', 'OAuth 2.0', 'PSD2'],
   },
   {
-    title: 'SaaS Boilerplate / Infra',
-    status: 'Internal',
+    title: 'Augur',
+    status: 'Live · Phase 0',
+    statusColor: 'var(--accent-secondary)',
+    url: 'https://tryaugur.eu',
+    tagline: 'GRC Tooling for AI Governance',
+    description: 'Compliance and audit tooling targeting EU-regulated buyers. Designed for full EU data residency end-to-end — self-hosted analytics, EU-only infra, no third-party trackers. Phase 0: landing live, lead capture wired, going to market.',
+    infra: 'Fastify + Postgres on Hetzner behind Nginx with TLS. Self-hosted Umami for privacy-first analytics. ImprovMX inbound mail. Same VPS as Kelaro — single-box multi-product topology.',
+    tech: ['Fastify', 'Postgres', 'Nginx', 'Docker', 'Umami', 'Hetzner'],
+  },
+  {
+    title: 'Koa',
+    status: 'Engine',
     statusColor: 'var(--accent-warm)',
-    tagline: 'Multi-Tenant Deployment Engine on Dedicated VPS',
-    description: 'A centralized infrastructure layer hosting all SaaS products on a dedicated Hetzner CCX23 server. Eliminates per-project setup overhead and provides a unified runtime, routing, and observability layer.',
-    infra: 'Next.js monorepo. Nginx Proxy Manager for zero-downtime dynamic domain routing. Redis + BullMQ job queues to isolate heavy headless-Chrome PDF generation from web processes. Unified logging streams across all tenants.',
-    tech: ['Next.js', 'Docker', 'Nginx Proxy Manager', 'Redis', 'BullMQ', 'Hetzner VPS'],
+    url: null,
+    tagline: 'Deterministic PDF Bank-Statement Extractor',
+    description: 'Config-driven extraction system that turns bank-statement PDFs into structured JSON. Three components: a Python/FastAPI engine, a Next.js + Prisma mapper UI for authoring per-bank templates, and an isolated PII scrub container. Powers Kelaro\'s extraction pipeline.',
+    infra: 'Python 3.12 / FastAPI with pdfplumber + pikepdf for native PDFs and Tesseract / PaddleOCR fallback for scans. Pydantic schemas end-to-end. mypy strict, ruff, CI-gated, auto-deployed via GitHub Actions on push to release branch.',
+    tech: ['Python 3.12', 'FastAPI', 'Pydantic', 'pdfplumber', 'PaddleOCR', 'Next.js', 'Prisma', 'Docker'],
   },
 ];
 
@@ -59,7 +62,13 @@ export default function Projects() {
               {/* Header */}
               <div className="flex items-start justify-between mb-1">
                 <h3 className="font-bold text-lg text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                  {project.title}
+                  {project.url ? (
+                    <a href={project.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {project.title} ↗
+                    </a>
+                  ) : (
+                    project.title
+                  )}
                 </h3>
                 <span
                   className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 border ml-3 flex-shrink-0"

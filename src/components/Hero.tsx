@@ -13,17 +13,17 @@ export default function Hero() {
         {/* Status badge */}
         <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 border-2 border-[var(--accent-primary)] text-[var(--accent-primary)] text-xs font-mono uppercase tracking-wider">
           <span className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" />
-          Open to remote opportunities
+          Open: Senior IC · Staff · Fractional CTO · Contract
         </div>
 
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[var(--text-primary)]">
           GIL NETO
         </h1>
         <p className="text-xl md:text-2xl text-[var(--accent-primary)] font-semibold mb-2 font-mono">
-          Full-Stack Architect & Product Engineer
+          Founder-Engineer & Full-Stack Architect
         </p>
         <p className="text-md md:text-lg text-[var(--text-secondary)] mb-8 max-w-2xl leading-relaxed">
-          I architect, deploy, and maintain end-to-end systems — from Next.js products to containerized Hetzner infrastructure. Specializing in B2B utilities that eliminate operational bottlenecks.
+          Senior engineer with 12 years' experience. I ship B2B utilities end-to-end — infrastructure to UI — solo. Currently running three products on a single Hetzner VPS: Kelaro (live accounting-automation SaaS), Augur (live GRC tooling, EU-residency), and Koa (Python PDF extraction engine). Launching a new venture in the hospitality sector as CTO.
         </p>
       </motion.div>
 
@@ -40,7 +40,7 @@ export default function Hero() {
         <a href="https://github.com/gilneto8" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent-primary)] transition-colors flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)]">
           <Github size={16} className="text-[var(--text-primary)]" /> GitHub
         </a>
-        <a href="https://linkedin.com/in/gil-neto" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent-primary)] transition-colors flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)]">
+        <a href="https://www.linkedin.com/in/gil-neto-7b44946a" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--accent-primary)] transition-colors flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)]">
           <Linkedin size={16} className="text-[#0A66C2]" /> LinkedIn
         </a>
         <span className="flex items-center gap-2 px-3 py-2 border-2 border-[var(--border-muted)]">

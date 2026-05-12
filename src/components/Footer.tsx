@@ -17,7 +17,7 @@ export default function Footer() {
           </div>
           <h2 className="text-3xl font-black mb-2 text-[var(--text-primary)]">Let's build something.</h2>
           <p className="text-[var(--text-secondary)] max-w-md">
-            Open to senior full-stack or infrastructure-focused roles. If you have a hard problem that needs end-to-end ownership, let's talk.
+            Open to senior IC, staff, fractional CTO, or contract roles. Remote-first (EU timezones), Lisbon-based. If you have a hard problem that needs end-to-end ownership — infra to UI — let's talk.
           </p>
         </div>
 
@@ -30,7 +30,7 @@ export default function Footer() {
       </motion.div>
 
       <div className="mt-16 pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-        <p className="font-mono text-[var(--text-muted)]">© 2025 Gil Neto. All rights reserved.</p>
+        <p className="font-mono text-[var(--text-muted)]">© 2026 Gil Neto. All rights reserved.</p>
         <div className="flex gap-6 text-[var(--text-secondary)]">
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 bg-[var(--accent-primary)]" />

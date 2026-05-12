@@ -9,18 +9,18 @@ const accentColors = [
 const philosophy = [
   {
     title: 'Infrastructure-First',
-    body: 'I believe in owning the full stack. From Nginx reverse proxies and Redis queues to centralized observability with Better Stack, I build backends that don\'t wake me up at 3 AM. Everything containerized. Everything reproducible.',
-    tags: ['Docker', 'Nginx PM', 'Redis', 'Better Stack', 'VPS'],
+    body: 'I own the boundary — from Cloudflare DNS to React component. Three products live on a single Hetzner CCX23: Docker, Nginx, Postgres 16, Temporal, self-hosted analytics, all containerized and reproducible. Runbooks and an infrastructure map kept in sync with prod.',
+    tags: ['Docker', 'Nginx', 'Hetzner', 'Postgres', 'Temporal'],
   },
   {
-    title: 'AI-Leveraged Execution',
-    body: 'I use AI coding agents heavily to eliminate boilerplate and accelerate delivery — which means I spend my time on system architecture, database design, and complex API integrations rather than scaffolding. High velocity without cutting corners.',
-    tags: ['AI Agents', 'n8n', 'Gemini', 'Automation'],
+    title: 'AI-Augmented Execution',
+    body: 'AI coding agents kill boilerplate. That frees me to spend cycles on system architecture, data modeling, and business logic — not scaffolding. The result: solo-shipping multiple products without cutting corners on tests, types, or observability.',
+    tags: ['Claude Code', 'AI Agents', 'Type-strict', 'CI-gated'],
   },
   {
-    title: 'Business Logic First',
-    body: 'Code is a tool to solve business friction. I focus on building stateless, low-liability utilities with high operational impact — products that earn their keep. Scope is sacred; complexity is a liability.',
-    tags: ['B2B SaaS', 'API Design', 'Operational Impact'],
+    title: 'Scope Discipline',
+    body: 'Code is a tool to solve business friction and, as such, I build stateless, low-liability utilities with operational impact. Currently, six projects parked and three shipped.',
+    tags: ['B2B SaaS', 'Kill-fast', 'Operational Impact'],
   },
 ];
 
