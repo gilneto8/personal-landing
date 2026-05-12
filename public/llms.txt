@@ -1,0 +1,53 @@
+# Gil Neto
+
+> Senior software engineer with 12 years' experience. Founder-Engineer & Full-Stack Architect based in Lisbon, Portugal. Builds and operates B2B utilities end-to-end — infrastructure to UI — solo. Open to senior IC, staff, fractional CTO, and contract roles. Remote-first across EU timezones.
+
+## Identity
+
+- Name: Gil Neto
+- Title: Founder-Engineer & Full-Stack Architect
+- Location: Lisbon, Portugal
+- Availability: Remote (EU timezones), Lisbon on-site
+- Open to: Senior IC, Staff Engineer, Fractional CTO, Contract
+- Website: https://gil-neto.com
+- Email: gilneto8.work@gmail.com
+- GitHub: https://github.com/gilneto8
+- LinkedIn: https://www.linkedin.com/in/gil-neto-7b44946a
+
+## Products (currently live)
+
+- [Kelaro](https://kelaro.io): Accounting-automation SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via Temporal-orchestrated pipeline, emits accountant-ready datasets. Active pilots in Portugal and Netherlands.
+- [Augur](https://tryaugur.eu): GRC (Governance, Risk, Compliance) tooling for AI governance, targeting EU-regulated buyers. Full EU data residency by design. Phase 0: landing live, lead capture wired.
+- Koa: Deterministic PDF bank-statement extraction engine. Three components — Python/FastAPI engine with pdfplumber + OCR fallback (Tesseract / PaddleOCR), Next.js + Prisma mapper UI for per-bank templates, isolated PII scrub container. Powers Kelaro's extraction pipeline.
+
+## Infrastructure
+
+All three products run on a single Hetzner CCX23 VPS. Stack: Nginx, Docker, PostgreSQL 16, Temporal, ImprovMX (inbound mail), Brevo SMTP (transactional), self-hosted Umami (analytics).
+
+## Tech Stack
+
+- Languages: TypeScript, Python, SQL
+- Frameworks & Runtime: Next.js, React, Node.js, Nest.js, Fastify, Flask, Temporal
+- Infrastructure & Cloud: Docker, Nginx, Hetzner, Kafka, PostgreSQL, MongoDB, Redis, BullMQ, AWS, GCP
+- Integrations: Stripe, OAuth 2.0, Open Banking (PSD2), Brevo, Umami
+
+## Experience
+
+- 1/2026 – Present: Independent Founder-Engineer (self-directed) — building Kelaro, Augur, Koa; launching new hospitality venture as CTO.
+- 4/2021 – 1/2026: Lead Software Engineer at Opplane — monolith-to-microservices migration, LLM-integration layer, observability stack, mentoring teams of 4–5.
+- 3/2020 – 4/2021: Senior Software Engineer at Opplane — design systems, front-end architecture, client-facing projects across health and retail.
+- 1/2018 – 2/2020: Front-end Lead Developer at Glartek — industrial-IoT product, enterprise deals with manufacturing and oil & gas leaders.
+- 9/2013 – 1/2018: Analyst / Consultant at Link Consulting — enterprise apps; final two years as on-site systems administrator on a major oil & gas project in Kuwait.
+
+## Education
+
+Bachelor's Degree in Computer Science, Faculdade de Ciências e Tecnologia, Universidade Nova de Lisboa (2008–2013).
+
+## Languages
+
+Portuguese (native), English (proficient), Spanish (elementary).
+
+## Pages
+
+- /: Home — hero, philosophy, projects, experience, stack, contact
+- /blog: Technical writing on infrastructure, founder-engineering, and B2B SaaS (coming soon)
