@@ -207,6 +207,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
         ],
       })}
     />
+    {import.meta.env.PROD && (<script defer src="https://analytics.tryaugur.eu/script.js" data-website-id="29636950-9b21-45d2-bf23-ec872b2ff1a6"></script>)}
   </head>
   <body class="font-sans antialiased relative">
     <div class="fixed inset-0 z-0">
