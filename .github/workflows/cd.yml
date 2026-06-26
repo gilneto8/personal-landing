@@ -1,0 +1,26 @@
+name: CD
+# Deploy on push to `release` → SSH to the VPS, pull, build, publish.
+# Per VPS_DEPLOYMENT_STANDARD.md (static body). Runs as the `landing` user.
+on:
+  push:
+    branches: [release]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+            cd ~/personal-landing
+            git fetch origin release
+            git reset --hard origin/release
+            npm ci
+            npm run build
+            rm -rf /var/www/landing/*
+            cp -r dist/* /var/www/landing/
+            echo "deployed $(git rev-parse --short HEAD)"
