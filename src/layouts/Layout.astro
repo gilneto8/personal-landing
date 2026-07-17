@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title,
-  description = "Senior engineer with 12 years' experience. Founder-Engineer based in Lisbon, building B2B utilities end-to-end on a single Hetzner VPS. Open to senior IC, staff, fractional CTO, and contract roles.",
+  description = "Senior engineer with 12 years' experience. Founder-Engineer based in Lisbon, building B2B utilities end-to-end on a single Hetzner VPS. Open to fractional CTO and advisory engagements (not full-time).",
   ogImage = "/og-image.png",
   type = "website",
 } = Astro.props;
@@ -126,10 +126,8 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               name: "Faculdade de Ciências e Tecnologia - Universidade Nova de Lisboa",
             },
             seeks: [
-              "Senior IC roles",
-              "Staff engineer roles",
               "Fractional CTO engagements",
-              "Contract engagements",
+              "Advisory engagements",
             ],
             sameAs: [
               "https://github.com/gilneto8",
@@ -164,10 +162,10 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               },
               {
                 "@type": "Question",
-                name: "What kind of roles is Gil Neto open to?",
+                name: "What kind of work is Gil Neto open to?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Senior individual contributor, staff engineer, fractional CTO, and contract engagements. Remote-first across EU timezones, based in Lisbon.",
+                  text: "Fractional CTO and advisory engagements, not full-time. Remote-first across EU timezones, based in Lisbon.",
                 },
               },
               {
@@ -199,7 +197,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Where is Gil Neto based and what languages does he speak?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Available for remote work across EU timezones.",
+                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Available for fractional and advisory work across EU timezones.",
                 },
               },
             ],

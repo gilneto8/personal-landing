@@ -13,7 +13,7 @@ export default function Hero() {
         {/* Status badge */}
         <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 border-2 border-[var(--accent-primary)] text-[var(--accent-primary)] text-xs font-mono uppercase tracking-wider">
           <span className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" />
-          Open: Senior IC · Staff · Fractional CTO · Contract
+          Open: Fractional CTO · Advisory
         </div>
 
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[var(--text-primary)]">

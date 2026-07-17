@@ -13,11 +13,11 @@ export default function Footer() {
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-3 h-3 bg-[var(--accent-primary)] animate-pulse" />
-            <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)]">Available for remote work</span>
+            <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)]">Available for fractional & advisory</span>
           </div>
           <h2 className="text-3xl font-black mb-2 text-[var(--text-primary)]">Let's build something.</h2>
           <p className="text-[var(--text-secondary)] max-w-md">
-            Open to senior IC, staff, fractional CTO, or contract roles. Remote-first (EU timezones), Lisbon-based. If you have a hard problem that needs end-to-end ownership — infra to UI — let's talk.
+            Open to fractional CTO and advisory engagements, not full-time - my days are mostly spoken for, but I keep room for one or two outside problems worth the time. Remote-first (EU timezones), Lisbon-based. Hard problem that needs end-to-end judgement, infra to UI? Let's talk.
           </p>
         </div>
 
