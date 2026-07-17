@@ -67,6 +67,12 @@ export default function Hero() {
         >
           Let's Talk <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
         </a>
+        <a
+          href="/blog"
+          className="group px-6 py-3 font-mono font-bold uppercase tracking-wider border-2 border-[var(--border-muted)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] transition-all hover:shadow-[4px_4px_0_var(--accent-primary)] text-sm text-[var(--text-secondary)]"
+        >
+          Read the Blog <span className="inline-block group-hover:translate-x-1 transition-transform">→</span>
+        </a>
       </motion.div>
 
       {/* Scroll indicator */}
