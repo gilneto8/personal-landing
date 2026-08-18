@@ -30,7 +30,15 @@ export default function Footer() {
       </motion.div>
 
       <div className="mt-16 pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-        <p className="font-mono text-[var(--text-muted)]">© 2026 Gil Neto. All rights reserved.</p>
+        <div className="flex items-center gap-6">
+          <p className="font-mono text-[var(--text-muted)]">© 2026 Gil Neto. All rights reserved.</p>
+          <a
+            href="/rss.xml"
+            className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
+          >
+            RSS
+          </a>
+        </div>
         <div className="flex gap-6 text-[var(--text-secondary)]">
           <span className="flex items-center gap-2">
             <span className="w-2 h-2 bg-[var(--accent-primary)]" />
