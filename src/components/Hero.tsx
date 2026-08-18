@@ -20,10 +20,10 @@ export default function Hero() {
           GIL NETO
         </h1>
         <p className="text-xl md:text-2xl text-[var(--accent-primary)] font-semibold mb-2 font-mono">
-          Founder-Engineer & Full-Stack Architect
+          Founder-Engineer & Senior Software Engineer, AI Products
         </p>
         <p className="text-md md:text-lg text-[var(--text-secondary)] mb-8 max-w-2xl leading-relaxed">
-          Senior engineer with 12 years' experience. I ship B2B utilities end-to-end — infrastructure to UI — solo. Currently running three products on a single Hetzner VPS: Kelaro (live accounting-automation SaaS), Augur (live GRC tooling, EU-residency), and Koa (Python PDF extraction engine). Launching a new venture in the hospitality sector as CTO.
+          Senior engineer with 12 years' experience. I ship B2B utilities end-to-end — infrastructure to UI — solo, and I build LLM-backed systems where the model does judgment and deterministic code does correctness. Currently on a single Hetzner VPS: Kelaro (live accounting-automation SaaS), Koa (Python document-extraction engine, the deliberate alternative to vision-LLM extraction), and Augur (GRC tooling, EU-residency, parked).
         </p>
       </motion.div>
 

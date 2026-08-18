@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title,
-  description = "Senior engineer with 12 years' experience. Founder-Engineer based in Lisbon, building B2B utilities end-to-end on a single Hetzner VPS. Open to fractional CTO and advisory engagements (not full-time).",
+  description = "Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, building B2B utilities and LLM-backed systems end-to-end on a single Hetzner VPS. Open to fractional CTO and advisory engagements (not full-time).",
   ogImage = "/og-image.png",
   type = "website",
 } = Astro.props;
@@ -30,7 +30,13 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
     <meta name="author" content="Gil Neto" />
     <meta
       name="keywords"
-      content="founder-engineer, fractional CTO, senior full-stack architect, systems architect, B2B SaaS, Next.js, TypeScript, Python, Temporal, Hetzner, Lisbon, EU remote, hire"
+      content="founder-engineer, AI product engineer, AI engineer Lisbon, LLM application engineer, fractional CTO, fractional AI CTO, senior full-stack architect, systems architect, RAG, model evaluation, AI agents, document extraction, B2B SaaS, Next.js, TypeScript, Python, Temporal, Hetzner, Lisbon, EU remote, hire"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Gil Neto — Writing"
+      href="/rss.xml"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -79,9 +85,9 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             "@id": "https://gil-neto.com/#gil",
             name: "Gil Neto",
             url: "https://gil-neto.com",
-            jobTitle: "Founder-Engineer & Full-Stack Architect",
+            jobTitle: "Founder-Engineer & Senior Software Engineer, AI Products",
             description:
-              "Senior engineer with 12 years' experience building and operating B2B utilities end-to-end. Currently running three products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Augur (GRC tooling, EU data residency), and Koa (PDF extraction engine).",
+              "Senior engineer with 12 years' experience building and operating B2B utilities end-to-end, and building LLM-backed systems where the model does judgment and deterministic code does correctness. Currently running products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Koa (deterministic document-extraction engine, the deliberate alternative to vision-LLM extraction), and Augur (GRC tooling for AI governance, EU data residency, parked since July 2026).",
             email: "gilneto8.work@gmail.com",
             telephone: "+351914847254",
             address: {
@@ -120,6 +126,15 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               "Open Banking",
               "PSD2",
               "LLM Integration",
+              "LLM Application Architecture",
+              "Retrieval-Augmented Generation",
+              "pgvector",
+              "Model Evaluation",
+              "Eval Harnesses",
+              "AI Agents",
+              "Agent Orchestration",
+              "Document Extraction",
+              "Deterministic NLP",
             ],
             alumniOf: {
               "@type": "CollegeOrUniversity",
@@ -128,6 +143,8 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             seeks: [
               "Fractional CTO engagements",
               "Advisory engagements",
+              "AI product engineering engagements",
+              "Fractional CTO for AI products",
             ],
             sameAs: [
               "https://github.com/gilneto8",
@@ -143,9 +160,9 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             "@type": "WebSite",
             "@id": "https://gil-neto.com/#website",
             url: "https://gil-neto.com",
-            name: "Gil Neto — Founder-Engineer & Full-Stack Architect",
+            name: "Gil Neto — Founder-Engineer & Senior Software Engineer, AI Products",
             description:
-              "Portfolio and writings of Gil Neto, a Lisbon-based founder-engineer building B2B utilities end-to-end.",
+              "Portfolio and writings of Gil Neto, a Lisbon-based founder-engineer and senior software engineer working on AI products, building B2B utilities and LLM-backed systems end-to-end.",
             inLanguage: "en",
             publisher: { "@id": "https://gil-neto.com/#gil" },
           },
@@ -157,7 +174,23 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Who is Gil Neto?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a Founder-Engineer building and operating B2B utilities solo, from infrastructure to UI. Currently running three products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Augur (GRC tooling for EU-regulated buyers), and Koa (deterministic PDF extraction engine).",
+                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a Founder-Engineer, building and operating B2B utilities solo from infrastructure to UI, and as a senior software engineer on AI products, building LLM-backed systems for other people. Currently running products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Koa (deterministic document-extraction engine), and Augur (GRC tooling for EU-regulated buyers, parked since July 2026).",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Does Gil Neto work on AI and LLM products?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. Gil Neto works as a senior software engineer on AI products, building LLM-backed systems where the model handles judgment and deterministic code handles correctness. That covers LLM application architecture, retrieval-augmented generation, model evaluation and eval harnesses as release gates, agent orchestration, and document extraction. He is available for fractional CTO and advisory engagements on AI products, based in Lisbon and remote across EU timezones.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What AI systems has Gil Neto built?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Koa, a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. Kelaro's LLM-backed pipeline, running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. An agent-run second-brain system where guarantees live in lifecycle hooks rather than in prompts. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
                 },
               },
               {
@@ -189,7 +222,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What products has Gil Neto shipped?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Three live products on a single Hetzner CCX23 VPS: Kelaro (kelaro.io) — accounting-automation SaaS in closed beta; Augur (tryaugur.eu) — GRC tooling for AI governance with EU data residency; Koa — a deterministic PDF bank-statement extraction engine powering Kelaro. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
+                  text: "Products on a single Hetzner CCX23 VPS: Kelaro (kelaro.io) — accounting-automation SaaS in closed beta with active pilots in Portugal and the Netherlands; Koa — a deterministic PDF bank-statement extraction engine powering Kelaro, built as the alternative to vision-LLM extraction; Augur (tryaugur.eu) — GRC tooling for AI governance with EU data residency, parked since July 2026. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
                 },
               },
               {
