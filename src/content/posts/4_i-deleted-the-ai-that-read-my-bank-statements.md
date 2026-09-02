@@ -2,6 +2,7 @@
 title: "I deleted the AI that read my bank statements"
 description: "It never crashed. It handed back a clean, plausible ledger with the wrong numbers in it, and there was no way for anyone downstream to tell which rows were the wrong ones."
 pubDate: 2026-08-28
+draft: true  # held until the Kelaro battery passes and Koa is verified (Gil, 02-set)
 tags:
   - llm
   - extraction
@@ -11,7 +12,7 @@ tags:
 canonical: "https://gil-neto.com/blog/i-deleted-the-ai-that-read-my-bank-statements"
 ---
 
-One of my products takes a bank statement PDF and gives you back a spreadsheet. That's the free door into the rest of it - you convert one statement, you see it works, maybe you stay for the syncing. It was priced at 5.99 euros for 50 conversions, which tells you how much of a funnel piece it is rather than a revenue line.
+One of my products takes a bank statement PDF and gives you back a spreadsheet. That's the free door into the rest of it - you convert one statement, you see it works, maybe you stay for the automated syncing. It was priced at 5.99 euros for 50 conversions, which tells you how much of a funnel piece it is rather than a revenue line.
 
 Behind that door I had Docling, IBM's document extraction stack, running as its own Python container on the box. It ate about 4GB of RAM and it sat behind a Temporal workflow so the conversion could take its time without holding a request open. Reasonable setup. Everyone builds some version of it.
 
