@@ -184,3 +184,7 @@ Every fix I shipped today is a comparison moved out of my head and into a script
 Look at anything in your system that emits a number nobody can fail. Then ask what it would have to be compared against for that number to mean something, and whether anything in the system is doing that comparison, or whether you are.
 
 If it's you, it isn't happening on the days you're busy. That's not a discipline problem. It's an architecture one.
+
+---
+
+*I'm a founder-engineer in Lisbon. I build B2B utilities end-to-end, and the memory and evaluation tooling that keeps them honest. Open to fractional build and advisory work. Reach me at [gilneto8.work@gmail.com](mailto:gilneto8.work@gmail.com) or via [gil-neto.com](https://gil-neto.com).*
