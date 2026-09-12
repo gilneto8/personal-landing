@@ -97,7 +97,7 @@ The next time I have a targeting idea good enough that I want to build on it imm
 
 ---
 
-*I'm a founder-engineer in Lisbon. I build B2B utilities end-to-end, and I write up the ones that don't work as often as the ones that do. Open to fractional CTO and consultancy work. Reach me at [gilneto8.work@gmail.com](mailto:gilneto8.work@gmail.com) or via [gil-neto.com](https://gil-neto.com).*
+*I'm a founder-engineer in Lisbon. I build B2B utilities end-to-end, and I write up the ones that don't work as often as the ones that do. Open to fractional build and advisory work. Reach me at [gilneto8.work@gmail.com](mailto:gilneto8.work@gmail.com) or via [gil-neto.com](https://gil-neto.com).*
 
 <!--
 LINKEDIN HOOK (not rendered - kept here so it doesn't get lost)

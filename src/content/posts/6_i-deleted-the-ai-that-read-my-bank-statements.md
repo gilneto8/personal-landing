@@ -97,7 +97,7 @@ The thing I'd want someone to take from this: before you put an AI extractor any
 
 ---
 
-*I'm a founder-engineer in Lisbon. I build B2B utilities end-to-end, and lately I spend a lot of time on the question of what an agent should and shouldn't be allowed to decide for me. Open to fractional CTO and consultancy work. Reach me at [gilneto8.work@gmail.com](mailto:gilneto8.work@gmail.com) or via [gil-neto.com](https://gil-neto.com).*
+*I'm a founder-engineer in Lisbon. I build B2B utilities end-to-end, and lately I spend a lot of time on the question of what an agent should and shouldn't be allowed to decide for me. Open to fractional build and advisory work. Reach me at [gilneto8.work@gmail.com](mailto:gilneto8.work@gmail.com) or via [gil-neto.com](https://gil-neto.com).*
 
 <!--
 LINKEDIN HOOK (not rendered - kept here so it doesn't get lost)
