@@ -8,19 +8,19 @@ const accentColors = [
 
 const philosophy = [
   {
+    title: 'Memory as Infrastructure',
+    body: 'An agent that forgets is a demo. I build the layer underneath: capture that cannot be skipped, routing that runs on a schedule rather than on attention, retrieval split between generated indexes for state and vector search for facts, and a nightly eval that says out loud when the index has started lying. Judgment is the model\'s job. The guarantees are the harness\'s.',
+    tags: ['Agent memory', 'Retrieval', 'Eval harness', 'Drift audit'],
+  },
+  {
     title: 'Infrastructure-First',
-    body: 'I own the boundary — from Cloudflare DNS to React component. Three products live on a single Hetzner CCX23: Docker, Nginx, Postgres 16, Temporal, self-hosted analytics, all containerized and reproducible. Runbooks and an infrastructure map kept in sync with prod.',
-    tags: ['Docker', 'Nginx', 'Hetzner', 'Postgres', 'Temporal'],
+    body: 'I own the boundary — from DNS record to React component. Several products in production behind one operational surface: Docker, Nginx, Postgres, durable workflow orchestration, self-hosted analytics, all containerized and reproducible. Runbooks and an infrastructure map kept in sync with prod.',
+    tags: ['Docker', 'Nginx', 'Postgres', 'Temporal', 'Runbooks'],
   },
   {
     title: 'AI-Augmented Execution',
     body: 'AI coding agents kill boilerplate. That frees me to spend cycles on system architecture, data modeling, and business logic — not scaffolding. The result: solo-shipping multiple products without cutting corners on tests, types, or observability.',
     tags: ['Claude Code', 'AI Agents', 'Type-strict', 'CI-gated'],
-  },
-  {
-    title: 'Scope Discipline',
-    body: 'Code is a tool to solve business friction and, as such, I build stateless, low-liability utilities with operational impact. Currently, six projects parked and three shipped.',
-    tags: ['B2B SaaS', 'Kill-fast', 'Operational Impact'],
   },
 ];
 

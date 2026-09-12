@@ -1,6 +1,6 @@
 # Gil Neto
 
-> Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, Portugal. Builds and operates B2B utilities end-to-end — infrastructure to UI — solo, and builds LLM-backed systems where the model does judgment and deterministic code does correctness. Open to fractional CTO and advisory engagements only (not full-time). Remote-first across EU timezones.
+> Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, Portugal. Current focus is the memory and knowledge layer LLM systems run on: how an agent captures what it learns, where that knowledge lives, how it is retrieved, and how staleness is detected. Also builds and operates B2B utilities end-to-end — infrastructure to UI — solo, on the principle that the model does judgment and deterministic code does correctness. Open to fractional build and advisory engagements. Remote-first across EU timezones.
 
 ## Identity
 
@@ -8,7 +8,7 @@
 - Title: Founder-Engineer & Senior Software Engineer, AI Products
 - Location: Lisbon, Portugal
 - Availability: Remote (EU timezones), Lisbon on-site
-- Open to: Fractional CTO, Advisory. Not full-time.
+- Open to: Fractional build, Advisory. Architecture, the first working version, and a handover.
 - Website: https://gil-neto.com
 - Email: gilneto8.work@gmail.com
 - GitHub: https://github.com/gilneto8
@@ -19,34 +19,34 @@
 
 What the AI-engineering work actually consists of, with the artifacts rather than adjectives:
 
+- **Persistent memory for LLM agents (second brain).** A markdown knowledge base an LLM agent reads and writes as long-term memory, in daily use. Capture, routing and checkpointing are enforced by lifecycle hooks rather than asked for in prompts. Retrieval runs in two rungs: generated index files for state, vector search for a specific fact, with "not in the corpus" kept as a valid answer. A scored nightly eval against a fixed question set detects when the index has gone stale, and a drift audit checks the model's own previous work.
 - **Deterministic extraction over model extraction (Koa).** Evaluated ML document-understanding for bank-statement parsing and replaced it with a deterministic Python engine. The system forces balances to reconcile and refuses loudly when it cannot, rather than returning a plausible total. A confidence score is not a proof; arithmetic is.
 - **LLM-backed pipelines with the model outside the arithmetic.** Kelaro's pipeline runs on durable Temporal workflows with retries, timeouts and operator-visible state. The model never touches the numbers.
 - **Evaluation practice.** Eval corpora and holdout sets used as release gates for AI quality, rather than shipping on impressions.
 - **Agentic development pipeline.** A two-phase pipeline (`midas`) that resolves every open decision before anything is specified, with a verdict gate between the halves. Built on top of Matt Pocock's wayfinder model. Agents execute settled decisions fast and improvise undecided ones at the same speed, so the gate is the product.
-- **Agent systems with enforcement outside the model.** A second-brain system where judgment is the model's job and guarantees are the harness's: lifecycle hooks, capped context reads, batch routing on a schedule, and a drift audit that checks the model's own work.
 - **LLM-integration layer at Opplane** (2021–2026), alongside an observability stack and a monolith-to-microservices migration.
 
-## Products (currently live)
+## Work (currently live)
 
 - [Kelaro](https://kelaro.io): Accounting-automation SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via Temporal-orchestrated pipeline, emits accountant-ready datasets. Active pilots in Portugal and Netherlands.
 - Koa: Deterministic PDF bank-statement extraction engine, and the deliberate alternative to vision-LLM extraction. Three components — Python/FastAPI engine with pdfplumber + OCR fallback (Tesseract / PaddleOCR), Next.js + Prisma mapper UI for per-bank templates, isolated PII scrub container. Powers Kelaro's extraction pipeline.
-- [Augur](https://tryaugur.eu): GRC (Governance, Risk, Compliance) tooling for AI governance, targeting EU-regulated buyers. Full EU data residency by design. Landing page live; the project is parked as of July 2026 while capacity goes to Kelaro and Koa.
+- Second brain: persistent long-term memory for an LLM agent — markdown knowledge base, hook-enforced capture, scheduled batch routing, two-rung retrieval, scored nightly eval and drift audit. Running daily and written up publicly on the blog.
 
 ## Infrastructure
 
-All products run on a single Hetzner CCX23 VPS. Stack: Nginx, Docker, PostgreSQL 16, Temporal, ImprovMX (inbound mail), Brevo SMTP (transactional), self-hosted Umami (analytics).
+All products run on one self-managed operational surface, owned end-to-end. Stack: Nginx, Docker, PostgreSQL 16, Temporal, ImprovMX (inbound mail), Brevo SMTP (transactional), self-hosted Umami (analytics).
 
 ## Tech Stack
 
 - Languages: TypeScript, Python, SQL
 - Frameworks & Runtime: Next.js, React, Node.js, Nest.js, Fastify, Flask, FastAPI, Temporal
-- AI / LLM: LLM application architecture, retrieval-augmented generation (RAG), pgvector, model evaluation, eval harnesses, AI agents, agent orchestration, document extraction, deterministic NLP
-- Infrastructure & Cloud: Docker, Nginx, Hetzner, Kafka, PostgreSQL, MongoDB, Redis, BullMQ, AWS, GCP
+- AI / LLM: agent memory, long-term memory for LLM agents, persistent knowledge architecture, personal knowledge management, context engineering, semantic retrieval, LLM application architecture, retrieval-augmented generation (RAG), pgvector, model evaluation, eval harnesses, AI agents, agent orchestration, document extraction, deterministic NLP
+- Infrastructure & Cloud: Docker, Nginx, Kafka, PostgreSQL, MongoDB, Redis, BullMQ, AWS, GCP
 - Integrations: Stripe, OAuth 2.0, Open Banking (PSD2), Brevo, Umami
 
 ## Experience
 
-- 1/2026 – Present: Independent Founder-Engineer — building and operating Kelaro, Augur and Koa. Also engaged as a contract senior full-stack engineer on AI product work, which is why availability is fractional and advisory rather than full-time.
+- 1/2026 – Present: Independent Founder-Engineer — building and operating Kelaro and Koa, and a second-brain memory system for an LLM agent. Also engaged as a contract senior full-stack engineer on AI product work, where the current brief is the knowledge and memory layer an LLM product runs on.
 - 4/2021 – 1/2026: Lead Software Engineer at Opplane — monolith-to-microservices migration, LLM-integration layer, observability stack, mentoring teams of 4–5.
 - 3/2020 – 4/2021: Senior Software Engineer at Opplane — design systems, front-end architecture, client-facing projects across health and retail.
 - 1/2018 – 2/2020: Front-end Lead Developer at Glartek — industrial-IoT product, enterprise deals with manufacturing and oil & gas leaders.
@@ -66,6 +66,8 @@ Technical writing on infrastructure, AI systems, agents and founder-engineering.
 
 - [Running 3 SaaS products on a single Hetzner CCX23](https://gil-neto.com/blog/running-3-saas-on-a-single-hetzner-ccx23) — one €30/month box, three products, the architecture and the trade-offs.
 - [Running a second brain on an LLM agent that forgets](https://gil-neto.com/blog/second-brain-hooks-not-prompts) — why better prompts did not fix agent reliability, and what hooks, structure and economics did.
+- [My agent had two rules and obeyed neither](https://gil-neto.com/blog/specification-is-not-decision-making) — two well-written rules that contradicted each other, and why writing a rule is not the same job as making a decision.
+- [The index was lying and the eval knew](https://gil-neto.com/blog/the-index-was-lying-and-the-eval-knew) — six weeks after hooks fixed capture, the memory was still confidently wrong; the nightly eval had been saying so for a month and nobody read the number.
 
 ## Pages
 

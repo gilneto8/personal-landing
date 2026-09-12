@@ -13,7 +13,7 @@ export default function Hero() {
         {/* Status badge */}
         <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 border-2 border-[var(--accent-primary)] text-[var(--accent-primary)] text-xs font-mono uppercase tracking-wider">
           <span className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-pulse" />
-          Open: Fractional CTO · Advisory
+          Open: Fractional Build · Advisory
         </div>
 
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[var(--text-primary)]">
@@ -23,7 +23,7 @@ export default function Hero() {
           Founder-Engineer & Senior Software Engineer, AI Products
         </p>
         <p className="text-md md:text-lg text-[var(--text-secondary)] mb-8 max-w-2xl leading-relaxed">
-          Senior engineer with 12 years' experience. I ship B2B utilities end-to-end — infrastructure to UI — solo, and I build LLM-backed systems where the model does judgment and deterministic code does correctness. Currently on a single Hetzner VPS: Kelaro (live accounting-automation SaaS), Koa (Python document-extraction engine, the deliberate alternative to vision-LLM extraction), and Augur (GRC tooling, EU-residency, parked).
+          Senior engineer, 12 years. I build LLM-backed systems where the model does judgment and deterministic code does correctness. Most of that work now sits in memory: how an agent captures what it learns, where that knowledge lives, how it comes back, and what stops it confidently repeating something that stopped being true. I run my own second brain on those rules, and I ship B2B utilities end-to-end — infrastructure to UI — solo.
         </p>
       </motion.div>
 

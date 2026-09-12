@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title,
-  description = "Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, building B2B utilities and LLM-backed systems end-to-end on a single Hetzner VPS. Open to fractional CTO and advisory engagements (not full-time).",
+  description = "Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, building agent memory and knowledge systems - capture, retrieval, evaluation - alongside B2B utilities shipped end-to-end. Open to fractional build and advisory engagements.",
   ogImage = "/og-image.png",
   type = "website",
 } = Astro.props;
@@ -30,7 +30,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
     <meta name="author" content="Gil Neto" />
     <meta
       name="keywords"
-      content="founder-engineer, AI product engineer, AI engineer Lisbon, LLM application engineer, fractional CTO, fractional AI CTO, senior full-stack architect, systems architect, RAG, model evaluation, AI agents, document extraction, B2B SaaS, Next.js, TypeScript, Python, Temporal, Hetzner, Lisbon, EU remote, hire"
+      content="founder-engineer, AI product engineer, AI engineer Lisbon, agent memory, long-term memory for LLM agents, AI second brain, exocortex, persistent memory architecture, personal knowledge management, context engineering, semantic retrieval, LLM application engineer, fractional build, fractional CTO, fractional AI CTO, systems architect, RAG, model evaluation, eval harness, AI agents, document extraction, B2B SaaS, Next.js, TypeScript, Python, Temporal, Lisbon, EU remote, hire"
     />
     <link
       rel="alternate"
@@ -87,7 +87,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             url: "https://gil-neto.com",
             jobTitle: "Founder-Engineer & Senior Software Engineer, AI Products",
             description:
-              "Senior engineer with 12 years' experience building and operating B2B utilities end-to-end, and building LLM-backed systems where the model does judgment and deterministic code does correctness. Currently running products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Koa (deterministic document-extraction engine, the deliberate alternative to vision-LLM extraction), and Augur (GRC tooling for AI governance, EU data residency, parked since July 2026).",
+              "Senior engineer with 12 years' experience building LLM-backed systems where the model does judgment and deterministic code does correctness. Current focus is the memory and knowledge layer such systems run on: capture, storage, retrieval and staleness detection for an LLM agent's long-term memory, running daily as a second-brain system. Also builds and operates B2B utilities end-to-end: Kelaro (accounting-automation SaaS) and Koa (deterministic document-extraction engine, the deliberate alternative to vision-LLM extraction).",
             email: "gilneto8.work@gmail.com",
             telephone: "+351914847254",
             address: {
@@ -118,7 +118,6 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               "Kafka",
               "Docker",
               "Nginx",
-              "Hetzner",
               "AWS",
               "GCP",
               "Stripe",
@@ -135,15 +134,24 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               "Agent Orchestration",
               "Document Extraction",
               "Deterministic NLP",
+              "Agent Memory",
+              "Long-Term Memory for LLM Agents",
+              "Persistent Memory Architecture",
+              "Personal Knowledge Management",
+              "Second Brain Systems",
+              "Knowledge Base Architecture",
+              "Context Engineering",
+              "Semantic Retrieval",
             ],
             alumniOf: {
               "@type": "CollegeOrUniversity",
               name: "Faculdade de Ciências e Tecnologia - Universidade Nova de Lisboa",
             },
             seeks: [
-              "Fractional CTO engagements",
+              "Fractional build engagements",
               "Advisory engagements",
               "AI product engineering engagements",
+              "Agent memory and knowledge system engagements",
               "Fractional CTO for AI products",
             ],
             sameAs: [
@@ -174,7 +182,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Who is Gil Neto?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a Founder-Engineer, building and operating B2B utilities solo from infrastructure to UI, and as a senior software engineer on AI products, building LLM-backed systems for other people. Currently running products on a single Hetzner VPS: Kelaro (accounting-automation SaaS), Koa (deterministic document-extraction engine), and Augur (GRC tooling for EU-regulated buyers, parked since July 2026).",
+                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a Founder-Engineer, building and operating B2B utilities solo from infrastructure to UI, and as a senior software engineer on AI products, building LLM-backed systems for other people. His current focus is the memory and knowledge layer that LLM systems run on: how an agent captures what it learns, where that knowledge is stored, how it is retrieved, and how staleness is detected. He runs a second-brain system on those rules daily, and builds Kelaro (accounting-automation SaaS) and Koa (deterministic document-extraction engine).",
                 },
               },
               {
@@ -182,7 +190,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Does Gil Neto work on AI and LLM products?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes. Gil Neto works as a senior software engineer on AI products, building LLM-backed systems where the model handles judgment and deterministic code handles correctness. That covers LLM application architecture, retrieval-augmented generation, model evaluation and eval harnesses as release gates, agent orchestration, and document extraction. He is available for fractional CTO and advisory engagements on AI products, based in Lisbon and remote across EU timezones.",
+                  text: "Yes. Gil Neto works as a senior software engineer on AI products, building LLM-backed systems where the model handles judgment and deterministic code handles correctness. That covers agent memory and persistent knowledge architecture, LLM application architecture, retrieval-augmented generation, model evaluation and eval harnesses as release gates, agent orchestration, and document extraction. He is available for fractional build and advisory engagements on AI products, based in Lisbon and remote across EU timezones.",
                 },
               },
               {
@@ -190,7 +198,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What AI systems has Gil Neto built?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Koa, a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. Kelaro's LLM-backed pipeline, running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. An agent-run second-brain system where guarantees live in lifecycle hooks rather than in prompts. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
+                  text: "Koa, a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. Kelaro's LLM-backed pipeline, running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. A second-brain system giving an LLM agent persistent long-term memory: a markdown knowledge base the agent reads and writes, with capture, routing and checkpointing enforced by lifecycle hooks rather than prompts, retrieval split between generated indexes for state and vector search for specific facts, and a scored nightly eval that detects when the index has gone stale. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
                 },
               },
               {
@@ -198,7 +206,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What kind of work is Gil Neto open to?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Fractional CTO and advisory engagements, not full-time. Remote-first across EU timezones, based in Lisbon.",
+                  text: "Fractional build and advisory engagements: architecture, the first working version, and a handover. Remote-first across EU timezones, based in Lisbon.",
                 },
               },
               {
@@ -206,7 +214,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What is Gil Neto's primary tech stack?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "TypeScript, Python, and SQL as primary languages. Next.js, React, Node.js, Nest.js, Fastify, Flask, and Temporal for runtime. Docker, Nginx, Hetzner, PostgreSQL, MongoDB, Redis, BullMQ, Kafka on AWS and GCP for infrastructure. Integrations with Stripe, OAuth 2.0, Open Banking (PSD2), Brevo, and Umami.",
+                  text: "TypeScript, Python, and SQL as primary languages. Next.js, React, Node.js, Nest.js, Fastify, Flask, and Temporal for runtime. Docker, Nginx, PostgreSQL, pgvector, MongoDB, Redis, BullMQ, Kafka on AWS and GCP for infrastructure. Integrations with Stripe, OAuth 2.0, Open Banking (PSD2), Brevo, and Umami.",
                 },
               },
               {
@@ -214,7 +222,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What is Gil Neto's technical philosophy?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Infrastructure-first: own the boundary from DNS to UI, everything containerized and reproducible. AI-augmented execution: leverage coding agents to eliminate boilerplate and focus on architecture and business logic. Scope discipline: build stateless, low-liability utilities with operational impact, and kill projects fast when market signal is wrong.",
+                  text: "Memory as infrastructure: an agent that forgets is a demo, so capture, routing and evaluation are enforced by the harness while judgment stays the model's job. Infrastructure-first: own the boundary from DNS to UI, everything containerized and reproducible. AI-augmented execution: leverage coding agents to eliminate boilerplate and focus on architecture and business logic.",
                 },
               },
               {
@@ -222,7 +230,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What products has Gil Neto shipped?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Products on a single Hetzner CCX23 VPS: Kelaro (kelaro.io) — accounting-automation SaaS in closed beta with active pilots in Portugal and the Netherlands; Koa — a deterministic PDF bank-statement extraction engine powering Kelaro, built as the alternative to vision-LLM extraction; Augur (tryaugur.eu) — GRC tooling for AI governance with EU data residency, parked since July 2026. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
+                  text: "Kelaro (kelaro.io) — accounting-automation SaaS in closed beta with active pilots in Portugal and the Netherlands; Koa — a deterministic PDF bank-statement extraction engine powering Kelaro, built as the alternative to vision-LLM extraction; and a second-brain memory system for an LLM agent, running daily and documented publicly. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
                 },
               },
               {
@@ -230,7 +238,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Where is Gil Neto based and what languages does he speak?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Available for fractional and advisory work across EU timezones.",
+                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Available for fractional build and advisory work across EU timezones.",
                 },
               },
             ],

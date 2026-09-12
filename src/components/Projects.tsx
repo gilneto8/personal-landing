@@ -2,24 +2,24 @@ import { motion } from 'framer-motion';
 
 const projects = [
   {
-    title: 'Kelaro',
-    status: 'Live · Closed Beta',
+    title: 'Second Brain',
+    status: 'Running Daily',
     statusColor: 'var(--accent-primary)',
-    url: 'https://kelaro.io',
-    tagline: 'Accounting-Automation SaaS',
-    description: 'B2B SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via an internal engine (Koa) orchestrated by Temporal, and emits accountant-ready datasets. Active pilots: PT chartered accountant + NL.',
-    infra: 'Next.js + Postgres 16 + Temporal workflows on Hetzner. Stripe integration with founder-discount pipeline (coupons, promo codes, 30-day trial). Admin dashboard for Users / Waitlist / Promo Codes / MRR. OAuth 2.0 against GCP and Azure Entra ID enterprise tenants.',
-    tech: ['Next.js', 'TypeScript', 'Temporal', 'PostgreSQL', 'Stripe', 'OAuth 2.0', 'PSD2'],
+    url: '/blog',
+    tagline: 'Persistent Memory for an LLM Agent',
+    description: 'A markdown knowledge base an LLM agent reads and writes as its long-term memory, in use every day since 2026. The prompts were never the hard part. Capture that cannot be skipped, routing that happens on a schedule rather than when someone remembers, retrieval in two rungs (generated indexes for state, vector search for a specific fact), and a scored nightly eval that catches the index lying before I act on it. Two published write-ups, both with the real numbers rather than the flattering ones.',
+    infra: 'Lifecycle hooks enforce capture and checkpointing outside the model, so a skipped save is structurally impossible rather than discouraged. A nightly batch routes the inbox, regenerates every index, runs a scored eval against a fixed question set, and audits the previous day\'s work for drift. Context reads are capped and the cost per night is a tracked number.',
+    tech: ['LLM Agents', 'Lifecycle Hooks', 'Vector Search', 'Eval Harness', 'Python', 'systemd'],
   },
   {
-    title: 'Augur',
-    status: 'Parked',
+    title: 'Kelaro',
+    status: 'Live · Closed Beta',
     statusColor: 'var(--accent-secondary)',
-    url: 'https://tryaugur.eu',
-    tagline: 'GRC Tooling for AI Governance',
-    description: 'Compliance and audit tooling targeting EU-regulated buyers. Designed for full EU data residency end-to-end — self-hosted analytics, EU-only infra, no third-party trackers. Landing live and lead capture wired. Parked since July 2026: the thesis was never disproven, capacity was the binding constraint.',
-    infra: 'Fastify + Postgres on Hetzner behind Nginx with TLS. Self-hosted Umami for privacy-first analytics. ImprovMX inbound mail. Same VPS as Kelaro — single-box multi-product topology.',
-    tech: ['Fastify', 'Postgres', 'Nginx', 'Docker', 'Umami', 'Hetzner'],
+    url: 'https://kelaro.io',
+    tagline: 'Accounting-Automation SaaS',
+    description: 'B2B SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via an internal engine (Koa) orchestrated by Temporal, and emits accountant-ready datasets. The model may explain a number. It never produces one. Active pilots: PT chartered accountant + NL.',
+    infra: 'Next.js + Postgres 16 + Temporal workflows. Stripe integration with founder-discount pipeline (coupons, promo codes, 30-day trial). Admin dashboard for Users / Waitlist / Promo Codes / MRR. OAuth 2.0 against GCP and Azure Entra ID enterprise tenants.',
+    tech: ['Next.js', 'TypeScript', 'Temporal', 'PostgreSQL', 'Stripe', 'OAuth 2.0', 'PSD2'],
   },
   {
     title: 'Koa',
@@ -44,7 +44,7 @@ export default function Projects() {
       >
         <div className="flex items-center gap-4 mb-12">
           <h2 className="text-sm font-mono font-bold bg-[var(--accent-warm)] text-[var(--bg-primary)] px-3 py-1.5 uppercase tracking-wider">
-            Shipped Projects
+            Selected Work
           </h2>
           <div className="flex-1 h-[2px] bg-[var(--border-muted)]" />
         </div>

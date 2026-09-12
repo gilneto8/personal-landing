@@ -12,9 +12,14 @@ const stackGroups = [
     items: ['Next.js', 'React', 'Node.js', 'Nest.js', 'Fastify', 'Flask', 'Temporal'],
   },
   {
+    label: 'AI & LLM',
+    color: 'var(--accent-primary)',
+    items: ['LLM Application Architecture', 'Agent Memory', 'RAG', 'pgvector', 'Eval Harnesses', 'Agent Orchestration', 'Document Extraction', 'Claude Code'],
+  },
+  {
     label: 'Infrastructure & Cloud',
     color: 'var(--accent-warm)',
-    items: ['Docker', 'Nginx', 'Hetzner', 'Kafka', 'PostgreSQL', 'MongoDB', 'Redis', 'BullMQ', 'AWS', 'GCP'],
+    items: ['Docker', 'Nginx', 'Kafka', 'PostgreSQL', 'MongoDB', 'Redis', 'BullMQ', 'AWS', 'GCP'],
   },
   {
     label: 'Integrations',
