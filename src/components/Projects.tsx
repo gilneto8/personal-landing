@@ -7,7 +7,7 @@ const projects = [
     statusColor: 'var(--accent-primary)',
     url: '/blog',
     tagline: 'Persistent Memory for an LLM Agent',
-    description: 'A markdown knowledge base an LLM agent reads and writes as its long-term memory, in use every day since 2026. The prompts were never the hard part. Capture that cannot be skipped, routing that happens on a schedule rather than when someone remembers, retrieval in two rungs (generated indexes for state, vector search for a specific fact), and a scored nightly eval that catches the index lying before I act on it. Two published write-ups, both with the real numbers rather than the flattering ones.',
+    description: 'A markdown knowledge base an LLM agent reads and writes as its long-term memory, in use every day since Jan 2026. The prompts were never the hard part. Capture that cannot be skipped, routing that happens on a schedule rather than when someone remembers, retrieval in two rungs (generated indexes for state, vector search for a specific fact), and a scored nightly eval that catches the index lying before I act on it. Two published write-ups, both with the real numbers rather than the flattering ones.',
     infra: 'Lifecycle hooks enforce capture and checkpointing outside the model, so a skipped save is structurally impossible rather than discouraged. A nightly batch routes the inbox, regenerates every index, runs a scored eval against a fixed question set, and audits the previous day\'s work for drift. Context reads are capped and the cost per night is a tracked number.',
     tech: ['LLM Agents', 'Lifecycle Hooks', 'Vector Search', 'Eval Harness', 'Python', 'systemd'],
   },
@@ -64,7 +64,7 @@ export default function Projects() {
                 <h3 className="font-bold text-lg text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
                   {project.url ? (
                     <a href={project.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      {project.title} ↗
+                      {project.title}
                     </a>
                   ) : (
                     project.title
