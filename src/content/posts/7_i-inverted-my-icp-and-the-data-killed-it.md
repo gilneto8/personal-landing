@@ -74,9 +74,9 @@ That is not a market waiting to be served. That's a market that isn't scared yet
 
 I had a note in my own docs from a month earlier saying enforcement would probably start soft, GDPR-slow, and that this was a credibility play rather than a revenue line. I'd written the honest version down and then kept building past it. The list didn't tell me something new. It made the thing I already knew impossible to keep working around.
 
-Then a second source landed on the same answer from a completely different direction. I tore down the nearest occupant of the primitive I'd been treating as my moat - a French company doing file-level integrity with eIDAS-qualified signatures and blockchain anchoring. Twelve years old. [Under ten people](https://www.pappers.fr/entreprise/keeex-807570148). Société Générale, Thales, Orange as customers.
+Then a second source landed on the same answer from a completely different direction. I tore down the nearest occupant of the primitive I'd been treating as my moat - a French company doing file-level integrity with eIDAS-qualified signatures and blockchain anchoring. Twelve years old. [Under ten people](https://www.pappers.fr/entreprise/keeex-807570148).
 
-Read that carefully, because the instinct is to read it as a competitor being bad at business. Real enterprise logos and a working product and twelve years to under ten people isn't a company failing. **It's a category moving at that speed.** Two independent measurements - the signature count, and a competitor's twelve-year growth curve - agreeing on buyer urgency in the same week is about as clear as a market signal gets.
+Read that carefully, because the instinct is to read it as a competitor being bad at business. A working product and twelve years to under ten people isn't a company failing. **It's a category moving at that speed.** Two independent measurements - the signature count, and a competitor's twelve-year growth curve - agreeing on buyer urgency in the same week is about as clear as a market signal gets.
 
 ## What survived
 
@@ -84,7 +84,7 @@ One signal did. The list stays open, so it keeps changing. A company that signs 
 
 I rewrote the watcher to track exactly that: snapshot, diff, log the changes. Then I turned the daily timer off, because a nightly job pointed at a market that wakes up in December 2027 has nothing to report for a year. The script and the baseline snapshot are sitting in the repo waiting to be re-armed.
 
-The project is parked. Not dead, and not disproven - the differentiator survived the teardown, the regulation is still coming, the deadline is real. What binds is capacity: about eight hours a week against a compliance product with an eighteen-month runway to a market that isn't buying. That's not a close call, and pretending it was would have cost me the year.
+The project is parked. Not dead, and not disproven - the differentiator survived the teardown, the regulation is still coming, the deadline is real. What binds is capacity: about eight hours a week against a compliance product with an eighteen-month runway to a market that isn't buying.
 
 ## What I'd still push back on, including at myself
 
