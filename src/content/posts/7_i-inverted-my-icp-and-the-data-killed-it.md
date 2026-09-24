@@ -74,9 +74,9 @@ That is not a market waiting to be served. That's a market that isn't scared yet
 
 I had a note in my own docs from a month earlier saying enforcement would probably start soft, GDPR-slow, and that this was a credibility play rather than a revenue line. I'd written the honest version down and then kept building past it. The list didn't tell me something new. It made the thing I already knew impossible to keep working around.
 
-Then a second source landed on the same answer from a completely different direction. I tore down the nearest occupant of the primitive I'd been treating as my moat - a French company doing file-level integrity with eIDAS-qualified signatures and blockchain anchoring. Twelve years old. Ten people. About $1.38M raised, still seed. Société Générale, Thales, SNCF, Orange as customers.
+Then a second source landed on the same answer from a completely different direction. I tore down the nearest occupant of the primitive I'd been treating as my moat - a French company doing file-level integrity with eIDAS-qualified signatures and blockchain anchoring. Twelve years old. [Under ten people](https://www.pappers.fr/entreprise/keeex-807570148). Société Générale, Thales, Orange as customers.
 
-Read that carefully, because the instinct is to read it as a competitor being bad at business. Real enterprise logos and a working product and twelve years to ten people isn't a company failing. **It's a category moving at that speed.** Two independent measurements - the signature count, and a competitor's twelve-year growth curve - agreeing on buyer urgency in the same week is about as clear as a market signal gets.
+Read that carefully, because the instinct is to read it as a competitor being bad at business. Real enterprise logos and a working product and twelve years to under ten people isn't a company failing. **It's a category moving at that speed.** Two independent measurements - the signature count, and a competitor's twelve-year growth curve - agreeing on buyer urgency in the same week is about as clear as a market signal gets.
 
 ## What survived
 
