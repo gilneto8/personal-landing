@@ -38,9 +38,9 @@ I'd do it again. But I want the number on the page, because "I chose correctness
 
 This isn't a Docling problem, and I want to be careful not to make it sound like one. Any extractor built on a language model has the same shape, and it's now measured well enough that I can stop asserting it from my own scar tissue.
 
-Fin-RATE ran the benchmark in February and found cross-entity extraction landing 14 to 19% off, with a real case of 47.3 million read out as 37.4 million. A transposition. The kind of error that survives every check a human does at a glance, because both numbers look like numbers. Their line about it stuck with me: formatting quality is uncorrelated with factual accuracy. The output looking clean tells you nothing at all about whether it's true.
+[Fin-RATE](https://arxiv.org/abs/2602.07294) ran the benchmark in February and found cross-entity extraction landing 14 to 19% off. Their line about it stuck with me: formatting quality is uncorrelated with factual accuracy. The output looking clean tells you nothing at all about whether it's true.
 
-There's more of this now. [FinGround](https://arxiv.org/pdf/2604.23588) and [FinVerBench](https://arxiv.org/pdf/2605.29586) both benchmark fabricated figures in financial documents specifically. And a 2026 report from Presenc AI found enterprise retrieval accuracy falling from around 95% on straight lookups to near zero once the task involved arithmetic across several values - which is, unfortunately, what a bank statement is.
+There's more of this now. [FinGround](https://arxiv.org/pdf/2604.23588) and [FinVerBench](https://arxiv.org/pdf/2605.29586) both benchmark fabricated figures in financial documents specifically.
 
 So the industry is running hard in one direction. Template OCR was the old way, vision language models are the new way, and the new way is better at almost everything except the one property that matters when money is downstream.
 
@@ -51,6 +51,8 @@ The obvious answer is to make the extractor tell you when it's unsure. I looked 
 Two things follow from that. The first is commercial: everyone ships it already, which makes it the price of entry. You don't win anything by having it.
 
 The second one matters more. A confidence score still hands a human a number and asks them to judge it. You've moved the problem, you haven't removed it, and the human is judging under exactly the conditions where humans are worst - forty rows, all plausible, one of them subtly wrong, and a job to get back to.
+
+There's also a real question of whether the confidence number itself can be trusted. [Jev](https://github.com/scienthoon/jev-ood-calibration) sells calibrated, "epistemically honest" probabilities for exactly this - route the low-confidence cases to a human. A test on 900 synthetic support tickets found it scoring 44.7% on a priority task whose rule isn't in the ticket text, chance plus common sense, while putting an average 0.74 probability on its own answer. Getting honest probabilities back out needed a temperature of 3.4.
 
 ## The thing bank statements give you for free
 
