@@ -30,7 +30,7 @@ That's the failure. Not "the extractor is 94% accurate" - I could live with 94% 
 
 I pulled Docling out of production on the 26th of June. Not disabled behind a flag - removed from the compose file on the box. Three weeks later I deleted the rest of it from the codebase, about a thousand lines plus its fixtures, in one commit that took the app 352 lines forward and 1257 lines back.
 
-Here's the part I'd rather not write down. That converter is the top of my entire acquisition funnel. I have programmatic per-bank SEO pages pointing at it, one per bank, all of them ending in a call to action for a feature that has returned nothing since June. It is coming up on two months of a dark front door, and the replacement is still sitting on a branch waiting for me to finish testing it.
+Here's the part I'd rather not write down. That converter is the top of my entire acquisition funnel. I have programmatic per-bank SEO pages pointing at it, one per bank, all of them ending in a call to action for a feature that has returned nothing since June. It is coming up on three months of a dark front door, and the replacement is still sitting on a branch waiting for me to finish testing it.
 
 I'd do it again. But I want the number on the page, because "I chose correctness over uptime" sounds noble and costs nothing to say, and this one cost me the funnel for two months and counting.
 
@@ -79,7 +79,7 @@ A bank statement carries its own checksum. There's an opening balance at the top
 
 That's Koa. Per-bank YAML templates, a Python engine that runs the template over the PDF, out comes a normalized ledger, and the tie-out sits at the end as a hard gate. It refuses rather than guesses, and refusing is a fine outcome - I'd much rather tell someone their statement needs a manual look than hand them a file that quietly poisons their books.
 
-Everything is Decimal, never float, for the same reason. The engine has a 79-test suite behind it and a target of five seconds a page on the same server, no GPU, because the whole point is that this needs no inference at all.
+Everything is Decimal, never float, for the same reason. The engine has a 91-test suite behind it and a target of five seconds a page on the same server, no GPU, because the whole point is that this needs no inference at all.
 
 I keep repeating a line from my own docs: this is how the generic tool died, generic enough to attempt anything, unfixable for the specific job.
 
@@ -93,7 +93,37 @@ A post like this is worth nothing without mentioning what's still broken, so her
 - **One bank in production so far.** The engine went live in July serving a single template. The other nine statement PDFs are on my disk waiting for templates that I write by hand, one per bank per layout variant. That long tail is the real cost of this approach and I don't want to pretend it away.
 - **I chose the constraint that suits me.** I'm one person shipping this at maybe eight hours a week, and the deterministic path is the one I can reason about at eleven at night without a GPU bill. Someone with a team and a budget might reasonably conclude that a model plus an aggressive review layer gets them further faster. I'd want to see their silent-error rate before I believed it.
 
-The thing I'd want someone to take from this: before you put an AI extractor anywhere near money, work out how the person downstream is supposed to find out it was wrong. If the answer is that they read the source document line by line, you haven't built them a tool. You've given 
+The thing I'd want someone to take from this: before you put an AI extractor anywhere near money, work out how the person downstream is supposed to find out it was wrong. If the answer is that they read the source document line by line, you haven't built them a tool.
+
+## The verification I built and then dropped one function later
+
+Finding this one took going looking for it, which is the only reason I found it at all.
+
+The engine is one half of the story. A TypeScript app calls it and shows the result to an accountant. Earlier this year I fixed a bug in the engine where a statement whose balances were never captured could still ship as `SUCCESS` - a reconciliation that may not have run being reported as one that passed. The engine now caps that case at `PARTIAL` and sets an explicit flag saying whether the tie-out actually ran.
+
+Then I read the calling code.
+
+```typescript
+if (metadata.status === 'ERROR')    { throw ... }
+if (metadata.status === 'REJECTED') { throw ... }
+// PARTIAL falls straight through
+```
+
+`PARTIAL` isn't handled. And the type the app maps into has no status field at all, so the information doesn't survive the boundary. And the warning banner in the UI renders on this condition:
+
+```tsx
+statement.confidence !== undefined && statement.confidence < 0.5 && statement.warnings?.length > 0
+```
+
+Confidence is computed from row parsing, before and independently of the tie-out. So a statement that parses cleanly at 0.9 but whose balance check failed or never ran is handed to the accountant with no warning of any kind.
+
+The engine fails closed. The app fails open on top of it. The whole product promise is verified numbers in the accountant's own sheet, and I'd built the verification and then dropped it one function later.
+
+I want to be clear about how this happened, because it wasn't carelessness at the boundary. Both sides are individually correct. The engine correctly reports PARTIAL. The app correctly handles the two statuses it knows about, and correctly shows warnings on low-confidence parses. There is no line of code you can point at and call wrong. What's wrong is that nothing compares the set of statuses the engine can emit against the set the app handles, and nothing compares what the user needs to be warned about against what actually triggers a warning.
+
+The fix for the calling code is drafted, not shipped. So the tie-out this whole post is about is real in the engine, and not yet visible end to end for the accountant on the other side of it. That's the honest state of it right now.
+
+Same lesson as the rest of this post, one layer up: the measurement was right. The comparison didn't exist.
 
 ---
 
