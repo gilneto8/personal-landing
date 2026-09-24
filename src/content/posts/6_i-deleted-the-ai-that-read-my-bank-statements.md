@@ -32,13 +32,13 @@ I pulled Docling out of production on the 26th of June. Not disabled behind a fl
 
 Here's the part I'd rather not write down. That converter is the top of my entire acquisition funnel. I have programmatic per-bank SEO pages pointing at it, one per bank, all of them ending in a call to action for a feature that has returned nothing since June. It is coming up on three months of a dark front door, and the replacement is still sitting on a branch waiting for me to finish testing it.
 
-I'd do it again. But I want the number on the page, because "I chose correctness over uptime" sounds noble and costs nothing to say, and this one cost me the funnel for two months and counting.
+I'd do it again. But I want the number on the page, because "I chose correctness over uptime" sounds noble and costs nothing to say, and this one cost me the funnel for three months and counting.
 
 ## The failure mode nobody screenshots
 
 This isn't a Docling problem, and I want to be careful not to make it sound like one. Any extractor built on a language model has the same shape, and it's now measured well enough that I can stop asserting it from my own scar tissue.
 
-[Fin-RATE](https://arxiv.org/abs/2602.07294) ran the benchmark in February and found cross-entity extraction landing 14 to 19% off. Their line about it stuck with me: formatting quality is uncorrelated with factual accuracy. The output looking clean tells you nothing at all about whether it's true.
+[Fin-RATE](https://arxiv.org/abs/2602.07294) found accuracy dropping 14 to 19% once questions spanned several companies or several years of filings. The output looking clean tells you nothing at all about whether it's true.
 
 There's more of this now. [FinGround](https://arxiv.org/pdf/2604.23588) and [FinVerBench](https://arxiv.org/pdf/2605.29586) both benchmark fabricated figures in financial documents specifically.
 
@@ -52,7 +52,7 @@ Two things follow from that. The first is commercial: everyone ships it already,
 
 The second one matters more. A confidence score still hands a human a number and asks them to judge it. You've moved the problem, you haven't removed it, and the human is judging under exactly the conditions where humans are worst - forty rows, all plausible, one of them subtly wrong, and a job to get back to.
 
-There's also a real question of whether the confidence number itself can be trusted. [Jev](https://github.com/scienthoon/jev-ood-calibration) sells calibrated, "epistemically honest" probabilities for exactly this - route the low-confidence cases to a human. A test on 900 synthetic support tickets found it scoring 44.7% on a priority task whose rule isn't in the ticket text, chance plus common sense, while putting an average 0.74 probability on its own answer. Getting honest probabilities back out needed a temperature of 3.4.
+There's also a real question of whether the confidence number itself can be trusted. Jev pitches calibrated, "epistemically honest" probabilities for exactly this - route the low-confidence cases to a human. [A public test](https://github.com/scienthoon/jev-ood-calibration) on 900 synthetic support tickets found it scoring 44.7% on a priority task whose rule isn't in the ticket text, chance plus common sense, while putting an average 0.74 probability on its own answer, and the author's own correction still leaves it overconfident.
 
 ## The thing bank statements give you for free
 
@@ -91,7 +91,7 @@ A post like this is worth nothing without mentioning what's still broken, so her
 
 - **I don't have a head-to-head benchmark and I can't produce one now.** I deleted Docling. Standing it back up to measure it fairly is a day of work against a container I have no other use for, and I keep deciding I have better uses for the day. So what I've got is a lived account, not a table. Treat it as such.
 - **The tie-out only works because bank statements carry that closing balance.** Invoices don't. Receipts don't. Contracts definitely don't. So none of this generalises to document extraction as a category, and if someone tells you deterministic extraction beats models everywhere, they're selling something. It beats models on documents that can check their own arithmetic.
-- **There's an open bug I know about and haven't fixed.** Three of the banks come out of the text layer with the characters in reverse order. It's marked critical in my own backlog and it's been sitting there while I ship a different bank first, which is the honest version of prioritisation.
+- **There's an open gap I know about and haven't closed.** Three of the banks - ActivoBank, Millennium, Santander - don't have templates yet, only the first one does. I went in expecting a reversed-text bug and found the movement tables were never reversed; only a rotated sidebar label was. It's marked critical in my own backlog and it's been sitting there while I ship a different bank first, which is the honest version of prioritisation.
 - **One bank in production so far.** The engine went live in July serving a single template. The other nine statement PDFs are on my disk waiting for templates that I write by hand, one per bank per layout variant. That long tail is the real cost of this approach and I don't want to pretend it away.
 - **I chose the constraint that suits me.** I'm one person shipping this at maybe eight hours a week, and the deterministic path is the one I can reason about at eleven at night without a GPU bill. Someone with a team and a budget might reasonably conclude that a model plus an aggressive review layer gets them further faster. I'd want to see their silent-error rate before I believed it.
 
@@ -99,9 +99,9 @@ The thing I'd want someone to take from this: before you put an AI extractor any
 
 ## The verification I built and then dropped one function later
 
-Finding this one took going looking for it, which is the only reason I found it at all.
+I only found this because I went looking.
 
-The engine is one half of the story. A TypeScript app calls it and shows the result to an accountant. Earlier this year I fixed a bug in the engine where a statement whose balances were never captured could still ship as `SUCCESS` - a reconciliation that may not have run being reported as one that passed. The engine now caps that case at `PARTIAL` and sets an explicit flag saying whether the tie-out actually ran.
+The engine is one half of the story. A TypeScript app calls it and shows the result to an accountant. Earlier this year I fixed a bug in the engine where a statement whose balances were never captured could still ship as `SUCCESS` - a reconciliation that may not have run being reported as one that passed. The fix caps that case at `PARTIAL` on develop and sets an explicit flag saying whether the tie-out actually ran.
 
 Then I read the calling code.
 
@@ -123,9 +123,8 @@ The engine fails closed. The app fails open on top of it. The whole product prom
 
 I want to be clear about how this happened, because it wasn't carelessness at the boundary. Both sides are individually correct. The engine correctly reports PARTIAL. The app correctly handles the two statuses it knows about, and correctly shows warnings on low-confidence parses. There is no line of code you can point at and call wrong. What's wrong is that nothing compares the set of statuses the engine can emit against the set the app handles, and nothing compares what the user needs to be warned about against what actually triggers a warning.
 
-The fix for the calling code is drafted, not shipped. So the tie-out this whole post is about is real in the engine, and not yet visible end to end for the accountant on the other side of it. That's the honest state of it right now.
-
-Same lesson as the rest of this post, one layer up: the measurement was right. The comparison didn't exist.
+<!-- GIL: rewrite to the shipped state (with date) at publish; post ships only after BREAK-6 + fail-open fix reach prod -->
+The fix for the calling code is merged but not released. So the tie-out this whole post is about is real in the engine, and not yet visible end to end for the accountant on the other side of it.
 
 ---
 
