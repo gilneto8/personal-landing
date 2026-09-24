@@ -51,6 +51,6 @@ None of this needs a product. It needs a checklist, and it needs to happen soon:
 
 ## Why I'm not building this
 
-I'd argue the demand is real and it has a date on it. Even so, it's the wrong thing for me to build right now. It expires by design - CoinEx withdrawals close 22 December, and BitMEX and AscendEX could follow without much more warning than they've already given - the buyer is a crypto holder and not the accountant I sell to, and cost basis across venues is a different product from the one I'm building. The tools that already do cost basis are mature and cheap.
+I'd argue the demand is real and it has a date on it. Even so, it's the wrong thing for me to build right now. It expires by design (CoinEx closes withdrawals on 22 December, and the other two could follow). The buyer is a crypto holder and not the accountant I sell to, and cost basis across venues is a different product from the one I'm building. The tools that already do cost basis are mature and cheap.
 
 So, I'm writing it down instead. If you're an accountant with a client on AscendEX, BitMEX or CoinEx, send them the checklist above now, while the withdrawal window is still open.
