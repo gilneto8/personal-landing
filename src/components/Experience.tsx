@@ -9,7 +9,7 @@ const experiences = [
     highlights: [
       'Agent memory system in daily use: an LLM agent reading and writing a persistent markdown knowledge base, where capture, routing and checkpointing are enforced by lifecycle hooks instead of prompts, and a scored nightly eval gates the whole thing.',
       'Retrieval designed in two rungs — generated indexes for state, vector search for a specific fact — with "not in the corpus" kept as a valid answer rather than a failure to paper over.',
-      'Kelaro (live, kelaro.io) — accounting-automation SaaS in closed beta with active pilots (PT chartered accountant, NL), powered by Koa.',
+      'Kelaro (live, kelaro.io) — accounting-automation SaaS in closed beta with one active pilot (PT chartered accountant), NL pending, powered by Koa.',
       'Koa — deterministic document-extraction engine, built as the deliberate alternative to vision-LLM extraction: balances must reconcile, and it refuses loudly rather than returning a plausible total.',
       'Multi-product operational topology: Nginx, Docker, Postgres 16, Temporal, transactional and inbound mail. Authored infrastructure map and runbooks.',
       'Agentic development pipeline with a decision gate ahead of specification, so agents execute settled decisions rather than improvising undecided ones.',

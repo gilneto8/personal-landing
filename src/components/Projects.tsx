@@ -17,7 +17,7 @@ const projects = [
     statusColor: 'var(--accent-secondary)',
     url: 'https://kelaro.io',
     tagline: 'Accounting-Automation SaaS',
-    description: 'B2B SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via an internal engine (Koa) orchestrated by Temporal, and emits accountant-ready datasets. The model may explain a number. It never produces one. Active pilots: PT chartered accountant + NL.',
+    description: 'B2B SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via an internal engine (Koa) orchestrated by Temporal, and emits accountant-ready datasets. The model may explain a number. It never produces one. Active pilot: PT chartered accountant. NL pending.',
     infra: 'Next.js + Postgres 16 + Temporal workflows. Stripe integration with founder-discount pipeline (coupons, promo codes, 30-day trial). Admin dashboard for Users / Waitlist / Promo Codes / MRR. OAuth 2.0 against GCP and Azure Entra ID enterprise tenants.',
     tech: ['Next.js', 'TypeScript', 'Temporal', 'PostgreSQL', 'Stripe', 'OAuth 2.0', 'PSD2'],
   },

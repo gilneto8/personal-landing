@@ -28,7 +28,7 @@ What the AI-engineering work actually consists of, with the artifacts rather tha
 
 ## Work (currently live)
 
-- [Kelaro](https://kelaro.io): Accounting-automation SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via Temporal-orchestrated pipeline, emits accountant-ready datasets. Active pilots in Portugal and Netherlands.
+- [Kelaro](https://kelaro.io): Accounting-automation SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via Temporal-orchestrated pipeline, emits accountant-ready datasets. One active pilot in Portugal (chartered accountant); Netherlands pending.
 - Koa: Deterministic PDF bank-statement extraction engine, and the deliberate alternative to vision-LLM extraction. Three components — Python/FastAPI engine with pdfplumber + OCR fallback (Tesseract / PaddleOCR), Next.js + Prisma mapper UI for per-bank templates, isolated PII scrub container. Powers Kelaro's extraction pipeline.
 - Second brain: persistent long-term memory for an LLM agent — markdown knowledge base, hook-enforced capture, scheduled batch routing, two-rung retrieval, scored nightly eval and drift audit. Running daily and written up publicly on the blog.
 
