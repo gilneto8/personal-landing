@@ -11,7 +11,7 @@ tags:
 canonical: "https://gil-neto.com/blog/three-exchanges-died-this-year"
 ---
 
-Three mid-tier crypto exchanges shut down in 2026. [AscendEX](https://ascendexannouncement.com/) stopped operating on 1 July. [BitMEX](https://www.bitmex.com/blog/bitmex-closure/) announced its closure on 23 July and shut on 23 September. [CoinEx](https://www.coinex.com/en/announcements/detail/53539656293908) is winding down in steps: spot trading ends on 29 September and withdrawals stay open until 22 December. By mid-year, [RootData's tracker counted 99](https://www.bitget.com/news/detail/12560605545942) crypto projects that had died in total, but those three are the ones that matter here, because people used them like accounts.
+Three mid-tier crypto exchanges shut down in 2026. [AscendEX](https://ascendexannouncement.com/) stopped operating on 1 July. [BitMEX](https://www.bitmex.com/blog/bitmex-closure/) announced its closure on 23 July and shut on 23 September. [CoinEx](https://www.coinex.com/en/announcements/detail/53539656293908) is winding down in steps: it set spot trading to end on 29 September, with withdrawals staying open until 22 December. By mid-year, [RootData's tracker counted 99](https://www.bitget.com/news/detail/12560605545942) crypto projects that had died this year, but those three are the ones that matter here, because people used them like accounts.
 
 Most of the coverage stops at the closure. Who lost access and how long the withdrawal window is. That's the front office. I want to write about the back office, because that's where I spend my time: I build a tool that takes a small accounting practice's bank data and puts it into the spreadsheet the practice already runs on. I looked hard at crypto as a source for it in August, and I decided not to build it. The reasons I said no are the same reasons this is going to hurt someone in about a year.
 
@@ -27,7 +27,7 @@ Here is the part that makes it an accounting problem and not a news story.
 
 The EU's crypto reporting directive ([DAC8](https://taxation-customs.ec.europa.eu/taxation/tax-transparency-cooperation/administrative-co-operation-and-mutual-assistance/directive-administrative-cooperation-dac/dac8_en)) has been in force since 1 January 2026. Exchanges collect data through 2026 and file the first reports between January and September 2027. So 2026 is the first year in which a European's crypto activity becomes visible to their tax authority as a matter of routine.
 
-Put the two timelines next to each other. A client traded on BitMEX in the first half of 2026. The exchange closed in September. Their accountant sees the numbers in spring 2027, maybe prompted by a letter from the tax authority, which by then has data the client never looked at. At that point the venue that produced the history doesn't exist anymore. Nobody can log in and re-download the statement. Whatever the client exported before the doors shut is now the only record, and I'd guess most clients won't export anything until someone asks them to.
+Put the two timelines next to each other. A client traded on one of these exchanges in the first half of 2026. Their accountant sees the numbers in spring 2027, maybe prompted by a letter from the tax authority, which by then has data the client never looked at. By then the venue that produced the history may not exist anymore, and the client may not be able to log back in to re-download the statement. Whatever the client exported before that point is now the only record, and I'd guess most clients won't export anything until someone asks them to.
 
 ## Why an exchange export is worse than a bank statement
 
@@ -41,16 +41,16 @@ The third one is the one that bothers me most. A bank reconciliation fails loudl
 
 ## What I'd do this week, if I had a client on one of them
 
-None of this needs a product. It needs a checklist, and it needs to happen before 22 December.
+None of this needs a product. It needs a checklist, and it needs to happen soon: CoinEx withdrawals close on 22 December, and BitMEX and AscendEX have given no guaranteed end date for theirs, which is not reassuring.
 
 1. Export everything the venue still offers: trade history, deposits, withdrawals, fees and any staking or earn records. Separate files are fine, keep all of them.
 2. Save the final balance screen (a screenshot is fine) the day before the last withdrawal. It's the closest thing to a closing statement you're going to get.
 3. Note where every withdrawal went. That address or account is where the cost basis continues, and it's the thread the accountant will need to pull next year.
 4. Convert to fiat at the transaction date, and keep the rate you used next to each row. Doing that in 2027 from memory is much harder.
-5. Check it yourself, once: deposits minus withdrawals, plus or minus trades and fees, should land on zero after the final withdrawal. If it doesn't, something is missing, and today you can still go back and look. In January you can't.
+5. Check it yourself, once: deposits minus withdrawals, plus or minus trades and fees, should land on zero after the final withdrawal. If it doesn't, something is missing, and you can still go back and look now. Access to any of these three could tighten without much more warning than they've already given.
 
 ## Why I'm not building this
 
-I'd argue the demand is real and it has a date on it. Even so, it's the wrong thing for me to build right now. It expires by design (after 22 December there's nothing left to export), the buyer is a crypto holder and not the accountant I sell to, and cost basis across venues is a different product from the one I'm building. The tools that already do cost basis are mature and cheap.
+I'd argue the demand is real and it has a date on it. Even so, it's the wrong thing for me to build right now. It expires by design - CoinEx withdrawals close 22 December, and BitMEX and AscendEX could follow without much more warning than they've already given - the buyer is a crypto holder and not the accountant I sell to, and cost basis across venues is a different product from the one I'm building. The tools that already do cost basis are mature and cheap.
 
 So, I'm writing it down instead. If you're an accountant with a client on AscendEX, BitMEX or CoinEx, send them the checklist above now, while the withdrawal window is still open.
