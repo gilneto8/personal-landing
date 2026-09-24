@@ -13,11 +13,11 @@ export default function Footer() {
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-3 h-3 bg-[var(--accent-primary)] animate-pulse" />
-            <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)]">Available for fractional build & advisory</span>
+            <span className="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)]">Available for fractional build: bank-data & accounting pipelines</span>
           </div>
           <h2 className="text-3xl font-black mb-2 text-[var(--text-primary)]">Let's build something.</h2>
           <p className="text-[var(--text-secondary)] max-w-md">
-            I take on fractional build and advisory work. That means I ship the thing as well as shape it - architecture, the first working version, and the handover that lets someone else carry it. Remote-first (EU timezones), Lisbon-based. Hard problem that needs end-to-end judgement, infra to UI? Let's talk.
+            I take on fractional build work on bank-data and accounting pipelines. That means I ship the thing as well as shape it - architecture, the first working version, and the handover that lets someone else carry it. Remote-first (EU timezones), Lisbon-based. Hard problem that needs end-to-end judgement, infra to UI? Let's talk.
           </p>
         </div>
 

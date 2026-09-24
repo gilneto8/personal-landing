@@ -1,6 +1,6 @@
 # Gil Neto
 
-> Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, Portugal. Current focus is the memory and knowledge layer LLM systems run on: how an agent captures what it learns, where that knowledge lives, how it is retrieved, and how staleness is detected. Also builds and operates B2B utilities end-to-end — infrastructure to UI — solo, on the principle that the model does judgment and deterministic code does correctness. Open to fractional build and advisory engagements. Remote-first across EU timezones.
+> Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, Portugal. Current focus is the memory and knowledge layer LLM systems run on: how an agent captures what it learns, where that knowledge lives, how it is retrieved, and how staleness is detected. Also builds and operates B2B utilities end-to-end — infrastructure to UI — solo, on the principle that the model does judgment and deterministic code does correctness. Open to fractional build engagements: bank-data and accounting pipelines. Remote-first across EU timezones.
 
 ## Identity
 
@@ -8,7 +8,7 @@
 - Title: Founder-Engineer & Senior Software Engineer, AI Products
 - Location: Lisbon, Portugal
 - Availability: Remote (EU timezones), Lisbon on-site
-- Open to: Fractional build, Advisory. Architecture, the first working version, and a handover.
+- Open to: Fractional build - bank-data and accounting pipelines. Architecture, the first working version, and a handover.
 - Website: https://gil-neto.com
 - Email: gilneto8.work@gmail.com
 - GitHub: https://github.com/gilneto8
