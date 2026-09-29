@@ -1,8 +1,8 @@
 ---
 title: "Three exchanges died this year. The mess lands on accountants"
 description: "AscendEX, BitMEX and CoinEx all shut in 2026. The tax year outlives the venue, and the only record left is whatever the client remembered to export."
-pubDate: 2026-09-23
-draft: true
+pubDate: 2026-09-29
+draft: false
 tags:
   - crypto
   - accounting
@@ -41,7 +41,7 @@ The third one is the one that bothers me most. A bank reconciliation fails loudl
 
 ## What I'd do this week, if I had a client on one of them
 
-None of this needs a product. It needs a checklist, and it needs to happen soon: CoinEx withdrawals close on 22 December, and BitMEX and AscendEX have given no guaranteed end date for theirs, which is not reassuring.
+None of this needs a product. It needs a checklist, and it needs to happen soon: CoinEx withdrawals close on 22 December. After that, whatever is left moves into custody at a monthly fee of 5% of the original balance, and claims close in August 2028. BitMEX and AscendEX have given no guaranteed end date for theirs, which is not reassuring.
 
 1. Export everything the venue still offers: trade history, deposits, withdrawals, fees and any staking or earn records. Separate files are fine, keep all of them.
 2. Save the final balance screen (a screenshot is fine) the day before the last withdrawal. It's the closest thing to a closing statement you're going to get.
