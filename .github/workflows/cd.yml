@@ -53,5 +53,5 @@ jobs:
         run: |
           if grep -q 'news.ycombinator.com' report.md; then
             gh issue create -R "${{ github.repository }}" \
-              --title "Post mirrored — submit to HN ($(date -u +%F))" --body-file report.md
+              --title "Mirror kit: HN + Hashnode + LinkedIn ($(date -u +%F))" --body-file report.md
           fi

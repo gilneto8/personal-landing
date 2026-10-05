@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// Mirror newly published posts to dev.to and Hashnode, with the canonical URL pointing back to
-// gil-neto.com, and hand back a prefilled HN submit link (HN has no submit API; Gil submits it).
+// Mirror newly published posts: dev.to through its API, with the canonical URL pointing back to
+// gil-neto.com. Hashnode (API is Pro-only), HN (no submit API) and LinkedIn (optional) are by hand:
+// the report carries everything Gil needs to paste for each, and CD opens it as a GitHub issue.
 //
 // Runs in CD after a deploy to `release`. Idempotent: a post already present on a platform (matched
 // by canonical URL) is skipped there, so a re-run never double-posts.
@@ -201,6 +202,24 @@ function hashnodeManual(p) {
   ].join("\n");
 }
 
+// LinkedIn: optional, by hand (Gil, 2026-10-05: "i may or may not mirror my posts there")
+function linkedinManual(p) {
+  return [
+    `- LinkedIn (optional, by hand):`,
+    `  - Share post: paste the text below, the link preview comes from the URL`,
+    ``,
+    "````text",
+    `${p.title}`,
+    ``,
+    `${p.description}`,
+    ``,
+    `${p.url}`,
+    "````",
+    ``,
+    `  - Or as an Article: reuse the Hashnode body above and open it with "Originally published at ${p.url}"`,
+  ].join("\n");
+}
+
 // ---------- main ----------
 
 const hnLink = (p) =>
@@ -245,6 +264,7 @@ async function main() {
     }
     log(`- HN (submit by hand, then add your first comment): ${hnLink(p)}`);
     if (!pub) log(hashnodeManual(p));
+    log(linkedinManual(p));
   }
   finish(lines);
   if (failed) process.exitCode = 1;
