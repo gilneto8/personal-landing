@@ -141,8 +141,10 @@ async function hashnode(query, variables = {}) {
     headers: { "Content-Type": "application/json", Authorization: HASHNODE_TOKEN },
     body: JSON.stringify({ query, variables }),
   });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok || j.errors) throw new Error(`hashnode: ${r.status} ${JSON.stringify(j.errors || j).slice(0, 300)}`);
+  const text = await r.text();
+  let j = {};
+  try { j = JSON.parse(text); } catch { /* non-JSON body, reported below */ }
+  if (!r.ok || j.errors || !j.data) throw new Error(`hashnode: ${r.status} ${(JSON.stringify(j.errors) || text).slice(0, 300)}`);
   return j.data;
 }
 
