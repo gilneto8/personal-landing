@@ -24,3 +24,34 @@ jobs:
             rm -rf /var/www/landing/*
             cp -r dist/* /var/www/landing/
             echo "deployed $(git rev-parse --short HEAD)"
+
+  # Mirror newly published posts to dev.to + Hashnode (canonical → gil-neto.com) and open an issue
+  # with the prefilled HN submit link. Gil, 2026-10-05: every post goes to dev.to, Hashnode and HN.
+  syndicate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Mirror new posts
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          HASHNODE_TOKEN: ${{ secrets.HASHNODE_TOKEN }}
+          SYNDICATE_REPORT: report.md
+        run: node scripts/syndicate.mjs
+      - name: Open an issue with the HN link
+        if: always() && hashFiles('report.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if grep -q 'news.ycombinator.com' report.md; then
+            gh issue create -R "${{ github.repository }}" \
+              --title "Post mirrored — submit to HN ($(date -u +%F))" --body-file report.md
+          fi

@@ -1,0 +1,23 @@
+name: Syndicate check
+# Dry run of scripts/syndicate.mjs: validates the dev.to + Hashnode tokens and prints what would be
+# mirrored. Writes nothing. Run by hand, or on a push to a syndicate/* branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["syndicate/**"]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dry run
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          HASHNODE_TOKEN: ${{ secrets.HASHNODE_TOKEN }}
+          DRY_RUN: "1"
+        run: node scripts/syndicate.mjs
