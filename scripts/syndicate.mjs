@@ -6,6 +6,8 @@
 // by canonical URL) is skipped there, so a re-run never double-posts.
 //
 //   DEVTO_API_KEY, HASHNODE_TOKEN   platform credentials (GitHub secrets)
+//   HASHNODE_MODE=api               post to Hashnode through its API (needs a Pro plan); default is
+//                                   manual: the report carries a paste-ready Hashnode block
 //   scripts/syndicated.json         slugs already mirrored by hand (posts 1-5), never touched
 //   DRY_RUN=1                       validate tokens and print the plan, write nothing
 //   LIST_ONLY=1                     print the posts that would be considered, no network
@@ -22,6 +24,9 @@ const DONE_BY_HAND = new Set(JSON.parse(readFileSync(new URL("./syndicated.json"
 const DRY = process.env.DRY_RUN === "1";
 const DEVTO_KEY = process.env.DEVTO_API_KEY;
 const HASHNODE_TOKEN = process.env.HASHNODE_TOKEN;
+// Hashnode's GraphQL API needs a paid Pro plan since 2026-05-13 (hashnode.com/announcements/graphql-api).
+// Until Gil buys Pro, Hashnode is posted by hand from the paste-ready block in the report/issue.
+const HASHNODE_API = process.env.HASHNODE_MODE === "api";
 
 // ---------- posts ----------
 
@@ -178,6 +183,24 @@ async function hashnodePublish(p, publicationId) {
   return d.publishPost.post.url;
 }
 
+function hashnodeManual(p) {
+  return [
+    `- Hashnode (by hand, blog.gil-neto.com → new article):`,
+    `  - Title: ${p.title}`,
+    `  - SEO → canonical URL: ${p.url}`,
+    `  - Meta description: ${p.description}`,
+    `  - Tags: ${p.tags.slice(0, 5).join(", ")}`,
+    ``,
+    `<details><summary>Body to paste</summary>`,
+    ``,
+    "````markdown",
+    p.body.trimEnd(),
+    "````",
+    ``,
+    `</details>`,
+  ].join("\n");
+}
+
 // ---------- main ----------
 
 const hnLink = (p) =>
@@ -188,35 +211,39 @@ async function main() {
     for (const p of loadPosts()) console.log(p.pubDate.toISOString().slice(0, 10), p.url, devtoTags(p.tags), p.body.length);
     return;
   }
-  if (!DEVTO_KEY || !HASHNODE_TOKEN) throw new Error("DEVTO_API_KEY and HASHNODE_TOKEN are required");
+  if (!DEVTO_KEY) throw new Error("DEVTO_API_KEY is required");
   const lines = [];
   const log = (s) => { console.log(s); lines.push(s); };
 
   // token checks run every time, so a revoked key fails loudly
   const me = await devto("/users/me");
-  const hn = await hashnode(`{ me { username } }`);
-  log(`tokens ok: dev.to @${me.username} · hashnode @${hn.me.username}${DRY ? " · DRY RUN" : ""}`);
+  let hnUser = null;
+  if (HASHNODE_API) {
+    if (!HASHNODE_TOKEN) throw new Error("HASHNODE_MODE=api needs HASHNODE_TOKEN");
+    hnUser = (await hashnode(`{ me { username } }`)).me.username;
+  }
+  log(`tokens ok: dev.to @${me.username} · hashnode ${hnUser ? "@" + hnUser : "manual (API needs Pro)"}${DRY ? " · DRY RUN" : ""}`);
 
   const posts = loadPosts();
   if (!posts.length) { log("nothing to mirror (no published post outside scripts/syndicated.json)"); return finish(lines); }
 
   const devSeen = await devtoCanonicals();
-  const pub = await hashnodePublication();
+  const pub = HASHNODE_API ? await hashnodePublication() : null;
   let failed = false;
 
   for (const p of posts) {
     log(`\n### ${p.title}\n${p.url}`);
     if (!DRY && !(await waitLive(p.url))) { log(`- ⚠ not live on the site yet, skipped (re-run CD later)`); failed = true; continue; }
-    for (const [name, seen, publish] of [
-      ["dev.to", devSeen, () => devtoPublish(p)],
-      ["Hashnode", pub.seen, () => hashnodePublish(p, pub.id)],
-    ]) {
+    const targets = [["dev.to", devSeen, () => devtoPublish(p)]];
+    if (pub) targets.push(["Hashnode", pub.seen, () => hashnodePublish(p, pub.id)]);
+    for (const [name, seen, publish] of targets) {
       if (seen.has(norm(p.url))) { log(`- ${name}: already there, skipped`); continue; }
       if (DRY) { log(`- ${name}: would publish`); continue; }
       try { log(`- ${name}: published ${await publish()}`); }
       catch (e) { log(`- ⚠ ${name}: FAILED ${e.message}`); failed = true; }
     }
     log(`- HN (submit by hand, then add your first comment): ${hnLink(p)}`);
+    if (!pub) log(hashnodeManual(p));
   }
   finish(lines);
   if (failed) process.exitCode = 1;
