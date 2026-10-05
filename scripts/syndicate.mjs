@@ -224,10 +224,11 @@ async function main() {
   }
   log(`tokens ok: dev.to @${me.username} · hashnode ${hnUser ? "@" + hnUser : "manual (API needs Pro)"}${DRY ? " · DRY RUN" : ""}`);
 
+  const devSeen = await devtoCanonicals(); // also proves the listing endpoint works with this key
+  log(`dev.to: ${devSeen.size} existing article(s) with a canonical URL`);
   const posts = loadPosts();
   if (!posts.length) { log("nothing to mirror (no published post outside scripts/syndicated.json)"); return finish(lines); }
 
-  const devSeen = await devtoCanonicals();
   const pub = HASHNODE_API ? await hashnodePublication() : null;
   let failed = false;
 
