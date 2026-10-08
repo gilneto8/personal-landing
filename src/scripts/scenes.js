@@ -22,7 +22,18 @@ function counters() {
     (function f(now) { const k = Math.min(1, Math.max(0, (now - t0) / 1400)); b.textContent = Math.round(ease(k) * n).toLocaleString('en') + s; if (k < 1) requestAnimationFrame(f); })(t0);
   });
 }
-counters();
+/* Live counters: the night run publishes vault-stats.json to the repo's `stats` branch.
+   Use it when it answers within 1.5 s; otherwise keep the numbers baked into the HTML. */
+const STATS_URL = 'https://raw.githubusercontent.com/gilneto8/personal-landing/stats/vault-stats.json';
+function applyStats(d) {
+  const map = { notes: d.notes, links: d.links, commits: d.commits, eval: d.eval };
+  document.querySelectorAll('[data-stat]').forEach(b => { const v = map[b.dataset.stat]; if (Number.isFinite(v)) b.dataset.n = v; });
+  if (Number.isFinite(d.notes)) LAYERS[2][1] = `${d.notes.toLocaleString('en')} markdown notes, git-versioned`;
+}
+Promise.race([
+  fetch(STATS_URL, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)),
+  new Promise(res => setTimeout(() => res(null), 1500)),
+]).then(d => { if (d) applyStats(d); }).catch(() => {}).finally(counters);
 
 const CL = [
   { name: 'Work', n: 260, c: 3, x: 0.30, y: 0.34 },
