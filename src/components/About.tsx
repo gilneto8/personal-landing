@@ -1,10 +1,5 @@
-import { motion } from 'framer-motion';
-
-const accentColors = [
-  'var(--accent-primary)',
-  'var(--accent-secondary)',
-  'var(--accent-warm)',
-];
+import { motion, MotionConfig } from 'framer-motion';
+import { Eyebrow, ScrollLitText, ease } from '../lib/motion';
 
 const philosophy = [
   {
@@ -26,56 +21,44 @@ const philosophy = [
 
 export default function About() {
   return (
-    <section id="about" className="px-6 md:px-12 lg:px-24 py-20 border-t-2 border-[var(--border-muted)]">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex items-center gap-4 mb-12">
-          <h2 className="text-sm font-mono font-bold bg-[var(--accent-primary)] text-[var(--bg-primary)] px-3 py-1.5 uppercase tracking-wider">
-            Philosophy
-          </h2>
-          <div className="flex-1 h-[2px] bg-[var(--border-muted)]" />
-        </div>
+    <MotionConfig reducedMotion="user">
+      <section id="about" className="relative px-5 md:px-12 lg:px-20 pt-28 md:pt-40 pb-24">
+        <Eyebrow index="01" label="Approach" />
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <ScrollLitText
+          className="font-display text-[2.1rem] leading-[1.08] md:text-[4.6vw] md:leading-[1.04] font-medium tracking-[-0.02em] text-[var(--mist-50)] max-w-[22ch] md:max-w-none"
+          text="An agent that forgets is a demo. The model does judgment. Deterministic code does correctness. The harness keeps the guarantees."
+        />
+
+        <div className="mt-20 md:mt-28 grid md:grid-cols-3 gap-5">
           {philosophy.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-              className="border-2 border-[var(--border-muted)] p-6 relative group hover:shadow-[4px_4px_0_var(--border-muted)] transition-all flex flex-col"
-              style={{ borderLeftColor: accentColors[index], borderLeftWidth: '4px' }}
+            <motion.article
+              key={item.title}
+              initial={{ opacity: 0, y: 50, rotate: index % 2 ? 1.5 : -1.5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.9, ease, delay: index * 0.1 }}
+              whileHover={{ y: -6 }}
+              className="group relative rounded-3xl bg-[var(--ink-700)] p-7 md:p-8 flex flex-col overflow-hidden border border-[var(--ink-600)] hover:border-[var(--sun-400)]/60 transition-colors duration-500"
             >
-              <span
-                className="absolute -top-3 right-4 px-2 text-xs font-mono uppercase tracking-wider"
-                style={{ color: accentColors[index], backgroundColor: 'var(--bg-primary)' }}
-              >
+              {/* saffron glow follows hover */}
+              <span aria-hidden className="absolute -top-24 -right-24 w-56 h-56 rounded-full bg-[var(--sun-400)] opacity-0 blur-3xl group-hover:opacity-20 transition-opacity duration-700" />
+              <span className="font-display text-7xl font-bold outline-text group-hover:[-webkit-text-stroke-color:var(--sun-400)] transition-all duration-500 mb-6">
                 0{index + 1}
               </span>
-              <h3 className="font-bold text-lg text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                <span className="flex-shrink-0" style={{ color: accentColors[index] }}>→</span>
-                <span>{item.title}</span>
-              </h3>
-              <p className="text-[var(--text-secondary)] leading-relaxed text-sm mb-4 flex-grow">{item.body}</p>
-              <div className="flex flex-wrap gap-2 pt-4 border-t border-[var(--border-muted)]">
+              <h3 className="font-display text-2xl font-semibold text-[var(--mist-50)] mb-4">{item.title}</h3>
+              <p className="text-[var(--mist-200)]/85 leading-relaxed text-[15px] mb-6 flex-grow">{item.body}</p>
+              <div className="flex flex-wrap gap-2">
                 {item.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-2 py-1 bg-[var(--bg-secondary)] border border-[var(--border-muted)] text-[var(--text-muted)] font-mono"
-                  >
+                  <span key={tag} className="text-[11px] px-3 py-1 rounded-full bg-[var(--ink-800)] text-[var(--aqua-300)] font-mono">
                     {tag}
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
-      </motion.div>
-    </section>
+      </section>
+    </MotionConfig>
   );
 }

@@ -7,6 +7,8 @@ import Projects from "../components/Projects";
 import Stack from "../components/Stack";
 import Writing from "../components/Writing.astro";
 import Footer from "../components/Footer";
+import Nav from "../components/Nav";
+import Thread from "../components/Thread";
 import ScrollToTop from "../components/ScrollToTop";
 import "../styles/global.css";
 ---
@@ -15,11 +17,13 @@ import "../styles/global.css";
   title="Gil Neto — Founder-Engineer & Senior Software Engineer, AI Products · Lisbon / EU Remote"
   description="Senior software engineer, 12 years, working on AI products. Founder-Engineer in Lisbon building agent memory and knowledge systems - capture, retrieval and evaluation - alongside B2B utilities shipped end-to-end. Open to fractional build engagements: bank-data and accounting pipelines."
 >
-  <main>
+  <Nav client:load />
+  <main class="relative overflow-x-clip">
+    <Thread client:idle />
     <Hero client:load />
     <About client:visible />
+    <Projects client:load />
     <Experience client:visible />
-    <Projects client:visible />
     <Stack client:visible />
     <Writing />
     <Footer client:visible />

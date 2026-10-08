@@ -1,61 +1,192 @@
 @import "tailwindcss";
 
+/*
+  Palette: coolors.co/30323d-4d5061-ccdbdc-9ad1d4-fbb02d
+  Dark slate grounds, misty blues for type, saffron as the one guiding accent.
+  Every extra tone below is a tint or shade of one of the five.
+*/
 :root {
-  /* Enhanced Brutalist Theme - Richer palette */
-  --bg-primary: #0A1912;
-  --bg-secondary: #0f241a;
-  --bg-card: #142e22;
-  --border-color: #1B998B;
-  --border-muted: #2d4a3d;
-  
-  --text-primary: #E3E7AF;
-  --text-secondary: #C9EDDC;
-  --text-muted: #89B6A5;
-  
-  --accent-primary: #1B998B;
-  --accent-secondary: #C5D86D;
-  --accent-warm: #FE5F55;
-  --accent-highlight: #C9EDDC;
-  
+  /* grounds — gunmetal → independence */
+  --ink-950: #1f2128;
+  --ink-900: #282a33;
+  --ink-800: #30323d; /* base */
+  --ink-700: #3c3f4c;
+  --ink-600: #4d5061; /* surfaces */
+  --ink-500: #676b7f; /* rules, muted chrome */
+
+  /* type — platinum → powder blue */
+  --mist-50: #eef3f3;
+  --mist-200: #ccdbdc; /* main text */
+  --aqua-300: #9ad1d4; /* secondary text, links */
+  --aqua-500: #6fb3b7;
+
+  /* accent — saffron */
+  --sun-300: #fcc868;
+  --sun-400: #fbb02d; /* accent */
+  --sun-600: #d48f15;
+
+  /* legacy names, remapped so /blog inherits the new palette */
+  --bg-primary: var(--ink-800);
+  --bg-secondary: var(--ink-700);
+  --bg-card: var(--ink-600);
+  --border-color: var(--sun-400);
+  --border-muted: var(--ink-600);
+  --text-primary: var(--mist-50);
+  --text-secondary: var(--mist-200);
+  --text-muted: var(--aqua-300);
+  --accent-primary: var(--sun-400);
+  --accent-secondary: var(--aqua-300);
+  --accent-warm: var(--sun-300);
+  --accent-highlight: var(--mist-200);
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* motion palette */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --spring-snappy: linear(
+    0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%,
+    0.938 16.7%, 1.017 19.4%, 1.067 22.5%, 1.089 26%,
+    1.079 30.3%, 1.049 36%, 1.024 42.6%, 1.011 50.3%,
+    1.004 59.2%, 1.001 69.3%, 1
+  );
 }
 
 html {
-  scroll-behavior: smooth;
+  background-color: var(--ink-800);
 }
 
+/* Lenis owns smooth scrolling; native smooth would fight it */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--ink-800);
+  color: var(--mist-200);
   font-family: 'Inter', sans-serif;
 }
 
-/* Brutalist utility classes */
-.brutalist-border {
-  border: 2px solid var(--border-muted);
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+
+/* film grain over everything — keeps big flat slate from feeling dead */
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 8s steps(10) infinite;
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -2%); }
+  80% { transform: translate(3%, 3%); }
 }
 
-.brutalist-border-accent {
-  border: 2px solid var(--accent-primary);
+/* ambient aurora blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+.orbit-a { animation: orbit-x 13s var(--ease-in-out) infinite alternate, orbit-y 17s var(--ease-in-out) infinite alternate; }
+.orbit-b { animation: orbit-x 19s var(--ease-in-out) infinite alternate-reverse, orbit-y 11s var(--ease-in-out) infinite alternate; }
+@keyframes orbit-x { to { translate: 6vw 0; } }
+@keyframes orbit-y { to { margin-top: -4vw; } }
+
+/* marquee */
+.marquee { overflow: hidden; white-space: nowrap; }
+.marquee-track { display: inline-flex; animation: marquee 38s linear infinite; }
+.marquee-track.reverse { animation-direction: reverse; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* outlined display numerals */
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ink-500);
 }
 
-.brutalist-shadow {
-  box-shadow: 4px 4px 0 var(--border-muted);
+/* sliding underline */
+.link-slide { position: relative; }
+.link-slide::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -3px;
+  height: 1.5px;
+  background: var(--sun-400);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s var(--ease-snap);
 }
+.link-slide:hover::after { transform: scaleX(1); transform-origin: left; }
 
-.brutalist-shadow-accent {
-  box-shadow: 4px 4px 0 var(--accent-primary);
-}
-
-.brutalist-tag {
+/* buttons: fill wipes in from the left */
+.btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.6rem;
+  border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  transition: color 0.4s var(--ease-snap), transform 0.55s var(--spring-snappy), border-color 0.4s var(--ease-snap);
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--ease-snap);
+}
+.btn:hover::before { transform: scaleX(1); }
+.btn:active { transform: scale(0.96); transition-duration: 0.08s; }
+.btn .arrow { transition: transform 0.45s var(--ease-snap); }
+.btn:hover .arrow { transform: translateX(4px); }
+.btn:focus-visible { outline: 2px solid var(--sun-400); outline-offset: 3px; }
+
+.btn-primary { background: var(--sun-400); color: var(--ink-900); }
+.btn-primary::before { background: var(--mist-50); }
+
+.btn-ghost { border: 1.5px solid var(--ink-500); color: var(--mist-200); }
+.btn-ghost::before { background: var(--sun-400); }
+.btn-ghost:hover { color: var(--ink-900); border-color: var(--sun-400); }
+
+/* scroll-reveal for static Astro markup (Writing section) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(6px);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out), filter 0.8s var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; filter: none; }
+
+::selection {
+  background-color: var(--sun-400);
+  color: var(--ink-900);
 }
 
-/* Selection styling */
-::selection {
-  background-color: var(--accent-primary);
-  color: var(--bg-primary);
+@media (prefers-reduced-motion: reduce) {
+  .grain::after, .orbit-a, .orbit-b, .marquee-track { animation: none !important; }
+  [data-reveal] { transform: none; filter: none; transition: opacity 0.3s linear; }
+  .btn, .btn::before, .link-slide::after { transition-duration: 0.01s; }
 }

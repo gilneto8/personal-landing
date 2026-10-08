@@ -1,4 +1,6 @@
-import { motion } from 'framer-motion';
+import { motion, MotionConfig, useScroll, useSpring } from 'framer-motion';
+import { useRef } from 'react';
+import { Eyebrow, ease } from '../lib/motion';
 
 const experiences = [
   {
@@ -58,69 +60,80 @@ const experiences = [
 ];
 
 export default function Experience() {
-  return (
-    <section id="experience" className="px-6 md:px-12 lg:px-24 py-20 border-t-2 border-[var(--border-muted)]">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="flex items-center gap-4 mb-12">
-          <h2 className="text-sm font-mono font-bold bg-[var(--accent-secondary)] text-[var(--bg-primary)] px-3 py-1.5 uppercase tracking-wider">
-            Experience
-          </h2>
-          <div className="flex-1 h-[2px] bg-[var(--border-muted)]" />
-        </div>
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.7', 'end 0.6'] });
+  const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 28 });
 
-        <div className="space-y-0">
+  return (
+    <MotionConfig reducedMotion="user">
+      <section id="experience" className="relative px-5 md:px-12 lg:px-20 py-24 md:py-36">
+        <Eyebrow index="03" label="Experience" />
+
+        <div ref={ref} className="relative">
+          {/* the timeline rail fills saffron as you read down it */}
+          <div aria-hidden className="absolute left-[7px] md:left-[calc(220px+7px)] top-2 bottom-2 w-px bg-[var(--ink-600)]">
+            <motion.div style={{ scaleY: fill }} className="absolute inset-0 origin-top bg-[var(--sun-400)]" />
+          </div>
+
           {experiences.map((exp, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              className="grid md:grid-cols-[180px_1fr] gap-4 md:gap-8 py-8 border-b border-[var(--border-muted)] last:border-b-0"
-            >
-              <div className="flex flex-col gap-2">
-                <span className="text-xs font-mono text-[var(--accent-primary)] uppercase tracking-wider">
-                  {exp.period}
+            <div key={index} className="relative grid md:grid-cols-[220px_1fr] gap-3 md:gap-0 pl-9 md:pl-0 pb-16 last:pb-0">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.6 }}
+                transition={{ duration: 0.8, ease }}
+                className="md:sticky md:top-28 self-start md:pr-10"
+              >
+                <span className="font-display font-bold text-4xl md:text-5xl tracking-[-0.03em] text-[var(--mist-50)] block leading-none">
+                  {exp.period.split(' – ')[0].split('/')[1]}
                 </span>
-                <span className="text-sm font-mono text-[var(--text-muted)]">
-                  @ {exp.company}
-                </span>
-              </div>
-              <div>
-                <h3 className="font-bold text-lg text-[var(--text-primary)] mb-2">{exp.title}</h3>
-                <p className="text-[var(--text-secondary)] mb-4 leading-relaxed">{exp.description}</p>
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--aqua-300)] block mt-2">{exp.period}</span>
+              </motion.div>
+
+              <motion.span
+                aria-hidden
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, amount: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+                className="absolute left-0 md:left-[220px] top-1.5 w-[15px] h-[15px] rounded-full bg-[var(--ink-800)] border-2 border-[var(--sun-400)]"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, y: 30, filter: 'blur(6px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.8, ease, delay: 0.08 }}
+                className="md:pl-14"
+              >
+                <h3 className="font-display text-2xl md:text-3xl font-semibold text-[var(--mist-50)] tracking-[-0.01em]">
+                  {exp.title} <span className="text-[var(--sun-400)]">@</span> <span className="text-[var(--aqua-300)]">{exp.company}</span>
+                </h3>
+                <p className="text-[var(--mist-200)] mt-3 mb-5 leading-relaxed max-w-3xl">{exp.description}</p>
                 {exp.highlights && (
-                  <ul className="text-[var(--text-secondary)] mb-4 space-y-2">
+                  <ul className="space-y-3 mb-5 max-w-3xl">
                     {exp.highlights.map((h, i) => (
-                      <li key={i} className="flex items-baseline gap-3">
-                        <span className="text-[var(--accent-primary)]">→</span>
+                      <li key={i} className="flex items-baseline gap-3 text-[15px] text-[var(--mist-200)]/85 leading-relaxed">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--sun-400)] shrink-0 translate-y-[-2px]" />
                         <span>{h}</span>
                       </li>
                     ))}
                   </ul>
                 )}
                 {exp.tech.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2">
                     {exp.tech.map((t) => (
-                      <span 
-                        key={t} 
-                        className="text-xs px-2 py-1 border border-[var(--border-muted)] text-[var(--text-muted)] font-mono"
-                      >
+                      <span key={t} className="text-[11px] px-3 py-1 rounded-full bg-[var(--ink-700)] text-[var(--aqua-300)] font-mono">
                         {t}
                       </span>
                     ))}
                   </div>
                 )}
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           ))}
         </div>
-      </motion.div>
-    </section>
+      </section>
+    </MotionConfig>
   );
 }
