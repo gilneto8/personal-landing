@@ -1,0 +1,79 @@
+/* Homepage only. Element selectors here must not leak into /blog, so this file is imported by index.astro alone. */
+a { color: inherit; text-decoration: none; }
+nav.top { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 18px var(--pad); background: rgba(22, 31, 53, 0.75); backdrop-filter: blur(12px); border-bottom: 1px solid transparent; transition: border-color .3s; font-size: 15px; }
+nav.top.scrolled { border-color: var(--line); }
+nav.top b { color: var(--bright); font-weight: 500; }
+nav.top ul { list-style: none; display: flex; gap: 26px; padding: 0; color: var(--dim); }
+nav.top ul a { transition: color .3s; } nav.top ul a:hover { color: var(--bright); }
+section { padding: 0 var(--pad); }
+.split { min-height: 92svh; display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr); gap: 56px; align-items: center; padding-block: 8vh; }
+.split.flip { grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr); }
+.split.flip .copy { order: 2; }
+.copy { display: grid; gap: 18px; align-content: center; }
+.kicker { font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+h1 { font-weight: 500; font-size: clamp(2.4rem, 4.6vw, 4.6rem); line-height: 1.04; letter-spacing: -0.04em; color: var(--bright); max-width: 13ch; }
+h1 span { color: var(--pink); }
+h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.06; letter-spacing: -0.035em; color: var(--bright); max-width: 16ch; }
+.copy p { max-width: 42ch; }
+.copy ul { list-style: none; padding: 0; display: grid; gap: 6px; font-size: 15px; color: var(--dim); }
+.copy ul b { color: var(--bright); font-weight: 500; }
+.links { display: flex; gap: 24px; font-size: 15px; flex-wrap: wrap; margin-top: 8px; }
+.links a { color: var(--bright); padding-bottom: 3px; border-bottom: 1px solid var(--line); transition: border-color .3s; }
+.links a:first-child, .links a:hover { border-color: var(--pink); }
+.stats { margin-top: 18px; display: flex; gap: 28px; flex-wrap: wrap; }
+.stats div { display: grid; }
+.stats b { font-weight: 500; font-size: 26px; color: var(--bright); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.stats span { font-size: 13px; color: var(--dim); }
+.scene canvas { width: 100%; display: block; }
+.cap { font: 13px/1.6 'Geist Mono', monospace; color: var(--dim); margin-top: 6px; min-height: 1.6em; }
+.cap b { font-weight: 400; color: var(--bright); }
+.band { padding-top: 18vh; padding-bottom: 2vh; display: grid; gap: 14px; }
+.band .eyebrow { font-size: 15px; color: var(--dim); }
+.band h2 { max-width: 20ch; font-size: clamp(2.2rem, 4.4vw, 4.4rem); }
+
+/* chat */
+.feed { height: 520px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; mask-image: linear-gradient(to bottom, transparent, #000 18%); }
+.m { max-width: 82%; padding: 12px 16px; border-radius: 14px; font-size: 15px; opacity: 0; transform: translateY(14px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
+.m.in { opacity: 1; transform: none; }
+.q { align-self: flex-end; background: var(--panel); color: var(--bright); border-bottom-right-radius: 4px; }
+.a { align-self: flex-start; border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.a .src { display: block; margin-top: 6px; font: 12px 'Geist Mono', monospace; }
+.a .src.ok { color: var(--teal); } .a .src.no { color: var(--amber); }
+.a .tag { display: inline-block; font: 11px 'Geist Mono', monospace; padding: 1px 8px; border-radius: 999px; margin-bottom: 6px; border: 1px solid currentColor; }
+.typing { align-self: flex-start; display: flex; gap: 4px; padding: 14px 16px; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); animation: dot 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 50% { transform: translateY(-4px); opacity: .5; } }
+
+/* experience + writing */
+.list { padding-block: 16vh 4vh; display: grid; gap: 28px; }
+.list h2 { font-size: clamp(1.9rem, 3vw, 2.8rem); }
+.rows { border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 160px minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); align-items: baseline; transition: background .3s; }
+.row .when { font: 13px 'Geist Mono', monospace; color: var(--dim); }
+.row .what { color: var(--bright); font-weight: 500; font-size: 19px; letter-spacing: -0.01em; }
+.row .what span { color: var(--dim); font-weight: 400; }
+.row .why { font-size: 15px; color: var(--text); }
+a.row:hover .what { color: var(--pink); }
+.contact { min-height: 80svh; display: grid; align-content: center; gap: 28px; padding-block: 14vh 8vh; }
+.contact h2 { font-size: clamp(3rem, 8vw, 8rem); max-width: none; letter-spacing: -0.05em; }
+.contact h2 span { color: var(--pink); }
+.contact .btn { justify-self: start; border: 1px solid var(--pink); color: var(--bright); border-radius: 999px; padding: 14px 26px; font-size: 16px; transition: background .3s, color .3s; }
+.contact .btn:hover { background: var(--pink); color: var(--bg); }
+footer { padding: 28px var(--pad) 40px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 14px; color: var(--dim); }
+
+[data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+[data-reveal].in { opacity: 1; transform: none; }
+@media (max-width: 900px) {
+  nav.top ul { display: none; }
+  .split, .split.flip { grid-template-columns: 1fr; gap: 28px; min-height: auto; padding-block: 10vh 4vh; }
+  .split.flip .copy { order: 0; }
+  .row { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; } }
+.list h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.list h2 .all { font-size: 15px; font-weight: 400; color: var(--dim); letter-spacing: 0; transition: color .3s; }
+.list h2 .all:hover { color: var(--pink); }
+footer a { transition: color .3s; } footer a:hover { color: var(--bright); }
+.list h2 { max-width: none; }

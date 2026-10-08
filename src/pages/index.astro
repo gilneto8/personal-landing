@@ -1,32 +1,109 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Hero from "../components/Hero";
-import About from "../components/About";
-import Experience from "../components/Experience";
-import Projects from "../components/Projects";
-import Stack from "../components/Stack";
-import Writing from "../components/Writing.astro";
-import Footer from "../components/Footer";
-import Nav from "../components/Nav";
-import Thread from "../components/Thread";
-import ScrollToTop from "../components/ScrollToTop";
+import { getCollection } from "astro:content";
 import "../styles/global.css";
+import "../styles/home.css";
+
+const latest = (await getCollection("posts", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+const slugFor = (id: string) => id.replace(/^\d+_/, "");
 ---
 
 <Layout
   title="Gil Neto — Founder-Engineer & Senior Software Engineer, AI Products · Lisbon / EU Remote"
   description="Senior software engineer, 12 years, working on AI products. Founder-Engineer in Lisbon building agent memory and knowledge systems - capture, retrieval and evaluation - alongside B2B utilities shipped end-to-end. Open to fractional build engagements: bank-data and accounting pipelines."
 >
-  <Nav client:load />
-  <main class="relative overflow-x-clip">
-    <Thread client:idle />
-    <Hero client:load />
-    <About client:visible />
-    <Projects client:load />
-    <Experience client:visible />
-    <Stack client:visible />
-    <Writing />
-    <Footer client:visible />
-    <ScrollToTop client:load />
-  </main>
+<nav class="top" id="nav"><b>Gil Neto</b><ul><li><a href="#vault">Second brain</a></li><li><a href="#finance">Finance</a></li><li><a href="#experience">Experience</a></li><li><a href="#writing">Writing</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+
+<section class="split" id="top">
+  <div class="copy">
+    <span class="kicker" style="color:var(--teal)">Open to fractional build work</span>
+    <h1>I build the <span>memory layer</span> LLM agents run on.</h1>
+    <p>Senior engineer, 12 years. The model does judgment, deterministic code does correctness. My own second brain runs on those rules every day, and I ship the B2B tools around it, infrastructure to UI.</p>
+    <div class="links"><a href="#vault">See how it works</a><a href="#writing">Writing</a><a href="#contact">Get in touch</a></div>
+    <div class="stats"><div><b data-n="951">0</b><span>notes</span></div><div><b data-n="4078">0</b><span>links</span></div><div><b data-n="1826">0</b><span>commits</span></div><div><b data-n="94" data-s="%">0</b><span>last eval</span></div></div>
+  </div>
+  <div class="scene" data-scene="graph" data-h="560"><canvas></canvas><div class="cap"></div></div>
+</section>
+
+<section class="band" id="vault" data-reveal>
+  <span class="eyebrow">Second brain</span>
+  <h2>An agent that forgets is a demo.</h2>
+</section>
+
+<section class="split flip">
+  <div class="copy" data-reveal>
+    <span class="kicker" style="color:var(--blue)">How it's built</span>
+    <h2>Six layers. The harness keeps the guarantees.</h2>
+    <p>Mail and calendar come in. Every fact is captured the moment it's said. A nightly batch files it, rebuilds the indexes and scores itself against a fixed question set. The model judges. Code enforces.</p>
+  </div>
+  <div class="scene" data-scene="stack" data-h="540"><canvas></canvas><div class="cap"></div></div>
+</section>
+
+<section class="split">
+  <div class="copy" data-reveal>
+    <span class="kicker" style="color:var(--pink)">What using it is like</span>
+    <h2>It answers with sources, or says it doesn't know.</h2>
+    <p>A daily brief, a course on anything, a draft in my voice. And when the vault doesn't hold the answer, it says so instead of guessing.</p>
+  </div>
+  <div class="scene" data-scene="chat"><div class="feed"></div></div>
+</section>
+
+<section class="band" id="finance" data-reveal>
+  <span class="eyebrow">Finance tools</span>
+  <h2>Bank data, verified. AI explains the numbers. It never produces them.</h2>
+</section>
+
+<section class="split">
+  <div class="copy" data-reveal data-copy="flow"></div>
+  <div class="scene" data-scene="flow" data-h="600"><canvas></canvas><div class="cap"></div></div>
+</section>
+<section class="split flip">
+  <div class="copy" data-reveal data-copy="koa"></div>
+  <div class="scene" data-scene="koa" data-h="600" data-hm="680"><canvas></canvas><div class="cap"></div></div>
+</section>
+<section class="split">
+  <div class="copy" data-reveal data-copy="kelaro"></div>
+  <div class="scene" data-scene="kelaro" data-h="600" data-hm="850"><canvas></canvas><div class="cap"></div></div>
+</section>
+<section class="split flip">
+  <div class="copy" data-reveal data-copy="cashew"></div>
+  <div class="scene" data-scene="cashew" data-h="600" data-hm="840"><canvas></canvas><div class="cap"></div></div>
+</section>
+
+<section class="list" id="experience">
+  <h2 data-reveal>Experience</h2>
+  <div class="rows">
+    <div class="row" data-reveal><span class="when">2026 — now</span><span class="what">Independent founder-engineer</span><span class="why">B2B utilities built and run solo, plus contract work on the memory layer of AI products.</span></div>
+    <div class="row" data-reveal><span class="when">2021 — 2026</span><span class="what">Lead engineer <span>· Opplane</span></span><span class="why">Monolith to microservices, the LLM-integration layer, observability, a team of four to five.</span></div>
+    <div class="row" data-reveal><span class="when">2020 — 2021</span><span class="what">Senior engineer <span>· Opplane</span></span><span class="why">Design system and front-end architecture across product teams.</span></div>
+    <div class="row" data-reveal><span class="when">2018 — 2020</span><span class="what">Front-end lead <span>· Glartek</span></span><span class="why">The core industrial-IoT product, its component library and build pipeline.</span></div>
+    <div class="row" data-reveal><span class="when">2013 — 2018</span><span class="what">Analyst, consultant <span>· Link Consulting</span></span><span class="why">Enterprise delivery, then on-site systems administration in Kuwait.</span></div>
+  </div>
+</section>
+
+<section class="list" id="writing">
+  <h2 data-reveal>Writing <a href="/blog" class="all">All posts →</a></h2>
+  <div class="rows">
+    {latest.map((post) => (
+      <a class="row" href={`/blog/${slugFor(post.id)}`} data-reveal>
+        <span class="when">{post.data.pubDate.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+        <span class="what">{post.data.title}</span>
+        <span class="why">{post.data.description}</span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <h2 data-reveal>Let's build <span>something.</span></h2>
+  <p data-reveal style="max-width:52ch">Fractional build work on bank-data and accounting pipelines: the architecture, the first working version, and the handover. Remote across EU timezones, based in Lisbon.</p>
+  <a class="btn" href="mailto:gilneto8.work@gmail.com" data-reveal>gilneto8.work@gmail.com</a>
+</section>
+<footer><span>© 2026 Gil Neto</span><span><a href="https://github.com/gilneto8" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/gil-neto-7b44946a" rel="noopener">LinkedIn</a> · <a href="/rss.xml">RSS</a> · <a href="/blog">Blog</a></span><span>Portuguese · English · Spanish</span></footer>
 </Layout>
+
+<script>
+  import "../scripts/scenes.js";
+</script>

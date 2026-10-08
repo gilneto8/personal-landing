@@ -44,17 +44,17 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
     <link
       rel="preload"
       as="style"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400&display=swap"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400&display=swap"
       rel="stylesheet"
       media="print"
       onload="this.media='all'"
     />
     <noscript>
       <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400&display=swap"
         rel="stylesheet"
       />
     </noscript>
@@ -245,31 +245,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
       <script defer src={import.meta.env.PUBLIC_UMAMI_SCRIPT_URL} data-website-id={import.meta.env.PUBLIC_UMAMI_WEBSITE_ID}></script>
     )}
   </head>
-  <body class="font-sans antialiased relative grain">
+  <body class="antialiased">
     <slot />
-    <script>
-      import Lenis from "lenis";
-      // smooth wheel scrolling on pointer devices only; touch keeps native feel
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (!reduce && window.matchMedia("(pointer: fine)").matches) {
-        const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, anchors: true });
-        const raf = (t: number) => { lenis.raf(t); requestAnimationFrame(raf); };
-        requestAnimationFrame(raf);
-      }
-      // reveal static markup
-      const io = new IntersectionObserver(
-        (entries) => entries.forEach((e) => {
-          if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
-        }),
-        { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
-      );
-      document.querySelectorAll("[data-reveal]").forEach((el) => io.observe(el));
-    </script>
   </body>
 </html>
-
-<style is:global>
-  body {
-    font-family: "Inter", sans-serif;
-  }
-</style>
