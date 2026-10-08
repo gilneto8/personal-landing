@@ -39,7 +39,7 @@
   --accent-warm: var(--sun-300);
   --accent-highlight: var(--mist-200);
 
-  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* motion palette */
@@ -65,6 +65,7 @@ html.lenis, html.lenis body { height: auto; }
 
 body {
   background-color: var(--ink-800);
+  background-image: linear-gradient(180deg, #3a3d4b 0%, var(--ink-800) 900px);
   color: var(--mist-200);
   font-family: 'Inter', sans-serif;
 }
@@ -104,17 +105,10 @@ body {
 @keyframes orbit-x { to { translate: 6vw 0; } }
 @keyframes orbit-y { to { margin-top: -4vw; } }
 
-/* marquee */
-.marquee { overflow: hidden; white-space: nowrap; }
-.marquee-track { display: inline-flex; animation: marquee 38s linear infinite; }
-.marquee-track.reverse { animation-direction: reverse; }
-.marquee:hover .marquee-track { animation-play-state: paused; }
-@keyframes marquee { to { transform: translateX(-50%); } }
-
 /* outlined display numerals */
 .outline-text {
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--ink-500);
+  -webkit-text-stroke: 1px var(--ink-500);
 }
 
 /* sliding underline */
@@ -141,11 +135,10 @@ body {
   gap: 0.6rem;
   padding: 0.95rem 1.6rem;
   border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   transition: color 0.4s var(--ease-snap), transform 0.55s var(--spring-snappy), border-color 0.4s var(--ease-snap);
 }
 .btn::before {
@@ -153,22 +146,22 @@ body {
   position: absolute;
   inset: 0;
   z-index: -1;
-  transform: scaleX(0);
-  transform-origin: left;
+  transform: translateY(101%);
   transition: transform 0.5s var(--ease-snap);
 }
-.btn:hover::before { transform: scaleX(1); }
+.btn:hover::before { transform: translateY(0); }
 .btn:active { transform: scale(0.96); transition-duration: 0.08s; }
 .btn .arrow { transition: transform 0.45s var(--ease-snap); }
-.btn:hover .arrow { transform: translateX(4px); }
+.btn:hover .arrow { transform: translate(2px, -2px); }
 .btn:focus-visible { outline: 2px solid var(--sun-400); outline-offset: 3px; }
 
-.btn-primary { background: var(--sun-400); color: var(--ink-900); }
-.btn-primary::before { background: var(--mist-50); }
+.btn-primary { border: 1px solid var(--sun-400); color: var(--sun-400); box-shadow: 0 0 40px -12px rgba(251,176,45,0.45); }
+.btn-primary::before { background: var(--sun-400); }
+.btn-primary:hover { color: var(--ink-900); }
 
-.btn-ghost { border: 1.5px solid var(--ink-500); color: var(--mist-200); }
-.btn-ghost::before { background: var(--sun-400); }
-.btn-ghost:hover { color: var(--ink-900); border-color: var(--sun-400); }
+.btn-ghost { border: 1px solid var(--ink-500); color: var(--mist-200); }
+.btn-ghost::before { background: var(--mist-200); }
+.btn-ghost:hover { color: var(--ink-900); border-color: var(--mist-200); }
 
 /* scroll-reveal for static Astro markup (Writing section) */
 [data-reveal] {
@@ -186,7 +179,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .grain::after, .orbit-a, .orbit-b, .marquee-track { animation: none !important; }
+  .grain::after, .orbit-a, .orbit-b { animation: none !important; }
   [data-reveal] { transform: none; filter: none; transition: opacity 0.3s linear; }
   .btn, .btn::before, .link-slide::after { transition-duration: 0.01s; }
 }

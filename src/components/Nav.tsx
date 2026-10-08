@@ -1,4 +1,4 @@
-import { motion, MotionConfig, useScroll, useSpring } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import { ease } from '../lib/motion';
 
 const links = [
@@ -10,9 +10,6 @@ const links = [
 ];
 
 export default function Nav() {
-  const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 30 });
-
   return (
     <MotionConfig reducedMotion="user">
       <motion.header
@@ -20,9 +17,8 @@ export default function Nav() {
         animate={{ y: 0, opacity: 1, transition: { duration: 0.8, ease } }}
         className="fixed top-0 inset-x-0 z-50"
       >
-        <motion.div style={{ scaleX: progress }} className="h-[2px] bg-[var(--sun-400)] origin-left" />
         <nav className="mx-4 md:mx-8 mt-3 flex items-center justify-between rounded-full border border-[var(--ink-600)]/70 bg-[var(--ink-800)]/60 backdrop-blur-md px-5 py-2.5">
-          <a href="#top" className="font-display font-bold text-[var(--mist-50)] tracking-tight hover:text-[var(--sun-400)] transition-colors">
+          <a href="#top" className="font-display italic text-xl text-[var(--mist-50)] hover:text-[var(--sun-400)] transition-colors">
             gn<span className="text-[var(--sun-400)]">.</span>
           </a>
           <ul className="hidden md:flex gap-7">

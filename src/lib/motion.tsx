@@ -91,15 +91,15 @@ export function Eyebrow({ index, label }: { index: string; label: string }) {
       viewport={{ once: true, amount: 0.8 }}
       variants={stagger(0.08)}
     >
-      <motion.span data-thread variants={fadeUp} className="font-mono text-sm text-[var(--sun-400)]">
+      <motion.span data-thread variants={fadeUp} className="font-display italic text-2xl text-[var(--sun-400)]">
         {index}
       </motion.span>
       <motion.span variants={fadeUp} className="font-mono text-xs uppercase tracking-[0.25em] text-[var(--aqua-300)]">
         {label}
       </motion.span>
       <motion.span
-        className="flex-1 h-px bg-[var(--ink-600)] origin-left"
-        variants={{ hidden: { scaleX: 0 }, visible: { scaleX: 1, transition: { duration: 1.1, ease } } }}
+        className="flex-1 h-px bg-[var(--ink-600)]"
+        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 1.1, ease } } }}
       />
     </motion.div>
   );

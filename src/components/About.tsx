@@ -26,7 +26,7 @@ export default function About() {
         <Eyebrow index="01" label="Approach" />
 
         <ScrollLitText
-          className="font-display text-[2.1rem] leading-[1.08] md:text-[4.6vw] md:leading-[1.04] font-medium tracking-[-0.02em] text-[var(--mist-50)] max-w-[22ch] md:max-w-none"
+          className="font-display text-[2.5rem] leading-[1.05] md:text-[5.2vw] md:leading-[1.02] tracking-[-0.01em] text-[var(--mist-50)] max-w-[22ch] md:max-w-none"
           text="An agent that forgets is a demo. The model does judgment. Deterministic code does correctness. The harness keeps the guarantees."
         />
 
@@ -34,8 +34,8 @@ export default function About() {
           {philosophy.map((item, index) => (
             <motion.article
               key={item.title}
-              initial={{ opacity: 0, y: 50, rotate: index % 2 ? 1.5 : -1.5 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              initial={{ opacity: 0, y: 50, filter: 'blur(8px)' }}
+              whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.9, ease, delay: index * 0.1 }}
               whileHover={{ y: -6 }}
@@ -43,10 +43,10 @@ export default function About() {
             >
               {/* saffron glow follows hover */}
               <span aria-hidden className="absolute -top-24 -right-24 w-56 h-56 rounded-full bg-[var(--sun-400)] opacity-0 blur-3xl group-hover:opacity-20 transition-opacity duration-700" />
-              <span className="font-display text-7xl font-bold outline-text group-hover:[-webkit-text-stroke-color:var(--sun-400)] transition-all duration-500 mb-6">
+              <span className="font-display italic text-6xl text-[var(--ink-500)] group-hover:text-[var(--sun-400)] transition-colors duration-500 mb-6">
                 0{index + 1}
               </span>
-              <h3 className="font-display text-2xl font-semibold text-[var(--mist-50)] mb-4">{item.title}</h3>
+              <h3 className="font-display text-3xl text-[var(--mist-50)] mb-4">{item.title}</h3>
               <p className="text-[var(--mist-200)]/85 leading-relaxed text-[15px] mb-6 flex-grow">{item.body}</p>
               <div className="flex flex-wrap gap-2">
                 {item.tags.map((tag) => (

@@ -1,6 +1,5 @@
-import { motion, MotionConfig, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import { ease, fadeUp, stagger } from '../lib/motion';
+import { motion, MotionConfig } from 'framer-motion';
+import { MaskWords, ease, fadeUp, stagger } from '../lib/motion';
 
 const languages = [
   { label: 'Portuguese (native)', tone: 'var(--sun-400)' },
@@ -9,13 +8,9 @@ const languages = [
 ];
 
 export default function Footer() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] });
-  const x = useTransform(scrollYProgress, [0, 1], ['18%', '0%']);
-
   return (
     <MotionConfig reducedMotion="user">
-      <footer ref={ref} id="contact" className="relative overflow-hidden px-5 md:px-12 lg:px-20 pt-28 md:pt-40 pb-10">
+      <footer id="contact" className="relative overflow-hidden px-5 md:px-12 lg:px-20 pt-28 md:pt-40 pb-10">
         <div aria-hidden className="blob orbit-b w-[40vw] h-[40vw] -bottom-[10vw] -left-[10vw] bg-[var(--sun-400)] opacity-[0.08]" />
 
         <motion.div
@@ -33,13 +28,10 @@ export default function Footer() {
           </span>
         </motion.div>
 
-        <motion.h2
-          style={{ x }}
-          className="relative font-display font-bold text-[15vw] md:text-[11vw] leading-[0.86] tracking-[-0.05em] text-[var(--mist-50)] whitespace-nowrap"
-        >
-          Let's build<br />
-          <span className="text-[var(--sun-400)]">something.</span>
-        </motion.h2>
+        <h2 className="relative font-display text-[17vw] md:text-[12vw] leading-[0.9] tracking-[-0.02em] text-[var(--mist-50)]">
+          <MaskWords text="Let's build" className="block" />
+          <MaskWords text="something." className="block italic text-[var(--sun-400)]" delay={0.15} />
+        </h2>
 
         <motion.div
           className="relative mt-12 md:mt-16 grid md:grid-cols-[1fr_auto] gap-8 items-end"
@@ -57,8 +49,8 @@ export default function Footer() {
         </motion.div>
 
         <motion.div
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, ease }}
           className="relative mt-20 h-px bg-[var(--ink-600)] origin-left"

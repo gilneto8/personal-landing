@@ -78,13 +78,13 @@ export default function Experience() {
           {experiences.map((exp, index) => (
             <div key={index} className="relative grid md:grid-cols-[220px_1fr] gap-3 md:gap-0 pl-9 md:pl-0 pb-16 last:pb-0">
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.6 }}
                 transition={{ duration: 0.8, ease }}
                 className="md:sticky md:top-28 self-start md:pr-10"
               >
-                <span className="font-display font-bold text-4xl md:text-5xl tracking-[-0.03em] text-[var(--mist-50)] block leading-none">
+                <span className="font-display text-5xl md:text-6xl text-[var(--mist-50)] block leading-none">
                   {exp.period.split(' – ')[0].split('/')[1]}
                 </span>
                 <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--aqua-300)] block mt-2">{exp.period}</span>
@@ -106,8 +106,8 @@ export default function Experience() {
                 transition={{ duration: 0.8, ease, delay: 0.08 }}
                 className="md:pl-14"
               >
-                <h3 className="font-display text-2xl md:text-3xl font-semibold text-[var(--mist-50)] tracking-[-0.01em]">
-                  {exp.title} <span className="text-[var(--sun-400)]">@</span> <span className="text-[var(--aqua-300)]">{exp.company}</span>
+                <h3 className="font-display text-3xl md:text-4xl text-[var(--mist-50)]">
+                  {exp.title} <span className="italic text-[var(--aqua-300)]">at {exp.company}</span>
                 </h3>
                 <p className="text-[var(--mist-200)] mt-3 mb-5 leading-relaxed max-w-3xl">{exp.description}</p>
                 {exp.highlights && (

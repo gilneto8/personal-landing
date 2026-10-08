@@ -5,11 +5,6 @@ import { ease, fadeUp, stagger } from '../lib/motion';
 
 const rotating = ['agent memory', 'eval harnesses', 'retrieval that says "not found"', 'B2B utilities', 'infra to UI, solo'];
 
-const ticker = [
-  'Agent memory', 'Retrieval', 'Eval harness', 'Temporal', 'Deterministic extraction',
-  'Postgres', 'Docker', 'LLM products', 'Fractional build', 'Lisbon · EU remote',
-];
-
 function Rotator() {
   const [i, setI] = useState(0);
   useEffect(() => {
@@ -21,7 +16,7 @@ function Rotator() {
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={i}
-          className="text-[var(--sun-400)] whitespace-nowrap"
+          className="italic text-[var(--sun-400)] whitespace-nowrap"
           initial={{ y: '100%', opacity: 0 }}
           animate={{ y: '0%', opacity: 1, transition: { duration: 0.7, ease } }}
           exit={{ y: '-100%', opacity: 0, transition: { duration: 0.5, ease } }}
@@ -40,16 +35,16 @@ export default function Hero() {
   const nameOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.15]);
   const blobY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
 
-  const letters = 'GIL NETO'.split('');
+  const letters = 'Gil Neto'.split('');
 
   return (
     <MotionConfig reducedMotion="user">
       <section ref={ref} id="top" className="relative min-h-[100svh] flex flex-col overflow-hidden">
         {/* ambient light */}
         <motion.div style={{ y: blobY }} aria-hidden className="absolute inset-0">
-          <div className="blob orbit-a w-[55vw] h-[55vw] -top-[15vw] -right-[10vw] bg-[var(--ink-600)] opacity-80" />
-          <div className="blob orbit-b w-[38vw] h-[38vw] top-[30%] -left-[12vw] bg-[var(--aqua-500)] opacity-[0.16]" />
-          <div className="blob orbit-a w-[20vw] h-[20vw] bottom-[10%] right-[20%] bg-[var(--sun-400)] opacity-[0.10]" />
+          <div className="blob orbit-a w-[60vw] h-[60vw] -top-[20vw] -right-[12vw] bg-[var(--aqua-300)] opacity-[0.14]" />
+          <div className="blob orbit-b w-[45vw] h-[45vw] top-[25%] -left-[15vw] bg-[var(--ink-600)] opacity-90" />
+          <div className="blob orbit-a w-[22vw] h-[22vw] bottom-[5%] right-[25%] bg-[var(--sun-400)] opacity-[0.07]" />
         </motion.div>
 
         <div className="relative z-10 flex-1 flex flex-col justify-end px-5 md:px-12 lg:px-20 pt-28 pb-10">
@@ -69,14 +64,14 @@ export default function Hero() {
           <motion.h1
             aria-label="Gil Neto"
             style={{ y: nameY, opacity: nameOpacity }}
-            className="font-display font-bold leading-[0.82] tracking-[-0.055em] text-[var(--mist-50)] text-[21vw] md:text-[17.5vw] whitespace-nowrap -ml-[0.04em]"
+            className="font-display font-normal leading-[0.85] tracking-[-0.035em] text-[var(--mist-50)] text-[27vw] md:text-[19vw] whitespace-nowrap -ml-[0.03em]"
           >
             {letters.map((c, i) => (
-              <span key={i} aria-hidden className="inline-block overflow-hidden align-bottom">
+              <span key={i} aria-hidden className={`inline-block overflow-hidden align-bottom pb-[0.06em] ${i > 3 ? 'italic pr-[0.06em] -mr-[0.06em]' : ''}`}>
                 <motion.span
                   className="inline-block"
                   initial={{ y: '105%' }}
-                  animate={{ y: '0%', transition: { duration: 1.1, ease, delay: 0.15 + i * 0.05 } }}
+                  animate={{ y: '0%', transition: { duration: 1.2, ease, delay: 0.15 + i * 0.06 } }}
                 >
                   {c === ' ' ? ' ' : c}
                 </motion.span>
@@ -102,7 +97,7 @@ export default function Hero() {
               <p className="font-mono text-[11px] md:text-xs uppercase tracking-[0.2em] text-[var(--aqua-300)] mb-3">
                 Founder-Engineer & Senior Software Engineer, AI Products
               </p>
-              <p className="font-display text-[1.7rem] md:text-5xl font-medium leading-[1.1] text-[var(--mist-50)]">
+              <p className="font-display text-[2.2rem] md:text-6xl leading-[1.05] text-[var(--mist-50)]">
                 I build <br className="md:hidden" />
                 <Rotator />
               </p>
@@ -130,19 +125,20 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* saffron ticker closes the fold */}
+        {/* scroll cue: a saffron bead travelling down a hairline */}
         <motion.div
-          initial={{ clipPath: 'inset(0 100% 0 0)' }}
-          animate={{ clipPath: 'inset(0 0% 0 0)', transition: { duration: 1.2, ease, delay: 0.9 } }}
-          className="relative z-10 marquee bg-[var(--sun-400)] text-[var(--ink-900)] py-3"
+          aria-hidden
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { delay: 1.4, duration: 0.8 } }}
+          className="hidden md:flex absolute bottom-0 left-1/2 -translate-x-1/2 z-10 flex-col items-center"
         >
-          <div className="marquee-track">
-            {[...ticker, ...ticker].map((t, i) => (
-              <span key={i} className="font-mono text-sm font-bold uppercase tracking-[0.15em] px-6 flex items-center gap-6">
-                {t} <span aria-hidden>✦</span>
-              </span>
-            ))}
-          </div>
+          <span className="relative w-px h-14 bg-[var(--ink-500)]/60 overflow-hidden">
+            <motion.span
+              className="absolute left-[-1.5px] w-[4px] h-[4px] rounded-full bg-[var(--sun-400)]"
+              animate={{ top: ['-10%', '110%'] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: [0.65, 0, 0.35, 1] }}
+            />
+          </span>
         </motion.div>
       </section>
     </MotionConfig>

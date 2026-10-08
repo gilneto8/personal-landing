@@ -1,4 +1,4 @@
-import { motion, MotionConfig, useScroll, useTransform } from 'framer-motion';
+import { motion, MotionConfig, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Eyebrow, MaskWords, ease } from '../lib/motion';
 
@@ -38,15 +38,16 @@ function Panel({ p, i }: { p: Project; i: number }) {
   const Title = p.url ? 'a' : 'span';
   return (
     <article
-      className={`group relative shrink-0 w-full md:w-[78vw] md:h-[76vh] rounded-[2rem] p-7 md:p-12 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 overflow-hidden border border-[var(--ink-500)]/40 ${
+      className={`group relative shrink-0 w-full md:h-[72vh] rounded-[2rem] shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.45)] p-7 md:p-12 grid md:grid-cols-[1fr_1.15fr] gap-8 md:gap-14 overflow-hidden border border-[var(--ink-500)]/40 ${
         i % 2 ? 'bg-[var(--ink-700)]' : 'bg-[var(--ink-600)]'
       }`}
     >
       <div className="relative flex flex-col">
-        <span className="self-start font-mono text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 rounded-full bg-[var(--sun-400)] text-[var(--ink-900)] font-bold mb-6">
+        <span className="self-start flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--sun-400)] mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--sun-400)] shadow-[0_0_10px_var(--sun-400)]" />
           {p.status}
         </span>
-        <h3 className="font-display font-bold text-5xl md:text-[6.2vw] leading-[0.9] tracking-[-0.04em] text-[var(--mist-50)] mb-4">
+        <h3 className="font-display text-6xl md:text-[6.5vw] leading-[0.9] tracking-[-0.02em] text-[var(--mist-50)] mb-4">
           <Title
             {...(p.url ? { href: p.url, target: p.url.startsWith('http') ? '_blank' : undefined, rel: 'noopener noreferrer' } : {})}
             className={p.url ? 'hover:text-[var(--sun-400)] transition-colors duration-300' : ''}
@@ -56,7 +57,7 @@ function Panel({ p, i }: { p: Project; i: number }) {
           </Title>
         </h3>
         <p className="font-mono text-xs uppercase tracking-[0.15em] text-[var(--aqua-300)] max-w-[32ch]">{p.tagline}</p>
-        <span aria-hidden className="hidden md:block mt-auto font-display font-bold text-[13vw] leading-[0.75] tracking-[-0.05em] outline-text group-hover:[-webkit-text-stroke-color:var(--sun-400)] transition-all duration-700 select-none">
+        <span aria-hidden className="hidden md:block mt-auto font-display italic text-[11vw] leading-[0.75] text-[var(--ink-500)]/50 group-hover:text-[var(--sun-400)]/70 transition-colors duration-700 select-none">
           0{i + 1}
         </span>
       </div>
@@ -90,36 +91,36 @@ function useDesktop() {
   return desktop;
 }
 
-/* Desktop: vertical scroll drives a horizontal track of project panels. */
-function HorizontalTrack() {
-  const ref = useRef<HTMLDivElement>(null);
-  const track = useRef<HTMLDivElement>(null);
-  const [distance, setDistance] = useState(0);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
-  const x = useTransform(scrollYProgress, [0.05, 0.95], [0, -distance]);
-
-  useEffect(() => {
-    const measure = () => track.current && setDistance(track.current.scrollWidth - window.innerWidth);
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, []);
-
+/* Desktop: cards pin one after another and stack like a deck; the one underneath sinks back. */
+function StackCard({ p, i, progress }: { p: Project; i: number; progress: MotionValue<number> }) {
+  const n = projects.length;
+  const scale = useTransform(progress, [i / n, 1], [1, 1 - (n - 1 - i) * 0.05]);
+  const dim = useTransform(progress, [i / n, (i + 1) / n], [0, i < n - 1 ? 0.35 : 0]);
   return (
-    <div ref={ref} style={{ height: `${projects.length * 100 + 20}vh` }} className="relative">
-      <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-        <motion.div ref={track} style={{ x }} className="flex gap-8 pl-20 pr-[11vw] items-center">
-          <div className="shrink-0 w-[34vw] pr-8">
-            <p className="font-display text-[4.2vw] leading-[1] font-medium tracking-[-0.03em] text-[var(--mist-50)]">
-              <MaskWords text="Things I build and run myself." />
-            </p>
-            <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-[var(--aqua-300)]">Keep scrolling →</p>
-          </div>
-          {projects.map((p, i) => (
-            <Panel key={p.title} p={p} i={i} />
-          ))}
+    <div className="sticky h-[88vh] flex items-start" style={{ top: `calc(11vh + ${i * 22}px)` }}>
+      <motion.div style={{ scale }} className="relative w-full origin-top">
+        <motion.div
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 1, ease }}
+        >
+          <Panel p={p} i={i} />
         </motion.div>
-      </div>
+        <motion.div style={{ opacity: dim }} className="absolute inset-0 rounded-[2rem] bg-[var(--ink-950)] pointer-events-none" />
+      </motion.div>
+    </div>
+  );
+}
+
+function StackedCards() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  return (
+    <div ref={ref} className="relative px-12 lg:px-20 pb-[10vh]">
+      {projects.map((p, i) => (
+        <StackCard key={p.title} p={p} i={i} progress={scrollYProgress} />
+      ))}
     </div>
   );
 }
@@ -133,7 +134,12 @@ export default function Projects() {
           <Eyebrow index="02" label="Selected Work" />
         </div>
         {desktop ? (
-          <HorizontalTrack />
+          <>
+            <p className="px-12 lg:px-20 mb-6 font-display text-[4.2vw] leading-[1] tracking-[-0.01em] text-[var(--mist-50)] max-w-[18ch]">
+              <MaskWords text="Things I build and run myself." />
+            </p>
+            <StackedCards />
+          </>
         ) : (
           <div className="px-5 md:px-12 flex flex-col gap-6 pb-10">
             {projects.map((p, i) => (
