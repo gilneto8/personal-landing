@@ -10,6 +10,7 @@ const ease = t => 1 - Math.pow(1 - t, 3), clamp = (v, a = 0, b = 1) => Math.min(
 const mono = (c, px = 12) => c.font = `400 ${px}px Geist Mono, monospace`;
 const sans = (c, px = 14, wt = 500) => c.font = `${wt} ${px}px Geist, system-ui`;
 const rr = (c, x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const fit = (c, s, max) => { if (c.measureText(s).width <= max) return s; while (s.length > 1 && c.measureText(s + '…').width > max) s = s.slice(0, -1); return s.trimEnd() + '…'; };
 const fmt = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 let rng = 7; const rand = () => (rng = (rng * 16807) % 2147483647) / 2147483647;
 const gauss = () => { let u = 0, v = 0; while (!u) u = rand(); while (!v) v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
@@ -54,6 +55,48 @@ graph.nodes.forEach((n, i) => {
     if (m !== i) { graph.edges.push([i, m]); graph.adj[i].push(m); graph.adj[m].push(i); }
   }
 });
+/* Obsidian-style growth: each node spawns beside a node it links to, links pull like springs,
+   close nodes push apart, and a weak pull to each node's home spot settles the clusters under their labels.
+   Own RNG, so the other scenes keep their seeded samples. */
+const GW = 1000, GH = 560, SPAWN = 2.8, STEP = 1 / 60, LINK = 18, REP = 14;
+const NN = graph.nodes.length;
+let rs = 11; const srand = () => (rs = (rs * 16807) % 2147483647) / 2147483647;
+const sim = { x: new Float32Array(NN), y: new Float32Array(NN), vx: new Float32Array(NN), vy: new Float32Array(NN), born: new Float32Array(NN), from: new Int32Array(NN).fill(-1), live: new Uint8Array(NN), t: 0, alpha: 1, next: 0 };
+sim.order = (() => {
+  const seen = new Uint8Array(NN), out = [];
+  for (const r of [...Array(NN).keys()].sort(() => srand() - 0.5)) {
+    if (seen[r]) continue; seen[r] = 1; const q = [r];
+    while (q.length) { const v = q.shift(); out.push(v); for (const g of graph.adj[v].slice().sort(() => srand() - 0.5)) if (!seen[g]) { seen[g] = 1; sim.from[g] = v; q.push(g); } }
+  }
+  return out;
+})();
+sim.order.forEach((v, i) => { sim.born[v] = SPAWN * Math.sqrt(i / NN); });
+const clBorn = CL.map((_, ci) => Math.min(...sim.order.filter(v => graph.nodes[v].ci === ci).map(v => sim.born[v])));
+function spawn(v) {
+  const p = sim.from[v], a = srand() * 7, n = graph.nodes[v];
+  if (p >= 0 && sim.live[p]) { sim.x[v] = sim.x[p] + Math.cos(a) * 10; sim.y[v] = sim.y[p] + Math.sin(a) * 10; }
+  else { sim.x[v] = n.fx * GW + Math.cos(a) * 6; sim.y[v] = n.fy * GH + Math.sin(a) * 6; }
+  sim.live[v] = 1;
+}
+function simStep() {
+  sim.t += STEP;
+  while (sim.next < NN && sim.born[sim.order[sim.next]] <= sim.t) spawn(sim.order[sim.next++]);
+  if (sim.t > SPAWN) sim.alpha *= 0.993;
+  const A = sim.alpha, H = 0.004 + 0.016 * clamp(sim.t / (SPAWN + 1)), { x, y, vx, vy, live } = sim, grid = new Map();
+  for (let i = 0; i < NN; i++) if (live[i]) { const k = ((x[i] / REP) | 0) * 4096 + ((y[i] / REP) | 0); let b = grid.get(k); if (!b) grid.set(k, b = []); b.push(i); }
+  for (let i = 0; i < NN; i++) {
+    if (!live[i]) continue;
+    const cx = (x[i] / REP) | 0, cy = (y[i] / REP) | 0;
+    for (let gx = cx - 1; gx <= cx + 1; gx++) for (let gy = cy - 1; gy <= cy + 1; gy++) {
+      const b = grid.get(gx * 4096 + gy); if (!b) continue;
+      for (const j of b) { if (j <= i) continue; const dx = x[j] - x[i], dy = y[j] - y[i], d = Math.hypot(dx, dy) || 0.1; if (d >= REP) continue; const f = (REP - d) / d * 0.06 * A; vx[i] -= dx * f; vy[i] -= dy * f; vx[j] += dx * f; vy[j] += dy * f; }
+    }
+    const n = graph.nodes[i]; vx[i] += (n.fx * GW - x[i]) * H; vy[i] += (n.fy * GH - y[i]) * H;
+  }
+  for (const [a, b] of graph.edges) { if (!live[a] || !live[b]) continue; const dx = x[b] - x[a], dy = y[b] - y[a], d = Math.hypot(dx, dy) || 0.1, f = (d - LINK) / d * (graph.nodes[a].ci === graph.nodes[b].ci ? 0.012 : 0.002) * A; vx[a] += dx * f; vy[a] += dy * f; vx[b] -= dx * f; vy[b] -= dy * f; }
+  for (let i = 0; i < NN; i++) if (live[i]) { vx[i] *= 0.8; vy[i] *= 0.8; x[i] += vx[i]; y[i] += vy[i]; }
+}
+function settleNow() { for (let i = 0; i < NN; i++) { sim.x[i] = graph.nodes[i].fx * GW; sim.y[i] = graph.nodes[i].fy * GH; sim.live[i] = 1; } sim.next = NN; sim.t = 99; sim.alpha = 0; }
 let query = null;
 function newQuery(t) {
   const a = Math.floor(rand() * graph.nodes.length); const prev = new Map([[a, -1]]); let frontier = [a], depth = 0, end = a;
@@ -64,14 +107,22 @@ function newQuery(t) {
 }
 function graphScene(c, w, h, e) {
   const t = e;
-  const appear = ease(Math.min(1, e / 1.8));
-  const pos = graph.nodes.map(n => ({ x: w * (0.5 + (n.fx - 0.5) * appear) + Math.sin(t * 0.3 + n.d * 9) * 2, y: h * (0.5 + (n.fy - 0.5) * appear) + Math.cos(t * 0.27 + n.d * 7) * 2 }));
+  if (REDUCE) { if (sim.alpha) settleNow(); }
+  else { let n = 0; while (sim.t < t && n++ < 4) simStep(); if (sim.t < t - 0.25) sim.t = t; }
+  const sx = w / GW, sy = h / GH, ta = sim.t;
+  const pos = graph.nodes.map((n, i) => ({ x: sim.x[i] * sx + Math.sin(t * 0.3 + n.d * 9) * 2, y: sim.y[i] * sy + Math.cos(t * 0.27 + n.d * 7) * 2 }));
   c.lineWidth = 0.6;
-  for (let i = 0; i < graph.edges.length; i += 1) { const [a, b] = graph.edges[i]; const same = graph.nodes[a].ci === graph.nodes[b].ci; c.strokeStyle = same ? rgba(P.s[CL[graph.nodes[a].ci].c], 0.08) : rgba(P.dim, 0.05); c.beginPath(); c.moveTo(pos[a].x, pos[a].y); c.lineTo(pos[b].x, pos[b].y); c.stroke(); }
-  graph.nodes.forEach((n, i) => { c.fillStyle = rgba(P.s[CL[n.ci].c], 0.35 + 0.4 * n.d); c.beginPath(); c.arc(pos[i].x, pos[i].y, 1 + n.d * 1.4, 0, 7); c.fill(); });
-  CL.forEach(cl => { c.font = '500 12px Geist, system-ui'; c.fillStyle = rgba(P.bright, 0.8 * appear); c.textAlign = 'center'; c.fillText(cl.name, w * cl.x, h * cl.y - h * 0.12); });
+  for (let i = 0; i < graph.edges.length; i += 1) {
+    const [a, b] = graph.edges[i]; if (!sim.live[a] || !sim.live[b]) continue;
+    const f = clamp((ta - Math.max(sim.born[a], sim.born[b])) / 0.6), same = graph.nodes[a].ci === graph.nodes[b].ci;
+    c.strokeStyle = same ? rgba(P.s[CL[graph.nodes[a].ci].c], 0.08 + 0.22 * (1 - f)) : rgba(P.dim, 0.05 + 0.15 * (1 - f));
+    c.beginPath(); c.moveTo(pos[a].x, pos[a].y); c.lineTo(pos[b].x, pos[b].y); c.stroke();
+  }
+  graph.nodes.forEach((n, i) => { if (!sim.live[i]) return; const g = ease(clamp((ta - sim.born[i]) / 0.35)); c.fillStyle = rgba(P.s[CL[n.ci].c], 0.35 + 0.4 * n.d); c.beginPath(); c.arc(pos[i].x, pos[i].y, (1 + n.d * 1.4) * g, 0, 7); c.fill(); });
+  CL.forEach((cl, ci) => { c.font = '500 12px Geist, system-ui'; c.fillStyle = rgba(P.bright, 0.8 * ease(clamp((ta - clBorn[ci] - 0.3) / 0.8))); c.textAlign = 'center'; c.fillText(cl.name, w * cl.x, h * cl.y - h * 0.12); });
+  if (sim.next < NN || ta < SPAWN + 0.8) { setCap(`<b>${sim.next.toLocaleString('en')} notes</b> · linking…`); return; }
   if (!query || t - query.t0 > 5) newQuery(t);
-  const qe = t - query.t0, steps = query.path.length - 1, k = Math.min(steps, qe / 0.55);
+  const qe = t - query.t0, steps = query.path.length - 1, k = REDUCE ? steps : Math.min(steps, qe / 0.55);
   c.strokeStyle = P.bright; c.lineWidth = 1.6; c.beginPath();
   for (let i = 0; i <= Math.floor(k); i++) { const p = pos[query.path[i]]; i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y); }
   if (k < steps) { const a = pos[query.path[Math.floor(k)]], b = pos[query.path[Math.floor(k) + 1]], f = k % 1; c.lineTo(a.x + (b.x - a.x) * f, a.y + (b.y - a.y) * f); }
@@ -157,7 +208,7 @@ const OPEN = 1240.00, CLOSE = OPEN + TX.reduce((s, t) => s + t[2], 0);
 function koa(c, w, h, e) {
   const cyc = Math.floor(e / 10) % 2, t = e % 10, bad = cyc === 1, N = w < 560, fs = N ? 10 : 11;
   // statement page (left on desktop, top on phones)
-  const px = 0, py = 20, pw = N ? w : w * 0.42, ph = N ? 70 + 7 * 26 + 40 : h - 90;
+  const px = 0, py = 20, pw = N ? w : w * 0.42, ph = N ? 70 + 7 * 26 + 40 : 88 + 7 * 34 + 40;
   c.fillStyle = rgba(P.panel, 0.9); rr(c, px, py, pw, ph, 6); c.fill(); c.strokeStyle = P.line; c.stroke();
   sans(c, 13); c.fillStyle = P.bright; c.textAlign = 'left'; c.fillText('Statement · September', px + 18, py + 30);
   mono(c, fs); c.fillStyle = P.dim; c.fillText('opening balance', px + 18, py + (N ? 50 : 58)); c.textAlign = 'right'; c.fillText(fmt(OPEN), px + pw - 18, py + (N ? 50 : 58));
@@ -166,7 +217,7 @@ function koa(c, w, h, e) {
   TX.forEach((r, i) => {
     const y = rowY(i), passed = scanY > y;
     c.textAlign = 'left'; mono(c, fs); c.fillStyle = passed ? P.text : rgba(P.dim, 0.6);
-    c.fillText(r[0], px + 18, y); c.fillText(r[1].slice(0, N ? 15 : 17), px + (N ? 64 : 72), y);
+    c.fillText(r[0], px + 18, y); c.fillText(fit(c, r[1], pw - 18 - (N ? 64 : 72) - c.measureText(fmt(r[2])).width - 14), px + (N ? 64 : 72), y);
     c.textAlign = 'right'; c.fillText(fmt(r[2]), px + pw - 18, y);
   });
   c.textAlign = 'left'; c.fillStyle = P.dim; c.fillText('closing balance', px + 18, rowY(TX.length) + 10); c.textAlign = 'right'; c.fillText(fmt(CLOSE), px + pw - 18, rowY(TX.length) + 10);
@@ -185,7 +236,7 @@ function koa(c, w, h, e) {
     if (k <= 0) return;
     c.globalAlpha = k; const yy = tRow(i) + (1 - k) * 12;
     if (wrong) { c.fillStyle = rgba(P.amber, 0.14); c.fillRect(tx0 - 8, yy - 16, tw + 16, 24); }
-    mono(c, fs); c.fillStyle = P.text; c.textAlign = 'left'; c.fillText(r[0], tx0, yy); c.fillText(r[1].slice(0, N ? 12 : 18), tx0 + cols[1], yy);
+    mono(c, fs); c.fillStyle = P.text; c.textAlign = 'left'; c.fillText(r[0], tx0, yy); c.fillText(fit(c, r[1], cols[2] - cols[1] - c.measureText(fmt(amt)).width - 14), tx0 + cols[1], yy);
     c.textAlign = 'right'; c.fillStyle = wrong ? P.amber : P.text; c.fillText(fmt(amt), tx0 + cols[2], yy);
     c.fillStyle = P.dim; c.fillText(fmt(bal), tx0 + tw, yy); c.globalAlpha = 1;
   });
@@ -253,7 +304,7 @@ function kelaro(c, w, h, e) {
   cx.forEach(x => { c.beginPath(); c.moveTo(x, sy); c.lineTo(x, sy + rh * 13); c.stroke(); });
   sans(c, 12); c.fillStyle = P.bright; ['Data', 'Descritivo', 'Débito', 'Crédito'].forEach((hd, k) => { c.textAlign = 'left'; c.fillText(hd, cx[k] + 8, sy + 20); });
   const OLD = [['01/10', 'TPA — vendas dia', '', '356,10'], ['02/10', 'Fornecedor pão', '74,20', ''], ['02/10', 'TPA — vendas dia', '', '402,75'], ['03/10', 'Seguro', '48,20', ''], ['04/10', 'TPA — vendas dia', '', '371,40'], ['05/10', 'Água', '38,60', '']];
-  const drawRow = (r, i, a, hi) => { const yy = sy + (i + 1) * rh + (N ? 17 : 20); c.globalAlpha = a; if (hi) { c.fillStyle = rgba(P.pink, 0.12 * hi); c.fillRect(cx[0] + 1, sy + (i + 1) * rh + 1, sw - 2, rh - 2); } mono(c, N ? 10 : 11); c.fillStyle = P.text; c.textAlign = 'left'; c.fillText(r[0], cx[0] + 6, yy); c.fillText(N ? r[1].slice(0, 13) : r[1], cx[1] + 6, yy); c.textAlign = 'right'; c.fillText(r[2], cx[3] - 8, yy); c.fillText(r[3], cx[4] - 8, yy); c.globalAlpha = 1; };
+  const drawRow = (r, i, a, hi) => { const yy = sy + (i + 1) * rh + (N ? 17 : 20); c.globalAlpha = a; if (hi) { c.fillStyle = rgba(P.pink, 0.12 * hi); c.fillRect(cx[0] + 1, sy + (i + 1) * rh + 1, sw - 2, rh - 2); } mono(c, N ? 10 : 11); c.fillStyle = P.text; c.textAlign = 'left'; c.fillText(r[0], cx[0] + 6, yy); c.fillText(fit(c, r[1], cx[2] - cx[1] - 12), cx[1] + 6, yy); c.textAlign = 'right'; c.fillText(r[2], cx[3] - 8, yy); c.fillText(r[3], cx[4] - 8, yy); c.globalAlpha = 1; };
   OLD.forEach((r, i) => drawRow(r, i, 0.55, 0));
   const app0 = 3.4;
   NEWROWS.forEach((r, i) => { const k = ease(clamp((t - app0 - i * 0.35) / 0.45)); if (k > 0) drawRow(r, old + i, k, 1 - clamp((t - app0 - 2.5 - i * 0.35) / 1.5)); });
