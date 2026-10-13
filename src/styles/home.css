@@ -29,6 +29,7 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .scene canvas { width: 100%; display: block; }
 .cap { font: 13px/1.6 'Geist Mono', monospace; color: var(--dim); margin-top: 6px; min-height: 1.6em; }
 .cap b { font-weight: 400; color: var(--bright); }
+.scene[data-scene=graph] .cap { font-size: clamp(15px, 1.6vw, 20px); margin-top: 14px; }
 .band { padding-top: 14vh; padding-bottom: 2vh; display: grid; gap: 14px; }
 .band .eyebrow { font-size: 15px; color: var(--dim); }
 .band h2 { max-width: 20ch; font-size: clamp(2.2rem, 4.4vw, 4.4rem); }

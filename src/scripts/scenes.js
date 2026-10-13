@@ -46,6 +46,10 @@ const CL = [
 ];
 const graph = { nodes: [], edges: [], adj: [] };
 CL.forEach((cl, ci) => { for (let i = 0; i < cl.n; i++) { const r = Math.abs(gauss()) * 0.09 + 0.01, a = rand() * 7; graph.nodes.push({ ci, fx: cl.x + Math.cos(a) * r * 1.2, fy: cl.y + Math.sin(a) * r, d: rand() }); } });
+/* Squeeze the layout into the canvas with a margin, labels included, so no cluster runs off an edge. */
+{ const fit1 = (k, lo, hi) => { const v = graph.nodes.map(n => n[k]), a = Math.min(...v), b = Math.max(...v), s = Math.min(1, (hi - lo) / (b - a)), m = (lo + hi) / 2, c = (a + b) / 2;
+    graph.nodes.forEach(n => { n[k] = m + (n[k] - c) * s; }); CL.forEach(cl => { const ck = k === 'fx' ? 'x' : 'y'; cl[ck] = m + (cl[ck] - c) * s; }); };
+  fit1('fx', 0.05, 0.95); fit1('fy', 0.2, 0.94); }
 graph.adj = graph.nodes.map(() => []);
 graph.nodes.forEach((n, i) => {
   const k = 2 + Math.floor(rand() * 2);
@@ -94,13 +98,13 @@ function simStep() {
     const n = graph.nodes[i]; vx[i] += (n.fx * GW - x[i]) * H; vy[i] += (n.fy * GH - y[i]) * H;
   }
   for (const [a, b] of graph.edges) { if (!live[a] || !live[b]) continue; const dx = x[b] - x[a], dy = y[b] - y[a], d = Math.hypot(dx, dy) || 0.1, f = (d - LINK) / d * (graph.nodes[a].ci === graph.nodes[b].ci ? 0.012 : 0.002) * A; vx[a] += dx * f; vy[a] += dy * f; vx[b] -= dx * f; vy[b] -= dy * f; }
-  for (let i = 0; i < NN; i++) if (live[i]) { vx[i] *= 0.8; vy[i] *= 0.8; x[i] += vx[i]; y[i] += vy[i]; }
+  for (let i = 0; i < NN; i++) if (live[i]) { vx[i] *= 0.8; vy[i] *= 0.8; x[i] = clamp(x[i] + vx[i], 16, GW - 16); y[i] = clamp(y[i] + vy[i], 16, GH - 16); }
 }
 function settleNow() { for (let i = 0; i < NN; i++) { sim.x[i] = graph.nodes[i].fx * GW; sim.y[i] = graph.nodes[i].fy * GH; sim.live[i] = 1; } sim.next = NN; sim.t = 99; sim.alpha = 0; }
 let query = null;
 function newQuery(t) {
-  const a = Math.floor(rand() * graph.nodes.length); const prev = new Map([[a, -1]]); let frontier = [a], depth = 0, end = a;
-  while (depth < 4 && frontier.length) { const nx = []; for (const f of frontier) for (const g of graph.adj[f]) if (!prev.has(g)) { prev.set(g, f); nx.push(g); } frontier = nx; depth++; if (nx.length) end = nx[Math.floor(rand() * nx.length)]; }
+  const a = Math.floor(rand() * graph.nodes.length); const prev = new Map([[a, -1]]), want = 2 + Math.floor(rand() * 5); let frontier = [a], depth = 0, end = a;
+  while (depth < want && frontier.length) { const nx = []; for (const f of frontier) for (const g of graph.adj[f]) if (!prev.has(g)) { prev.set(g, f); nx.push(g); } frontier = nx; depth++; if (nx.length) end = nx[Math.floor(rand() * nx.length)]; }
   const path = []; for (let v = end; v !== -1; v = prev.get(v)) path.unshift(v);
   const Q = ['what did we decide on rates?', 'when is the pilot call?', 'which bank formats break Koa?', 'what did I learn about bonds?', 'who replied about the contract?'];
   query = { path, t0: t, q: Q[Math.floor(rand() * Q.length)] };
