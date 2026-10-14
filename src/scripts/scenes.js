@@ -455,13 +455,15 @@ const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* Each finance scene plays its whole loop in 10 s (Qocoa: both runs, tie-out and refusal). Loop lengths: koa 20 s, kelaro 13 s, cashew 17 s. */
+const SPEED = { koa: 2, kelaro: 1.3, cashew: 1.7 };
 
 /* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
-   Each tool stays up for one full loop of its scene, then the path lights the link to the next one, like a hop in the hero graph.
+   Each tool stays up for one full loop of its scene (10 s, see SPEED), then the path lights the link to the next one, like a hop in the hero graph.
    The timer only runs while the showcase is on screen. A click jumps to that tool and restarts its loop. */
 const show = document.querySelector('.show');
 const tick = show ? (() => {
-  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 20, kelaro: 13, cashew: 17 };
+  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 10, kelaro: 10, cashew: 10 };
   let cur = -1, spent = 0, inView = false, last = performance.now();
   const go = i => {
     cur = i; spent = 0;
@@ -481,7 +483,7 @@ const tick = show ? (() => {
 })() : () => {};
 requestAnimationFrame(function frame(now) {
   tick(now);
-  for (const s of scenes) { if (!s.vis || !s.cv) continue; const e = REDUCE ? 8 : now / 1000 - s.t0; CAP = s.cap; s.g.c.clearRect(0, 0, s.g.w, s.g.h); FN[s.k](s.g.c, s.g.w, s.g.h, Math.max(0, e)); }
+  for (const s of scenes) { if (!s.vis || !s.cv) continue; const e = REDUCE ? 8 : (now / 1000 - s.t0) * (SPEED[s.k] || 1); CAP = s.cap; s.g.c.clearRect(0, 0, s.g.w, s.g.h); FN[s.k](s.g.c, s.g.w, s.g.h, Math.max(0, e)); }
   requestAnimationFrame(frame);
 });
 const rio = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); rio.unobserve(en.target); } }), { threshold: 0.15 });
