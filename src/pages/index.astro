@@ -11,20 +11,21 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
 ---
 
 <Layout
-  title="Gil Neto — Founder-Engineer & Senior Software Engineer, AI Products · Lisbon / EU Remote"
-  description="Senior software engineer, 12 years, working on AI products. Founder-Engineer in Lisbon building agent memory and knowledge systems - capture, retrieval and evaluation - alongside B2B utilities shipped end-to-end. Open to fractional build engagements: bank-data and accounting pipelines."
+  title="Gil Neto · Founder-Engineer & Senior Software Engineer · Lisbon / EU Remote"
+  description="Senior software engineer with 12 years across backend, front-end, infrastructure and teams. Founder-engineer in Lisbon who takes products from the first version to production, with AI where it helps. Open to fractional and contract build work. My own products: a second brain for AI agents, and Qaravel, verified bank data."
 >
 <nav class="top" id="nav"><b>Gil Neto</b><ul><li><a href="#vault">Second brain</a></li><li><a href="#finance">Qaravel</a></li><li><a href="#experience">Experience</a></li><li><a href="#writing">Writing</a></li><li><a href="#contact">Contact</a></li></ul></nav>
 
 <section class="hero" id="top">
   <div class="copy">
     <h1><span>The model does judgment.</span> Code does correctness.</h1>
-    <p>Senior engineer, 12 years. I build AI products on that rule, infrastructure to UI: a second brain that runs my days, and finance tools where no model ever produces a number.</p>
+    <p>Senior engineer with 12 years across backend, front-end, infrastructure and teams. I take products from the first version to production, AI or not. The two below are my own, and they're built on that rule.</p>
     <div class="links"><a href="#writing">Writing</a><a href="#contact">Get in touch</a></div>
   </div>
   <div class="doors">
-    <a href="#vault" style="--cc:var(--pink)"><span>Second brain</span><b>An agent that remembers, and says when it doesn't know.</b><i>→</i></a>
-    <a href="#finance" style="--cc:var(--teal)"><span>Qaravel</span><b>Bank data, verified. AI explains it, never produces it.</b><i>→</i></a>
+    <small>My own products</small>
+    <a href="#vault" style="--cc:var(--pink)"><div><span>Second brain</span><b>An agent that remembers, and says when it doesn't know.</b></div><canvas data-door="brain" aria-hidden="true"></canvas></a>
+    <a href="#finance" style="--cc:var(--teal)"><div><span>Qaravel</span><b>Bank data, verified. AI explains it, never produces it.</b></div><canvas data-door="qaravel" aria-hidden="true"></canvas></a>
   </div>
 </section>
 
@@ -89,7 +90,7 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
 <section class="list" id="experience">
   <h2 data-reveal>Experience</h2>
   <div class="rows">
-    <div class="row" data-reveal><span class="when">2026 — now</span><span class="what">Independent founder-engineer</span><span class="why">B2B utilities built and run solo, plus contract work on the memory layer of AI products.</span></div>
+    <div class="row" data-reveal><span class="when">2026 — now</span><span class="what">Independent founder-engineer</span><span class="why">Contract build work for clients, alongside my own products, built and run solo.</span></div>
     <div class="row" data-reveal><span class="when">2021 — 2026</span><span class="what">Lead engineer <span>· Opplane</span></span><span class="why">Monolith to microservices, the LLM-integration layer, observability, a team of four to five.</span></div>
     <div class="row" data-reveal><span class="when">2020 — 2021</span><span class="what">Senior engineer <span>· Opplane</span></span><span class="why">Design system and front-end architecture across product teams.</span></div>
     <div class="row" data-reveal><span class="when">2018 — 2020</span><span class="what">Front-end lead <span>· Glartek</span></span><span class="why">The core industrial-IoT product, its component library and build pipeline.</span></div>
@@ -115,7 +116,7 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
 <div class="topic">
 <section class="contact" id="contact">
   <h2 data-reveal>Let's build <span>something.</span></h2>
-  <p data-reveal style="max-width:52ch">Fractional build work on bank-data and accounting pipelines: the architecture, the first working version, and the handover. Remote across EU timezones, based in Lisbon.</p>
+  <p data-reveal style="max-width:52ch">Open to fractional and contract build work, on whatever the product needs: the architecture, the first working version and the handover. Remote across EU timezones, based in Lisbon.</p>
   <a class="btn" href="mailto:gilneto8.work@gmail.com" data-reveal>gilneto8.work@gmail.com</a>
 </section>
 </div>

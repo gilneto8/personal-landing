@@ -586,3 +586,48 @@ const rio = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersect
 document.querySelectorAll('[data-reveal]').forEach(el => { const k = el.classList.contains('row') ? [...el.parentElement.querySelectorAll(':scope > .row')].indexOf(el) : 0; el.style.transitionDelay = k * 90 + 'ms'; rio.observe(el); });
 addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', scrollY > 20), { passive: true });
 
+
+/* ---------- hero doors: a small live picture of each product (speeds up on hover) ---------- */
+(() => {
+  const doors = [...document.querySelectorAll('canvas[data-door]')];
+  if (!doors.length) return;
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let sd = 3; const r1 = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+  // second brain: three small clusters of notes, drifting; every few seconds a query lights a short path
+  const notes = [[0.25, 0.4, P.blue], [0.62, 0.3, P.pink], [0.5, 0.72, P.teal]].flatMap(([cx, cy, col]) => Array.from({ length: 14 }, () => ({ x: cx + (r1() - 0.5) * 0.34, y: cy + (r1() - 0.5) * 0.46, col, p: r1() * 7 })));
+  const D = doors.map(cv => ({ cv, k: cv.dataset.door, t: 0, vis: false, hot: false }));
+  D.forEach(d => { const a = d.cv.closest('a'); a.addEventListener('mouseenter', () => d.hot = true); a.addEventListener('mouseleave', () => d.hot = false); new IntersectionObserver(([e]) => d.vis = e.isIntersecting).observe(d.cv); });
+  const size = d => { const r = d.cv.getBoundingClientRect(), dp = devicePixelRatio || 1; d.cv.width = r.width * dp; d.cv.height = r.height * dp; d.w = r.width; d.h = r.height; d.c = d.cv.getContext('2d'); d.c.setTransform(dp, 0, 0, dp, 0, 0); };
+  D.forEach(size); addEventListener('resize', () => D.forEach(size));
+  function brain(c, w, h, t) {
+    const pos = notes.map(n => [n.x * w + Math.sin(t * 0.6 + n.p) * 3, n.y * h + Math.cos(t * 0.5 + n.p) * 3]);
+    c.lineWidth = 0.6;
+    for (let i = 0; i < pos.length; i++) for (let j = i + 1; j < pos.length; j++) { const dd = Math.hypot(pos[i][0] - pos[j][0], pos[i][1] - pos[j][1]); if (dd < 26) { c.strokeStyle = rgba(notes[i].col, 0.25 * (1 - dd / 26)); c.beginPath(); c.moveTo(...pos[i]); c.lineTo(...pos[j]); c.stroke(); } }
+    notes.forEach((n, i) => { c.fillStyle = rgba(n.col, 0.55 + 0.35 * Math.sin(t + n.p) ** 2); c.beginPath(); c.arc(pos[i][0], pos[i][1], 1.8, 0, 7); c.fill(); });
+    // a query: three hops across clusters, drawn then faded
+    const q = Math.floor(t / 2.6), f = (t % 2.6) / 2.6, path = [q * 7 % 14, 14 + (q * 5 % 14), 28 + (q * 3 % 14)].map(i => pos[i]);
+    const k = Math.min(1, f / 0.5) * 2, fade = 1 - clamp((f - 0.7) / 0.3);
+    c.globalAlpha = fade; c.strokeStyle = P.bright; c.lineWidth = 1.3; c.beginPath(); c.moveTo(...path[0]);
+    for (let i = 1; i <= Math.floor(k) && i < 3; i++) c.lineTo(...path[i]);
+    if (k < 2) { const a = path[Math.floor(k)], b = path[Math.floor(k) + 1], u = k % 1; c.lineTo(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u); }
+    c.stroke(); if (k >= 2) { c.fillStyle = P.pink; c.beginPath(); c.arc(...path[2], 3.5, 0, 7); c.fill(); }
+    c.globalAlpha = 1; c.lineWidth = 1;
+  }
+  // qaravel: the chapter chart in miniature; grey from outside, teal inside, dots flowing through three Q stations
+  function qaravel(c, w, h, t) {
+    const QO = [w * 0.34, h * 0.3], QR = [w * 0.6, h * 0.55], QA = [w * 0.88, h * 0.78];
+    const routes = [[[4, QO[1]], QO, '#8a97b8'], [[4, h * 0.82], [QR[0] - 26, h * 0.82], QR, '#8a97b8'], [QO, [QR[0] - 18, QO[1]], QR, P.teal], [QR, [QA[0] - 22, QR[1] + 6], QA, P.teal]];
+    routes.forEach(rt => { const pts = rt.slice(0, -1), col = rt[rt.length - 1]; c.strokeStyle = col === P.teal ? P.teal : rgba(P.dim, 0.5); c.lineWidth = 2; c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(...p) : c.moveTo(...p)); c.stroke();
+      const seg = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])), tot = seg.reduce((a, b) => a + b, 0); let d = ((t * 0.5) % 1) * tot, i = 0; while (i < seg.length - 1 && d > seg[i]) { d -= seg[i]; i++; } const a = pts[i], b = pts[i + 1], u = d / seg[i];
+      c.fillStyle = col === P.teal ? P.teal : P.text; c.beginPath(); c.arc(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, 2.6, 0, 7); c.fill(); });
+    c.lineWidth = 1;
+    [QO, QR, QA].forEach(([x, y]) => { c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, 11, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.2); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 1.8; c.stroke(); c.lineWidth = 1; sans(c, 11, 600); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', x, y + 0.5); c.textBaseline = 'alphabetic'; c.textAlign = 'left'; });
+    sparkle(c, QR[0] + 11, QR[1] - 11, 3.6); sparkle(c, QA[0] + 11, QA[1] - 11, 3.6);
+  }
+  let last = performance.now();
+  (function loop(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    D.forEach(d => { if (!d.vis && d.t) return; d.t += RM ? 0 : dt * (d.hot ? 2.2 : 1); d.c.clearRect(0, 0, d.w, d.h); (d.k === 'brain' ? brain : qaravel)(d.c, d.w, d.h, RM ? 2 : d.t); });
+    requestAnimationFrame(loop);
+  })(last);
+})();

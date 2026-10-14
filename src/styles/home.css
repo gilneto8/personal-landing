@@ -48,12 +48,18 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .hero h1 span { color: var(--dim); }
 .hero .copy p { max-width: 50ch; font-size: 18px; }
 .doors { display: grid; gap: 18px; }
-.doors a { position: relative; isolation: isolate; overflow: hidden; display: grid; gap: 8px; padding: 28px 30px; border: 1px solid color-mix(in srgb, var(--cc) 40%, var(--line)); border-radius: 18px; transition: border-color .4s, transform .4s var(--ease); }
-.doors a::before { content: ''; position: absolute; z-index: -1; inset: -40% 30% -40% -30%; background: radial-gradient(closest-side, color-mix(in srgb, var(--cc) 18%, transparent), transparent); }
+.doors small { font: 12px 'Geist Mono', monospace; color: var(--dim); letter-spacing: .06em; text-transform: uppercase; }
+.doors a { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) clamp(120px, 34%, 220px); gap: 20px; align-items: center; padding: 26px 26px 26px 30px; border: 1px solid color-mix(in srgb, var(--cc) 40%, var(--line)); border-radius: 18px; transition: border-color .4s, transform .5s var(--ease), box-shadow .5s var(--ease); animation: door-in .9s var(--ease) both; }
+.doors a + a { animation-delay: .15s; }
+.doors a > div { display: grid; gap: 8px; }
+.doors a::before { content: ''; position: absolute; z-index: -1; inset: -40% 30% -40% -30%; background: radial-gradient(closest-side, color-mix(in srgb, var(--cc) 18%, transparent), transparent); transition: opacity .5s; opacity: .8; }
 .doors a span { justify-self: start; color: var(--cc); font-size: 14px; border: 1px solid color-mix(in srgb, var(--cc) 55%, transparent); border-radius: 999px; padding: 2px 11px; }
-.doors a b { font-weight: 500; color: var(--bright); font-size: clamp(1.15rem, 1.6vw, 1.5rem); line-height: 1.25; letter-spacing: -0.015em; max-width: 26ch; }
-.doors a i { position: absolute; right: 26px; bottom: 22px; font-style: normal; color: var(--cc); font-size: 22px; transition: transform .4s var(--ease); }
-.doors a:hover { border-color: var(--cc); transform: translateY(-2px); } .doors a:hover i { transform: translateX(4px); }
+.doors a b { font-weight: 500; color: var(--bright); font-size: clamp(1.1rem, 1.5vw, 1.45rem); line-height: 1.25; letter-spacing: -0.015em; max-width: 24ch; }
+.doors canvas { width: 100%; height: 96px; display: block; }
+.doors a:hover { border-color: var(--cc); transform: translateY(-3px); box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--cc) 60%, transparent); }
+.doors a:hover::before { opacity: 1; }
+@keyframes door-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .doors a { animation: none; } }
 /* chapter title: the title on the left, the chapter's own picture beside it */
 .band.chapter { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: clamp(32px, 4vw, 72px); align-items: center; padding-block: clamp(24px, 6vh, 72px); }
 .band.chapter .copy { align-content: center; gap: 28px; }
@@ -161,7 +167,7 @@ footer { padding: 28px var(--pad) 40px; border-top: 1px solid var(--line); displ
   .trace-copy, .trace { grid-template-columns: 1fr; }
   .trace .note { display: none; }
   .show { grid-template-columns: 1fr; }
-  .tools { grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; padding: 8px; }
+  .tools { gap: 8px; padding: 8px; }
   .tools li + li::before, .tools li + li::after { display: none; }
   .tools button[data-tool] { padding: 12px 40px 12px 12px; } .tools button span, .tools button em { display: none; }
   .tools .hold { top: 8px; right: 8px; margin-top: 0; width: 26px; height: 26px; }
