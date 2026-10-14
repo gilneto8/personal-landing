@@ -72,6 +72,8 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .tools button { position: relative; overflow: hidden; width: 100%; display: grid; gap: 4px; text-align: left; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; cursor: pointer; transition: border-color .4s, background .4s; }
 .tools button b { color: var(--bright); font-weight: 500; font-size: 18px; }
 .tools button span { font-size: 14px; color: var(--dim); }
+.tools button b { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tools button em { font: 400 11.5px 'Geist Mono', monospace; font-style: normal; color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); border-radius: 999px; padding: 1px 8px; letter-spacing: 0; }
 .tools button.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); }
 .tools button.done { border-color: color-mix(in srgb, var(--c) 45%, var(--line)); }
 .tools button::after { content: ''; position: absolute; right: 20px; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%; background: var(--c); opacity: 0; transform: scale(.4); transition: opacity .4s, transform .4s var(--ease); }
@@ -83,7 +85,7 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .pane.on { opacity: 1; visibility: visible; transition: opacity .7s var(--ease) .15s; }
 .pane .copy { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); column-gap: 48px; align-content: start; }
 .pane .copy > * { grid-column: 1; }
-.pane .copy ul { grid-column: 2; grid-row: 1 / span 3; align-self: end; }
+.pane .copy ul { grid-column: 2; grid-row: 1 / span 2; align-self: end; }
 .pane .copy h2 { font-size: clamp(1.5rem, 2.2vw, 2.2rem); max-width: 24ch; }
 .pane .copy p { max-width: 52ch; }
 .band { padding-bottom: clamp(8px, 2vh, 24px); display: grid; gap: 14px; }
@@ -135,7 +137,7 @@ footer { padding: 28px var(--pad) 40px; border-top: 1px solid var(--line); displ
   .show { grid-template-columns: 1fr; }
   .tools { grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; padding: 8px; }
   .tools li + li::before, .tools li + li::after { display: none; }
-  .tools button { padding: 12px; } .tools button span, .tools button::after { display: none; }
+  .tools button { padding: 12px; } .tools button span, .tools button em, .tools button::after { display: none; }
   .pane .copy { grid-template-columns: 1fr; }
   .pane .copy ul { grid-column: 1; grid-row: auto; }
 }
