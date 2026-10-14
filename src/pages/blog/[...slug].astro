@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
+import Subscribe from "../../components/Subscribe.astro";
 import "../../styles/global.css";
 
 export async function getStaticPaths() {
@@ -92,30 +93,25 @@ const blogPostingJsonLd = {
         <Content />
       </div>
     </article>
-
-    <footer
-      class="mt-20 pt-8 border-t border-[var(--border-muted)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
-    >
+    <Subscribe variant="post" />
+    <footer class="post-cta">
       <div>
-        <p
-          class="text-xs font-mono uppercase tracking-wider text-[var(--accent-primary)] mb-1"
-        >
-          Available for fractional build: bank-data & accounting pipelines
-        </p>
-        <p class="text-[var(--text-secondary)]">
-          Fractional build engagements: bank-data and accounting pipelines.
-          Remote-first, EU timezones.
-        </p>
+        <span class="post-cta-kicker">Open to fractional and contract build work</span>
+        <p>The architecture, the first working version and the handover. Remote across EU timezones, based in Lisbon.</p>
       </div>
-      <a
-        href="mailto:gilneto8.work@gmail.com"
-        class="bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-3 font-mono font-medium uppercase tracking-wider text-sm rounded-full transition-all border border-[var(--accent-primary)]"
-        >Email Gil →</a
-      >
+      <a class="post-cta-btn" href="mailto:gilneto8.work@gmail.com">gilneto8.work@gmail.com</a>
     </footer>
   </main>
 </Layout>
 
+<style>
+  .post-cta { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; }
+  .post-cta-kicker { font-size: 14px; color: var(--pink); display: flex; align-items: center; gap: 8px; }
+  .post-cta-kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .post-cta p { margin: 8px 0 0; color: var(--text); max-width: 52ch; }
+  .post-cta-btn { border: 1px solid var(--pink); color: var(--bright); border-radius: 999px; padding: 14px 26px; font-size: 16px; transition: background .3s, color .3s; }
+  .post-cta-btn:hover { background: var(--pink); color: var(--bg); }
+</style>
 <style is:global>
   .prose-content {
     font-size: 1.0625rem;

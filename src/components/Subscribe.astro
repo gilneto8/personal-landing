@@ -1,0 +1,66 @@
+---
+import { SUBSCRIBE_ACTION } from "../config/subscribe";
+interface Props { variant?: "home" | "post" }
+const { variant = "home" } = Astro.props;
+---
+{SUBSCRIBE_ACTION && (
+  <form class:list={["sub", variant]} action={SUBSCRIBE_ACTION} method="POST" data-sub>
+    <span class="sub-kicker">New posts, by email</span>
+    <p class="sub-lede">One email when a post goes out. What moved in the world, and what I'm building about it.</p>
+    <div class="sub-row">
+      <label class="sr" for={`sub-email-${variant}`}>Email</label>
+      <input id={`sub-email-${variant}`} type="email" name="EMAIL" required autocomplete="email" placeholder="you@company.com" />
+      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="sub-trap" />
+      <input type="hidden" name="locale" value="en" />
+      <button type="submit">Subscribe</button>
+    </div>
+    <p class="sub-note" data-sub-note>You'll get one email to confirm. Unsubscribe from any email.</p>
+  </form>
+)}
+
+<script>
+  document.querySelectorAll<HTMLFormElement>("form[data-sub]").forEach((f) => {
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const note = f.querySelector<HTMLElement>("[data-sub-note]")!;
+      const btn = f.querySelector("button")!;
+      btn.disabled = true;
+      try {
+        // the provider answers cross-origin without CORS headers, so the response is opaque by design
+        await fetch(f.action, { method: "POST", body: new FormData(f), mode: "no-cors" });
+        f.classList.add("done");
+        note.textContent = "Check your inbox and confirm. That's the only step left.";
+      } catch {
+        note.textContent = "That didn't go through. Try again, or email gilneto8.work@gmail.com.";
+        btn.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .sub { display: grid; gap: 14px; max-width: 560px; }
+  .sub-kicker { font-size: 14px; color: var(--teal); display: flex; align-items: center; gap: 8px; }
+  .sub-kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .sub-lede { color: var(--text); margin: 0; }
+  .sub-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .sub input[type="email"] {
+    flex: 1 1 240px; min-width: 0; background: var(--panel); border: 1px solid var(--line); color: var(--bright);
+    border-radius: 999px; padding: 13px 20px; font: inherit; font-size: 16px; transition: border-color .3s;
+  }
+  .sub input[type="email"]::placeholder { color: var(--dim); }
+  .sub input[type="email"]:focus { outline: none; border-color: var(--teal); }
+  .sub button {
+    border: 1px solid var(--teal); color: var(--bright); background: transparent; border-radius: 999px;
+    padding: 13px 24px; font: inherit; font-size: 16px; cursor: pointer; transition: background .3s, color .3s;
+  }
+  .sub button:hover, .sub button:focus-visible { background: var(--teal); color: var(--bg); outline: none; }
+  .sub button:disabled { opacity: .5; cursor: default; }
+  .sub-note { font-size: 14px; color: var(--dim); margin: 0; }
+  .sub.done .sub-row { display: none; }
+  .sub.done .sub-note { color: var(--teal); }
+  .sub-trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sub.post { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); max-width: none; }
+  .sub.home { margin-top: 12px; }
+</style>

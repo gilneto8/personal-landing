@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import Subscribe from "../components/Subscribe.astro";
 import "../styles/global.css";
 import "../styles/home.css";
 
@@ -109,6 +110,7 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
       </a>
     ))}
   </div>
+  <Subscribe variant="home" />
 </section>
 
 </div>
