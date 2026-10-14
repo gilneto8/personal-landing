@@ -11,6 +11,8 @@ const mono = (c, px = 12) => c.font = `400 ${px}px Geist Mono, monospace`;
 const sans = (c, px = 14, wt = 500) => c.font = `${wt} ${px}px Geist, system-ui`;
 const rr = (c, x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
 const fit = (c, s, max) => { if (c.measureText(s).width <= max) return s; while (s.length > 1 && c.measureText(s + '…').width > max) s = s.slice(0, -1); return s.trimEnd() + '…'; };
+/* the AI mark: a small four-point sparkle, always in lavender */
+const sparkle = (c, cx, cy, r, col = P.lav) => { c.fillStyle = col; c.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 - Math.PI / 2, q = i % 2 ? r * 0.32 : r; c.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q); } c.closePath(); c.fill(); };
 const fmt = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 let rng = 7; const rand = () => (rng = (rng * 16807) % 2147483647) / 2147483647;
 const gauss = () => { let u = 0, v = 0; while (!u) u = rand(); while (!v) v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
@@ -315,11 +317,18 @@ const CLIENTS = [
 ];
 const NEWROWS = [['06/10', 'TPA — vendas dia', '', '412,30'], ['06/10', 'Fornecedor café', '186,00', ''], ['07/10', 'EDP', '94,12', ''], ['07/10', 'TPA — vendas dia', '', '388,90'], ['07/10', 'Renda loja', '900,00', '']];
 function kelaro(c, w, h, e) {
-  const t = e % 13, N = w < 560;
+  // first 2.4 s: AI sets up each bank link (v2). Then the 06:00 sync runs with no AI at all.
+  const T = e % 15.4, setup = T < 2.4, t = T - 2.4, N = w < 560;
   // schedule clock
   const lw = N ? w : w * 0.44, ch = N ? 38 : 44, gap = N ? 44 : 52;
-  sans(c, 12); c.fillStyle = P.dim; c.textAlign = 'left'; c.fillText('Scheduled sync', 0, 18);
-  mono(c, 12); c.fillStyle = t > 0.8 ? P.bright : P.dim; c.fillText('every day · 06:00', 0, 38);
+  if (setup) {
+    sans(c, 12); c.fillStyle = P.lav; c.textAlign = 'left'; c.fillText('Connecting the banks', 0, 18);
+    sparkle(c, 6, 34, 6); mono(c, 12); c.fillStyle = P.lav; c.fillText('AI sets up each link · v2', 18, 38);
+  } else {
+    sans(c, 12); c.fillStyle = P.dim; c.textAlign = 'left'; c.fillText('Scheduled sync', 0, 18);
+    mono(c, 12); c.fillStyle = t > 0.8 ? P.bright : P.dim; c.fillText('every day · 06:00', 0, 38);
+    if (!N) { mono(c, 10); c.fillStyle = P.teal; c.textAlign = 'right'; c.fillText('no AI from here on', lw - 30, 34); c.textAlign = 'left'; }
+  }
   const pulse = t > 0.8 && t < 1.6; if (pulse) { c.fillStyle = rgba(P.pink, 0.2 * (1.6 - t) / 0.8 * 2); c.beginPath(); c.arc(lw - 12, 30, 14 + (t - 0.8) * 20, 0, 7); c.fill(); }
   c.fillStyle = t > 0.8 ? P.pink : P.line; c.beginPath(); c.arc(lw - 12, 30, 6, 0, 7); c.fill();
   // workspaces with their bank accounts
@@ -328,16 +337,17 @@ function kelaro(c, w, h, e) {
     sans(c, 14); c.fillStyle = P.bright; c.textAlign = 'left'; c.fillText(cl.n, 0, y + 14);
     y += 26;
     cl.acc.forEach(([an, st, n]) => {
-      const start = 1.2 + idx * 0.7, k = clamp((t - start) / 1.1), done = k >= 1, ex = st === 'expired';
+      const start = 1.2 + idx * 0.7, k = clamp((t - start) / 1.1), done = k >= 1, ex = st === 'expired', lk = clamp((T - 0.3 - idx * 0.35) / 0.5);
       c.strokeStyle = P.line; rr(c, 0, y, lw, ch, 8); c.stroke();
       if (ci === 1 && t > 4.5) { c.fillStyle = rgba(P.pink, 0.05); c.fill(); }
-      const dot = ex ? P.amber : done ? P.teal : k > 0 ? P.blue : P.dim;
+      const dot = setup ? (lk > 0 ? P.lav : P.dim) : ex ? P.amber : done ? P.teal : k > 0 ? P.blue : P.dim;
       c.fillStyle = dot; c.beginPath(); c.arc(16, y + ch / 2, 4, 0, 7); c.fill();
       sans(c, 13, 400); c.fillStyle = P.text; c.fillText(an, 30, y + (N ? 16 : 19));
       mono(c, 10); c.fillStyle = P.dim;
       let status = ex ? 'consent expired · skipped, flagged' : k <= 0 ? 'since 05/10 06:00' : !done ? 'fetching…' : `+${n} new · ties out ✓`;
       if (ex && k <= 0) status = 'since 05/10 06:00';
-      c.fillStyle = ex && k > 0 ? P.amber : done ? P.teal : P.dim; c.fillText(status, 30, y + (N ? 30 : 35));
+      if (setup) status = lk <= 0 ? 'not connected yet' : lk < 1 ? 'AI linking…' : 'linked · ready';
+      c.fillStyle = setup ? (lk > 0 ? P.lav : P.dim) : ex && k > 0 ? P.amber : done ? P.teal : P.dim; c.fillText(status, 30, y + (N ? 30 : 35));
       if (k > 0 && !done && !ex) { c.fillStyle = rgba(P.blue, 0.8); c.fillRect(lw - 70, y + 20, 56 * k, 3); c.fillStyle = P.line; c.fillRect(lw - 70 + 56 * k, y + 20, 56 * (1 - k), 3); }
       if (done && !ex) total += n;
       y += gap; idx++;
@@ -366,7 +376,7 @@ function kelaro(c, w, h, e) {
     sans(c, 12); c.fillStyle = P.teal; c.textAlign = 'left'; c.fillText(N ? '+5 rows · ties to the bank ✓' : '+5 rows appended · balance ties to the bank ✓', sx + 8, fy + (N ? 17 : 20)); c.globalAlpha = 1;
     mono(c, 10); c.fillStyle = P.dim; c.fillText(N ? 'next sync from 07/10 06:00' : 'next sync from 07/10 06:00 · nothing fetched twice', sx, sy + rh * 13 + 22);
   }
-  setCap(t < 0.8 ? '<b>06:00</b> scheduled sync' : t < 3.4 ? '<b>syncing</b> each account from where it stopped' : t < 6.2 ? '<b>appending</b> new movements to the client\'s own sheet' : t < 9 ? '<b>tied out</b>. One expired consent skipped and flagged, nothing guessed.' : `<b>${total || 52} new movements</b> across three clients, before the accountant opens the laptop`);
+  setCap(setup ? '<b>connecting</b>: AI sets up the link between each bank and Qoriander, once (v2)' : t < 0.8 ? '<b>06:00</b> scheduled sync, and no AI from here on' : t < 3.4 ? '<b>syncing</b> each account from where it stopped' : t < 6.2 ? '<b>appending</b> new movements to the client\'s own sheet' : t < 9 ? '<b>tied out</b>. One expired consent skipped and flagged, nothing guessed.' : `<b>${total || 52} new movements</b> across three clients, before the accountant opens the laptop`);
 }
 
 /* ---------- Cashew: scenarios. A plan drawn over real accounts, compared to reality, saved by a human ---------- */
@@ -394,7 +404,7 @@ function cashew(c, w, h, e) {
     const k = lev(i), v = b + (s - b) * k, engaged = k > 0.02;
     c.strokeStyle = engaged ? rgba(P.amber, 0.9) : P.line; rr(c, 0, y, lw, 74, 8); c.stroke();
     sans(c, 13); c.fillStyle = P.text; c.fillText(n, 14, y + 22);
-    if (engaged) { mono(c, 9); const bw = c.measureText('AGENT SET').width + 12; c.fillStyle = rgba(P.amber, 0.15); rr(c, lw - bw - 12, y + 10, bw, 16, 8); c.fill(); c.fillStyle = P.amber; c.fillText('AGENT SET', lw - bw - 6, y + 22); }
+    if (engaged) { mono(c, 9); const bw = c.measureText('AGENT SET').width + 24; c.fillStyle = rgba(P.lav, 0.15); rr(c, lw - bw - 12, y + 10, bw, 16, 8); c.fill(); sparkle(c, lw - bw - 3, y + 18, 4); c.fillStyle = P.lav; c.fillText('AGENT SET', lw - bw + 6, y + 22); }
     const sx = 14, sw = lw - 90; c.fillStyle = P.line; c.fillRect(sx, y + 40, sw, 3); c.fillStyle = col; c.fillRect(sx, y + 40, sw * v / 50, 3);
     if (engaged) { c.strokeStyle = rgba(col, 0.5); c.setLineDash([2, 3]); c.beginPath(); c.arc(sx + sw * b / 50, y + 41.5, 7, 0, 7); c.stroke(); c.setLineDash([]); }
     c.fillStyle = P.bg; c.beginPath(); c.arc(sx + sw * v / 50, y + 41.5, 7, 0, 7); c.fill(); c.strokeStyle = col; c.lineWidth = 2; c.stroke(); c.lineWidth = 1;
@@ -405,7 +415,7 @@ function cashew(c, w, h, e) {
   // the agent's read, which argues back
   const readY = y + 6;
   c.strokeStyle = P.line; rr(c, 0, readY, lw, 116, 8); c.stroke();
-  mono(c, 10); c.fillStyle = P.lav; c.fillText('AGENT READ', 14, readY + 20);
+  sparkle(c, 19, readY + 16, 5); mono(c, 10); c.fillStyle = P.lav; c.fillText('AGENT READ', 28, readY + 20);
   const read = !onPlan ? ['Current state. No lever engaged.', 'This is reality: nothing here', 'has been changed by any plan.']
     : t < 2.6 ? ['€200 is only the ticket. With', 'travel and on-site spend, the', 'real total is about €480.']
     : resolve <= 0 ? ['On the current path you reach', '€280 by July. Short by €200.', 'Start with delivery: least pain.']
@@ -433,7 +443,7 @@ function cashew(c, w, h, e) {
   // actions
   const ay = h - 44;
   sans(c, 13); let ax = 0;
-  (N ? [['Agent Resolve', t > 3.8 && t < 4.6 && onPlan]] : [['Ask Agent', false], ['Agent Resolve', t > 3.8 && t < 4.6 && onPlan], ['Reset', false]]).forEach(([s, hot]) => { const bw2 = c.measureText(s).width + 26; c.fillStyle = hot ? rgba(P.lav, 0.25) : 'transparent'; rr(c, ax, ay, bw2, 32, 16); c.fill(); c.strokeStyle = hot ? P.lav : P.line; c.stroke(); c.fillStyle = P.text; c.fillText(s, ax + 13, ay + 21); BTN[s] = [ax + bw2 / 2, ay + 17]; ax += bw2 + 8; });
+  (N ? [['Agent Resolve', t > 3.8 && t < 4.6 && onPlan]] : [['Ask Agent', false], ['Agent Resolve', t > 3.8 && t < 4.6 && onPlan], ['Reset', false]]).forEach(([s, hot]) => { const ai = s !== 'Reset', bw2 = c.measureText(s).width + 26 + (ai ? 16 : 0); c.fillStyle = hot ? rgba(P.lav, 0.25) : ai ? rgba(P.lav, 0.08) : 'transparent'; rr(c, ax, ay, bw2, 32, 16); c.fill(); c.strokeStyle = hot ? P.lav : ai ? rgba(P.lav, 0.6) : P.line; c.stroke(); if (ai) sparkle(c, ax + 16, ay + 16, 5); c.fillStyle = P.text; c.fillText(s, ax + 13 + (ai ? 16 : 0), ay + 21); BTN[s] = [ax + bw2 / 2, ay + 17]; ax += bw2 + 8; });
   const sv = 'Save Scenario', bw3 = c.measureText(sv).width + 26, sxp = w - bw3, press = t > 8.8 && t < 9.4;
   c.globalAlpha = diverged ? 1 : 0.35; c.fillStyle = press || saved ? P.amber : rgba(P.amber, 0.12); rr(c, sxp, ay, bw3, 32, 16); c.fill(); c.strokeStyle = P.amber; c.stroke();
   c.fillStyle = press || saved ? P.bg : P.amber; c.fillText(saved && onPlan ? 'Saved ✓' : sv, sxp + 13, ay + 21); c.globalAlpha = 1;
@@ -450,9 +460,53 @@ function cashew(c, w, h, e) {
   setCap(t < 1 ? '<b>Current state</b>: reality is the baseline' : t < 2.6 ? '<b>new scenario</b>: the agent corrects the goal before planning' : t < 4.2 ? '<b>agent read</b>: on the current path, it doesn\'t fit' : t < 7 ? '<b>Agent Resolve</b>: levers move, each saying what it releases' : t < 8.8 ? '<b>the plan, drawn over reality</b>. Dashed = released by levers.' : t < 11.2 ? '<b>I press save</b>. The agent never does.' : t < 13.6 ? '<b>back to Current state</b>: nothing was mutated' : '<b>Festival in July</b>, saved beside reality');
 }
 
+/* ---------- Qedable, at a glance: where bank data comes from, the three Qedable parts, where it goes ----------
+   Qedable's own parts are teal circles marked Q; everything outside Qedable is a neutral icon on a neutral line.
+   The split happens inside Qoriander. A sparkle marks the two parts where AI enters; the showcase below explains each. */
+function connect(c, w, h, e) {
+  const R = 34, r = 24, top = 70, bot = h - 90, Q = [w * 0.52, (top + bot) / 2], d = 0.7071;
+  const QO = [w * 0.3, top], QA = [w - 60, bot], ST = [34, top], BK = [34, bot], SH = [w - 34, top];
+  const E1 = [Q[0] - R * d, Q[1] - R * d], E2 = [Q[0] - R * d, Q[1] + R * d], E3 = [Q[0] + R * d, Q[1] - R * d], E4 = [Q[0] + R * d, Q[1] + R * d];
+  const ext = rgba(P.dim, 0.55), own = P.teal;
+  const routes = [
+    { col: ext, pts: [[ST[0] + 22, top], [QO[0] - r, top]] },
+    { col: own, pts: [[QO[0] + r, top], [E1[0] - (E1[1] - top), top], E1] },
+    { col: ext, pts: [[BK[0] + 22, bot], [E2[0] - (bot - E2[1]), bot], E2] },
+    { col: ext, dash: true, pts: [E3, [E3[0] + (E3[1] - top), top], [SH[0] - 22, top]] },
+    { col: own, pts: [E4, [E4[0] + (bot - E4[1]), bot], [QA[0] - r, bot]] },
+  ];
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  routes.forEach(({ col, dash, pts }) => { c.strokeStyle = col; c.lineWidth = 3; if (dash) c.setLineDash([9, 7]); c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.stroke(); c.setLineDash([]); });
+  c.lineWidth = 1;
+  // small solid dots travelling the routes, data on the move
+  if (!REDUCE) routes.forEach(({ col, pts }, i) => {
+    const seg = pts.slice(1).map((p, k) => Math.hypot(p[0] - pts[k][0], p[1] - pts[k][1])), tot = seg.reduce((a, b) => a + b, 0);
+    for (let n = 0; n < 2; n++) { let dd = ((e * 0.22 + i * 0.19 + n / 2) % 1) * tot, k = 0; while (k < seg.length - 1 && dd > seg[k]) { dd -= seg[k]; k++; } const a = pts[k], b = pts[k + 1], u = dd / seg[k];
+      c.fillStyle = col === own ? P.teal : P.text; c.beginPath(); c.arc(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, 3.4, 0, 7); c.fill(); }
+  });
+  // outside Qedable: neutral icons
+  const ink = P.text, lab = (x, y, s, al = 'center') => { sans(c, 14); c.fillStyle = P.text; c.textAlign = al; c.fillText(s, x, y); c.textAlign = 'left'; };
+  c.strokeStyle = ink; c.lineWidth = 1.6;
+  { const [x, y] = ST; c.beginPath(); c.moveTo(x - 10, y - 14); c.lineTo(x + 5, y - 14); c.lineTo(x + 11, y - 8); c.lineTo(x + 11, y + 14); c.lineTo(x - 10, y + 14); c.closePath(); c.stroke(); for (let i = 0; i < 3; i++) { c.beginPath(); c.moveTo(x - 5, y - 3 + i * 6); c.lineTo(x + 6, y - 3 + i * 6); c.stroke(); } }
+  { const [x, y] = BK; c.beginPath(); c.moveTo(x - 14, y - 6); c.lineTo(x, y - 15); c.lineTo(x + 14, y - 6); c.closePath(); c.stroke(); for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(x - 10 + i * 6.7, y - 2); c.lineTo(x - 10 + i * 6.7, y + 10); c.stroke(); } c.beginPath(); c.moveTo(x - 15, y + 14); c.lineTo(x + 15, y + 14); c.stroke(); }
+  { const [x, y] = SH; c.beginPath(); c.roundRect(x - 14, y - 12, 28, 24, 3); c.stroke(); for (let i = 1; i < 3; i++) { c.beginPath(); c.moveTo(x - 14, y - 12 + i * 8); c.lineTo(x + 14, y - 12 + i * 8); c.stroke(); } c.beginPath(); c.moveTo(x - 4, y - 12); c.lineTo(x - 4, y + 12); c.stroke(); }
+  c.lineWidth = 1;
+  lab(ST[0] - 12, top - 28, 'Bank statement', 'left'); lab(BK[0] - 14, bot + 40, 'Your bank', 'left'); lab(SH[0] + 14, top - 28, 'Spreadsheet', 'right');
+  // inside Qedable: teal circles marked Q
+  const station = ([x, y], rad, name, sub) => {
+    c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, rad, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.18); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 2.5; c.stroke(); c.lineWidth = 1;
+    sans(c, rad * 0.95, 500); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', x, y + 1); c.textBaseline = 'alphabetic';
+    sans(c, 14); c.fillText(name, x, y + rad + 22); if (sub) { sans(c, 12, 400); c.fillStyle = P.dim; c.fillText(sub, x, y + rad + 38); } c.textAlign = 'left';
+  };
+  station(QO, r, 'Qocoa', 'checks every total'); station(Q, R, 'Qoriander', 'keeps the books'); station(QA, r, 'Qashew');
+  // where AI enters: a sparkle badge on Qoriander and Qashew
+  const badge = (x, y) => { c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, 11, 0, 7); c.fill(); c.strokeStyle = P.lav; c.lineWidth = 1.4; c.stroke(); c.lineWidth = 1; sparkle(c, x, y, 6.5); };
+  badge(Q[0] + R * d + 4, Q[1] - R * d - 4); badge(QA[0] + r * d + 4, QA[1] - r * d - 4);
+}
+
 function setCopyAll() { document.querySelectorAll('[data-copy]').forEach(el => { const k = COPY[el.dataset.copy]; el.innerHTML = `<h2>${k.h}</h2><p>${k.p}</p><ul>${k.li.map(l => `<li><b>${l[0]}</b> · ${l[1]}</li>`).join('')}</ul>`; }); }
 setCopyAll();
-const FN = { graph: graphScene, koa, kelaro, cashew };
+const FN = { graph: graphScene, connect, koa, kelaro, cashew };
 const scenes = [...document.querySelectorAll('[data-scene]')].map(el => ({ el, k: el.dataset.scene, cv: el.querySelector('canvas'), cap: el.querySelector('.cap'), vis: false, t0: null }));
 /* The graph keeps a near-square world: its height follows the column width, capped by the viewport so it never outgrows the screen. */
 const graphH = w => Math.round(Math.max(380, Math.min(w * 0.85, innerHeight * 0.84, 1000)));
@@ -464,8 +518,8 @@ const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* Qocoa and Qoriander play their whole loop in 10 s (Qocoa: both runs, tie-out and refusal); Qashew, the one people interact with, gets 15 s. Loop lengths: koa 20 s, kelaro 13 s, cashew 17 s. */
-const SPEED = { koa: 2, kelaro: 1.3, cashew: 17 / 15 };
+/* Qocoa and Qoriander play their whole loop in 10 s (Qocoa: both runs, tie-out and refusal); Qashew, the one people interact with, gets 15 s. Loop lengths: koa 20 s, kelaro 15.4 s (setup beat + sync), cashew 17 s. */
+const SPEED = { koa: 2, kelaro: 1.54, cashew: 17 / 15 };
 
 /* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
    Each tool stays up for one full loop of its scene (10 s, see SPEED), then the path lights the link to the next one, like a hop in the hero graph.
