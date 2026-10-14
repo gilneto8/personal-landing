@@ -437,9 +437,9 @@ function cashew(c, w, h, e) {
   const sv = 'Save Scenario', bw3 = c.measureText(sv).width + 26, sxp = w - bw3, press = t > 8.8 && t < 9.4;
   c.globalAlpha = diverged ? 1 : 0.35; c.fillStyle = press || saved ? P.amber : rgba(P.amber, 0.12); rr(c, sxp, ay, bw3, 32, 16); c.fill(); c.strokeStyle = P.amber; c.stroke();
   c.fillStyle = press || saved ? P.bg : P.amber; c.fillText(saved && onPlan ? 'Saved ✓' : sv, sxp + 13, ay + 21); c.globalAlpha = 1;
-  // the pointer is on screen the whole loop: it clicks the scenario tab, Agent Resolve, Save, then flips back to reality and to the plan again
-  const rest = [gx + bgw * 0.55, gy + gh * 0.55], AR = BTN['Agent Resolve'], SV = [sxp + bw3 / 2, ay + 17];
-  const KF = [[0, ...rest], [0.95, ...TAB[1]], [2.3, gx + bgw * 0.45, base - 480 * scale + 14], [3.95, ...AR], [5.6, lw * 0.55, (N ? 82 : 62) + 58], [7.2, ...rest], [8.95, ...SV], [11.1, ...TAB[0]], [13.5, ...TAB[1]], [15.6, ...rest], [17, ...rest]];
+  // the pointer is on screen the whole loop and only travels to what the user clicks: the scenario tab, Agent Resolve, Save, back to reality, the plan again
+  const AR = BTN['Agent Resolve'], SV = [sxp + bw3 / 2, ay + 17];
+  const KF = [[0, ...TAB[1]], [0.95, ...TAB[1]], [3.95, ...AR], [8.95, ...SV], [11.1, ...TAB[0]], [13.5, ...TAB[1]], [17, ...TAB[1]]];
   let k = 1; while (k < KF.length - 1 && KF[k][0] < t) k++;
   const A = KF[k - 1], B = KF[k], st = Math.max(A[0], B[0] - 0.8), u = ease(clamp((t - st) / (B[0] - st || 1)));
   const mx = A[1] + (B[1] - A[1]) * u, my = A[2] + (B[2] - A[2]) * u;
@@ -464,15 +464,15 @@ const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* Each finance scene plays its whole loop in 10 s (Qocoa: both runs, tie-out and refusal). Loop lengths: koa 20 s, kelaro 13 s, cashew 17 s. */
-const SPEED = { koa: 2, kelaro: 1.3, cashew: 1.7 };
+/* Qocoa and Qoriander play their whole loop in 10 s (Qocoa: both runs, tie-out and refusal); Qashew, the one people interact with, gets 15 s. Loop lengths: koa 20 s, kelaro 13 s, cashew 17 s. */
+const SPEED = { koa: 2, kelaro: 1.3, cashew: 17 / 15 };
 
 /* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
    Each tool stays up for one full loop of its scene (10 s, see SPEED), then the path lights the link to the next one, like a hop in the hero graph.
    The timer only runs while the showcase is on screen. A click jumps to that tool and restarts its loop. */
 const show = document.querySelector('.show');
 const tick = show ? (() => {
-  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 10, kelaro: 10, cashew: 10 };
+  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 10, kelaro: 10, cashew: 15 };
   let cur = -1, spent = 0, inView = false, last = performance.now();
   const go = i => {
     cur = i; spent = 0;
