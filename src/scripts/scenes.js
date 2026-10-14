@@ -13,6 +13,8 @@ const rr = (c, x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
 const fit = (c, s, max) => { if (c.measureText(s).width <= max) return s; while (s.length > 1 && c.measureText(s + '…').width > max) s = s.slice(0, -1); return s.trimEnd() + '…'; };
 /* the AI mark: a small four-point sparkle, always in lavender */
 const sparkle = (c, cx, cy, r, col = P.lav) => { c.fillStyle = col; c.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 - Math.PI / 2, q = i % 2 ? r * 0.32 : r; c.lineTo(cx + Math.cos(a) * q, cy + Math.sin(a) * q); } c.closePath(); c.fill(); };
+/* a mouse pointer, tip at (x, y) */
+const pointer = (c, x, y, k = 1.35) => { c.save(); c.translate(x, y); c.scale(k, k); c.beginPath(); c.moveTo(0, 0); c.lineTo(0, 16); c.lineTo(4, 12.5); c.lineTo(6.8, 18.5); c.lineTo(9.2, 17.4); c.lineTo(6.5, 11.6); c.lineTo(11.6, 11.6); c.closePath(); c.fillStyle = P.bright; c.fill(); c.strokeStyle = P.bg; c.lineWidth = 1.1; c.stroke(); c.restore(); };
 const fmt = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 let rng = 7; const rand = () => (rng = (rng * 16807) % 2147483647) / 2147483647;
 const gauss = () => { let u = 0, v = 0; while (!u) u = rand(); while (!v) v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
@@ -317,8 +319,9 @@ const CLIENTS = [
 ];
 const NEWROWS = [['06/10', 'TPA — vendas dia', '', '412,30'], ['06/10', 'Fornecedor café', '186,00', ''], ['07/10', 'EDP', '94,12', ''], ['07/10', 'TPA — vendas dia', '', '388,90'], ['07/10', 'Renda loja', '900,00', '']];
 function kelaro(c, w, h, e) {
-  // first 4.6 s: AI sets up each bank link (v2), slowly enough to read. Then the 06:00 sync runs with no AI at all.
-  const T = e % 17.6, setup = T < 4.6, t = T - 4.6, N = w < 560;
+  // v2 setup, as planned: the person picks the accounts and the sheet and asks the AI to link them (0–2.8 s);
+  // the AI links each account (to 6.6 s); then the 06:00 sync runs with no AI at all.
+  const T = e % 19.6, setup = T < 6.6, t = T - 6.6, N = w < 560;
   // schedule clock
   const lw = N ? w : w * 0.44, ch = N ? 38 : 44, gap = N ? 44 : 52;
   if (setup) {
@@ -337,7 +340,7 @@ function kelaro(c, w, h, e) {
     sans(c, 14); c.fillStyle = P.bright; c.textAlign = 'left'; c.fillText(cl.n, 0, y + 14);
     y += 26;
     cl.acc.forEach(([an, st, n]) => {
-      const start = 1.2 + idx * 0.7, k = clamp((t - start) / 1.1), done = k >= 1, ex = st === 'expired', lk = clamp((T - 0.5 - idx * 0.6) / 0.8);
+      const start = 1.2 + idx * 0.7, k = clamp((t - start) / 1.1), done = k >= 1, ex = st === 'expired', lk = clamp((T - 2.8 - idx * 0.6) / 0.8);
       c.strokeStyle = P.line; rr(c, 0, y, lw, ch, 8); c.stroke();
       if (ci === 1 && t > 4.5) { c.fillStyle = rgba(P.pink, 0.05); c.fill(); }
       const dot = setup ? (lk > 0 ? P.lav : P.dim) : ex ? P.amber : done ? P.teal : k > 0 ? P.blue : P.dim;
@@ -354,6 +357,26 @@ function kelaro(c, w, h, e) {
     });
     y += 10;
   });
+  // the request: tick the accounts, tick the sheet, ask the AI. Fades once the AI takes over.
+  if (T < 3.1) {
+    const fa = 1 - ease(clamp((T - 2.4) / 0.6)), cy0 = 58, cw0 = N ? w : lw, chh = 156;
+    c.globalAlpha = fa; c.fillStyle = P.bg; rr(c, 0, cy0, cw0, chh, 12); c.fill(); c.fillStyle = rgba(P.lav, 0.06); c.fill();
+    c.setLineDash([5, 4]); c.strokeStyle = rgba(P.lav, 0.7); c.stroke(); c.setLineDash([]);
+    sans(c, 14); c.fillStyle = P.bright; c.textAlign = 'left'; c.fillText('Connect your banks', 16, cy0 + 26);
+    const row = (y, label, val, on) => { c.strokeStyle = on ? P.teal : P.line; c.lineWidth = 1.5; rr(c, 16, y - 11, 14, 14, 3); c.stroke(); c.lineWidth = 1; if (on) { c.strokeStyle = P.teal; c.lineWidth = 2; c.beginPath(); c.moveTo(19, y - 4); c.lineTo(22, y); c.lineTo(28, y - 8); c.stroke(); c.lineWidth = 1; } sans(c, 13, 500); c.fillStyle = P.text; c.fillText(label, 40, y); sans(c, 12, 400); c.fillStyle = P.dim; c.fillText(val, 40 + c.measureText(label).width + 26, y); };
+    row(cy0 + 56, 'Accounts', '5 across 3 clients', T > 0.6); row(cy0 + 84, 'Sheet', "each client's own file", T > 1.2);
+    const bx = 16, by = cy0 + 104, bwid = 158, press = T > 1.9 && T < 2.2, asked = T > 1.9;
+    c.fillStyle = rgba(P.lav, press ? 0.4 : asked ? 0.22 : 0.12); rr(c, bx, by, bwid, 34, 17); c.fill(); c.strokeStyle = P.lav; c.stroke();
+    sparkle(c, bx + 18, by + 17, 6); sans(c, 13); c.fillStyle = P.bright; c.fillText(asked ? 'Linking…' : 'Link with AI', bx + 32, by + 22);
+    mono(c, 10); c.fillStyle = P.lav; c.fillText('v2', bx + bwid + 10, by + 21);
+    // the pointer: rests, ticks the accounts, ticks the sheet, presses the button
+    const KF = [[0, cw0 * 0.7, cy0 + chh + 30], [0.6, 23, cy0 + 51], [1.2, 23, cy0 + 79], [1.9, bx + 90, by + 18], [3.1, bx + 90, by + 18]];
+    let kk = 1; while (kk < KF.length - 1 && KF[kk][0] < T) kk++;
+    const A0 = KF[kk - 1], B0 = KF[kk], st0 = Math.max(A0[0], B0[0] - 0.45), u0 = ease(clamp((T - st0) / (B0[0] - st0 || 1)));
+    const mx = A0[1] + (B0[1] - A0[1]) * u0, my = A0[2] + (B0[2] - A0[2]) * u0;
+    [0.6, 1.2, 1.9].forEach(ct => { const dd = T - ct; if (dd > 0 && dd < 0.4) { c.strokeStyle = rgba(P.bright, 0.6 * (1 - dd / 0.4)); c.lineWidth = 1.5; c.beginPath(); c.arc(mx, my, 6 + dd * 45, 0, 7); c.stroke(); c.lineWidth = 1; } });
+    pointer(c, mx, my); c.globalAlpha = 1;
+  }
   // destination: this client's own spreadsheet, rows appended at the bottom
   const sx = N ? 0 : lw + 36, sw = w - sx, top = N ? y + 10 : 0, sy = top + 70;
   sans(c, 12); c.fillStyle = P.dim; c.textAlign = 'left'; c.fillText('Café Aurora · their own spreadsheet', sx, top + 18);
@@ -376,7 +399,7 @@ function kelaro(c, w, h, e) {
     sans(c, 12); c.fillStyle = P.teal; c.textAlign = 'left'; c.fillText(N ? '+5 rows · ties to the bank ✓' : '+5 rows appended · balance ties to the bank ✓', sx + 8, fy + (N ? 17 : 20)); c.globalAlpha = 1;
     mono(c, 10); c.fillStyle = P.dim; c.fillText(N ? 'next sync from 07/10 06:00' : 'next sync from 07/10 06:00 · nothing fetched twice', sx, sy + rh * 13 + 22);
   }
-  setCap(setup ? '<b>connecting</b>: AI sets up the link between each bank and Qoriander, once (v2)' : t < 0.8 ? '<b>06:00</b> scheduled sync, and no AI from here on' : t < 3.4 ? '<b>syncing</b> each account from where it stopped' : t < 6.2 ? '<b>appending</b> new movements to the client\'s own sheet' : t < 9 ? '<b>tied out</b>. One expired consent skipped and flagged, nothing guessed.' : `<b>${total || 52} new movements</b> across three clients, before the accountant opens the laptop`);
+  setCap(setup && T < 2.8 ? '<b>you choose</b> the accounts and the sheet, then ask the AI to link them (v2)' : setup ? '<b>connecting</b>: the AI sets up the link between each bank and Qoriander, once' : t < 0.8 ? '<b>06:00</b> scheduled sync, and no AI from here on' : t < 3.4 ? '<b>syncing</b> each account from where it stopped' : t < 6.2 ? '<b>appending</b> new movements to the client\'s own sheet' : t < 9 ? '<b>tied out</b>. One expired consent skipped and flagged, nothing guessed.' : `<b>${total || 52} new movements</b> across three clients, before the accountant opens the laptop`);
 }
 
 /* ---------- Cashew: scenarios. A plan drawn over real accounts, compared to reality, saved by a human ---------- */
@@ -523,8 +546,8 @@ const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* One timer for all three tools: each scene plays its whole loop once in 15 s (Qocoa: both runs; Qoriander: AI link setup, then the sync). Loop lengths in scene time: koa 20 s, kelaro 17.6 s, cashew 17 s. */
-const SPEED = { koa: 20 / 15, kelaro: 17.6 / 15, cashew: 17 / 15 };
+/* One timer for all three tools: each scene plays its whole loop once in 15 s (Qocoa: both runs; Qoriander: AI link setup, then the sync). Loop lengths in scene time: koa 20 s, kelaro 19.6 s, cashew 17 s. */
+const SPEED = { koa: 20 / 15, kelaro: 19.6 / 15, cashew: 17 / 15 };
 
 /* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
    Each tool stays up for one full loop of its scene (10 s, see SPEED), then the path lights the link to the next one, like a hop in the hero graph.
