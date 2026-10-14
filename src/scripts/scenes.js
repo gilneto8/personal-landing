@@ -179,7 +179,7 @@ const trace = traceRoot && (() => {
     const o = { g, p, col, cy, ax: cx + A + 13 }; light(o, false); return o;
   });
   function light(L, on, col) { const c = col || L.col; L.p.setAttribute('fill', rgba(c, on ? 0.32 : 0.1)); L.p.setAttribute('stroke', on ? c : rgba(L.col, 0.55)); L.p.setAttribute('stroke-width', on ? 1.8 : 1); L.g.classList.toggle('lit', on); }
-  const line = sv('polyline', { fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, over), dot = sv('circle', { r: 5, cx: -20, cy: -20 }, over);
+  const line = sv('polyline', { fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, over), dot = sv('circle', { r: 5, visibility: 'hidden' }, over);
   const box = () => traceRoot.getBoundingClientRect(), k = () => svg.getBoundingClientRect().width / W;
   const at = (L) => { const s = svg.getBoundingClientRect(), r = box(); return [s.left - r.left + L.ax * k(), s.top - r.top + L.cy * k()]; };
   const edge = el => { const b = el.getBoundingClientRect(), r = box(); return [b.left - r.left - 6, b.top - r.top + b.height / 2]; };
@@ -199,7 +199,7 @@ const trace = traceRoot && (() => {
       const f = RM ? 1 : Math.min(1, (now - t0) / ms), h = ease(Math.min(1, f / arrive)) * tot, t = clamp((f - 0.3) / 0.7) * tot;
       const drawn = [at(t)]; cum.forEach((c, k) => { if (c > t && c < h) drawn.push(pts[k]); }); drawn.push(at(h));
       line.setAttribute('points', f >= 1 ? '' : drawn.map(p => p.join(',')).join(' '));
-      const head = at(h); dot.setAttribute('cx', f >= arrive ? -20 : head[0]); dot.setAttribute('cy', head[1]);
+      const head = at(h); dot.setAttribute('visibility', f >= arrive ? 'hidden' : 'visible'); dot.setAttribute('cx', head[0]); dot.setAttribute('cy', head[1]);
       pts.forEach((p, k) => { if (p.L && cum[k] <= h + 0.5) light(p.L, true, p.miss ? P.amber : null); });
       f < 1 ? requestAnimationFrame(step) : res();
     })(t0);
@@ -224,7 +224,7 @@ const trace = traceRoot && (() => {
       await onScreen();
       const Q = TRACE_Q[n % TRACE_Q.length];
       if (n % TRACE_Q.length === 0 && feed.children.length) { feed.style.opacity = 0; await wait(500); feed.innerHTML = ''; feed.style.opacity = 1; }
-      G.forEach(L => light(L, false)); line.setAttribute('points', ''); dot.setAttribute('cx', -20); note.classList.remove('in', 'miss');
+      G.forEach(L => light(L, false)); line.setAttribute('points', ''); dot.setAttribute('visibility', 'hidden'); note.classList.remove('in', 'miss');
       const qb = bubble(Q); show(qb); cap.innerHTML = Q.cap;
       await wait(800);
       // down: question → lane above the stack → trunk → each layer in turn
