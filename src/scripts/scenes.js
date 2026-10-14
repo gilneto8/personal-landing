@@ -186,17 +186,21 @@ const trace = traceRoot && (() => {
   const lane = () => { const s = svg.getBoundingClientRect(); return s.top - box().top + (top - 18) * k(); };
   const wide = () => innerWidth > 900;
   const wait = ms => new Promise(r => setTimeout(r, RM ? 0 : ms));
-  // walk a polyline; a layer lights the moment the head reaches its point
+  // walk a polyline like a comet: the head runs ahead, the tail follows and reaches the end just after the head,
+  // so the trace is gone the moment it arrives. A layer lights when the head passes it.
   const travel = (pts, col, ms) => new Promise(res => {
     if (!wide()) { pts.forEach(p => p.L && light(p.L, true, p.miss ? P.amber : null)); return setTimeout(res, RM ? 0 : ms * 0.6); }
     line.setAttribute('stroke', col); dot.setAttribute('fill', col);
-    const seg = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])), tot = seg.reduce((a, b) => a + b, 0), t0 = performance.now();
+    const seg = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])), cum = [0];
+    seg.forEach(l => cum.push(cum[cum.length - 1] + l)); const tot = cum[cum.length - 1];
+    const at = d => { let i = 0; while (i < seg.length - 1 && d > cum[i + 1]) i++; const u = seg[i] ? (d - cum[i]) / seg[i] : 0, a = pts[i], b = pts[i + 1]; return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; };
+    const t0 = performance.now(), arrive = 0.82;
     (function step(now) {
-      const f = RM ? 1 : Math.min(1, (now - t0) / ms); let d = f * tot, i = 0; const drawn = [pts[0]];
-      while (i < seg.length && d >= seg[i]) { d -= seg[i]; drawn.push(pts[++i]); }
-      let head = pts[i]; if (i < seg.length) { const a = pts[i], b = pts[i + 1], u = d / seg[i]; head = [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; drawn.push(head); }
-      line.setAttribute('points', drawn.map(p => p.join(',')).join(' ')); dot.setAttribute('cx', head[0]); dot.setAttribute('cy', head[1]);
-      for (let j = 0; j <= i; j++) if (pts[j].L) light(pts[j].L, true, pts[j].miss ? P.amber : null);
+      const f = RM ? 1 : Math.min(1, (now - t0) / ms), h = ease(Math.min(1, f / arrive)) * tot, t = clamp((f - 0.3) / 0.7) * tot;
+      const drawn = [at(t)]; cum.forEach((c, k) => { if (c > t && c < h) drawn.push(pts[k]); }); drawn.push(at(h));
+      line.setAttribute('points', f >= 1 ? '' : drawn.map(p => p.join(',')).join(' '));
+      const head = at(h); dot.setAttribute('cx', f >= arrive ? -20 : head[0]); dot.setAttribute('cy', head[1]);
+      pts.forEach((p, k) => { if (p.L && cum[k] <= h + 0.5) light(p.L, true, p.miss ? P.amber : null); });
       f < 1 ? requestAnimationFrame(step) : res();
     })(t0);
   });
