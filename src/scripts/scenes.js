@@ -1,4 +1,4 @@
-/* Homepage scenes: the vault (constellation, stack, conversation) and the finance showcase (Koa, Kelaro, Cashew).
+/* Homepage scenes: the vault (constellation, then the query trace through the stack) and the finance showcase (Koa, Kelaro, Cashew).
    Each canvas draws only while on screen and starts its clock the first time it is seen.
    All rows, amounts, names and chat lines are illustrative samples; the four stats are real (vault, 2026-10-08). */
 
@@ -29,7 +29,7 @@ const STATS_URL = 'https://raw.githubusercontent.com/gilneto8/personal-landing/s
 function applyStats(d) {
   const map = { notes: d.notes, links: d.links, commits: d.commits, eval: d.eval };
   document.querySelectorAll('[data-stat]').forEach(b => { const v = map[b.dataset.stat]; if (Number.isFinite(v)) b.dataset.n = v; });
-  if (Number.isFinite(d.notes)) LAYERS[2][1] = `${d.notes.toLocaleString('en')} markdown notes, git-versioned`;
+  if (Number.isFinite(d.notes)) { LAYERS[2][1] = `${d.notes.toLocaleString('en')} markdown notes, git-versioned`; if (typeof trace !== 'undefined' && trace) trace.vault(LAYERS[2][1]); }
 }
 Promise.race([
   fetch(STATS_URL, { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)),
@@ -47,9 +47,10 @@ const CL = [
 const graph = { nodes: [], edges: [], adj: [] };
 CL.forEach((cl, ci) => { for (let i = 0; i < cl.n; i++) { const r = Math.abs(gauss()) * 0.09 + 0.01, a = rand() * 7; graph.nodes.push({ ci, fx: cl.x + Math.cos(a) * r * 1.2, fy: cl.y + Math.sin(a) * r, d: rand() }); } });
 /* Squeeze the layout into the canvas with a margin, labels included, so no cluster runs off an edge. */
-{ const fit1 = (k, lo, hi) => { const v = graph.nodes.map(n => n[k]), a = Math.min(...v), b = Math.max(...v), s = k === 'fy' ? (hi - lo) / (b - a) : Math.min(1, (hi - lo) / (b - a)), m = (lo + hi) / 2, c = (a + b) / 2;
-    graph.nodes.forEach(n => { n[k] = m + (n[k] - c) * s; }); CL.forEach(cl => { const ck = k === 'fx' ? 'x' : 'y'; cl[ck] = m + (cl[ck] - c) * s; }); };
-  fit1('fx', 0.09, 0.91); fit1('fy', 0.14, 0.95); }
+{ /* Scale the bulk of the notes (1st–99th percentile) to fill the box, then pull the few stray outliers just inside it. */
+  const fit1 = (k, lo, hi) => { const v = graph.nodes.map(n => n[k]).sort((p, q) => p - q), a = v[Math.floor(v.length * 0.01)], b = v[Math.floor(v.length * 0.99)], s = (hi - lo) / (b - a), m = (lo + hi) / 2, c = (a + b) / 2;
+    graph.nodes.forEach(n => { n[k] = clamp(m + (n[k] - c) * s, lo - 0.03, hi + 0.03); }); CL.forEach(cl => { const ck = k === 'fx' ? 'x' : 'y'; cl[ck] = m + (cl[ck] - c) * s; }); };
+  fit1('fx', 0.1, 0.9); fit1('fy', 0.15, 0.93); }
 /* Depth for the slow camera orbit: each cluster sits on its own plane, notes jitter around it. Fractions of the canvas width. */
 const CLZ = [-0.12, 0.1, -0.06, 0.13, 0, -0.1];
 graph.nodes.forEach((n, i) => { n.z = CLZ[n.ci] + (n.d - 0.5) * 0.08 + Math.sin(i * 12.9898) * 0.03; });
@@ -149,61 +150,90 @@ const LAYERS = [
   ['Skills', 'tutor · voice · brief · research · pipeline', 1],
   ['Night jobs', 'route · lint · eval · audit · digest', 4],
 ];
-function stackScene(c, w, h, e) {
-  const open = ease(Math.min(1, e / 1.6)) * (0.75 + 0.25 * Math.sin(e * 0.8));
-  const cx = w * 0.26, base = h * 0.84, s = Math.min(w, h) * 0.2, gap = 18 + open * 58;
-  const hl = Math.floor(e / 2.2) % LAYERS.length;
-  LAYERS.forEach((L, i) => {
-    const y = base - i * gap, col = P.s[L[2]], on = i === hl;
-    c.beginPath(); c.moveTo(cx, y - s * 0.5); c.lineTo(cx + s, y); c.lineTo(cx, y + s * 0.5); c.lineTo(cx - s, y); c.closePath();
-    c.fillStyle = rgba(col, on ? 0.30 : 0.12); c.fill(); c.strokeStyle = rgba(col, on ? 1 : 0.55); c.lineWidth = on ? 1.6 : 1; c.stroke();
-    // inner detail per layer
-    c.strokeStyle = rgba(col, 0.35); c.lineWidth = 1;
-    for (let k = 1; k < 4; k++) { const f = k / 4; c.beginPath(); c.moveTo(cx - s + s * f, y - s * 0.5 * f); c.lineTo(cx + s * f, y + s * 0.5 * (1 - f)); c.stroke(); }
-    // label + leader
-    const lx = cx + s + 30;
-    c.strokeStyle = rgba(P.dim, on ? 0.9 : 0.35); c.beginPath(); c.moveTo(cx + s, y); c.lineTo(lx - 6, y); c.stroke();
-    c.textAlign = 'left'; c.font = '500 14px Geist, system-ui'; c.fillStyle = on ? P.bright : P.text; c.fillText(L[0], lx, y + 1);
-    c.font = '400 12px Geist Mono, monospace'; c.fillStyle = on ? col : P.dim; c.fillText(L[1], lx, y + 18);
-  });
-  // particles rising through the stack
-  for (let i = 0; i < 14; i++) { const p = ((e * 0.25 + i / 14) % 1), y = base - p * (LAYERS.length - 1) * gap, x = cx + Math.sin(i * 3.1 + e) * s * 0.3; c.fillStyle = rgba(P.bright, 0.7 * Math.sin(p * Math.PI)); c.beginPath(); c.arc(x, y, 1.6, 0, 7); c.fill(); }
-  setCap(`<b>${LAYERS[hl][0]}</b> — ${LAYERS[hl][1]}`);
-}
-
-const CHAT = [
-  ['q', 'what\'s on today?'],
-  ['a', 'Three tasks due, one call at 15:00. The Kelaro pilot is still waiting on a reply.', 'sources', 'ok', 'brief'],
-  ['q', 'teach me how bonds are priced'],
-  ['a', 'New course: four parts. Lesson 1 is ready as a 9-minute video with subtitles.', '', '', 'tutor'],
-  ['q', 'draft a reply to the recruiter, as me'],
-  ['a', 'Draft saved in Gmail, in your voice. Not sent — say the word.', '', '', 'voice'],
-  ['q', 'are you sure the invoice is due on the 30th?'],
-  ['a', 'Yes. It came in with the client\'s email on 2 Oct.', 'sources', 'ok', 'memory'],
-  ['q', 'who founded that startup that emailed me?'],
-  ['a', 'I don\'t know. It\'s not in the vault, and a matching name isn\'t proof.', 'no sources → no claim', 'no', 'memory'],
+/* ---------- Second brain · query trace: a question drops through the stack, a note comes back, the answer leaves with its sources ----------
+   The way down starts at the question; the way back ends at the answer. On phones the line is dropped and only the layers light. */
+const SVGNS = 'http://www.w3.org/2000/svg';
+const sv = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const TRACE_Q = [
+  { q: 'what\'s on today?', path: [4, 3, 2], note: 'Today.md · 3 tasks, call at 15:00', tag: 'brief', a: 'Three tasks due, one call at 15:00. The Kelaro pilot is still waiting on a reply.', src: ['ok', 'sources'], cap: '<b>brief</b> · skills → indexes → vault, back with sources' },
+  { q: 'teach me how bonds are priced', path: [4, 2], note: 'Courses/Bonds.md · part 1 of 4', tag: 'tutor', a: 'New course: four parts. Lesson 1 is ready as a 9-minute video with subtitles.', cap: '<b>tutor</b> · skills → vault' },
+  { q: 'draft a reply to the recruiter, as me', path: [4, 2], note: 'voice samples · 214 messages', tag: 'voice', a: 'Draft saved in Gmail, in your voice. Not sent — say the word.', cap: '<b>voice</b> · skills → vault' },
+  { q: 'are you sure the invoice is due on the 30th?', path: [3, 2, 1], note: 'mail · 2 Oct · invoice due 30th', tag: 'memory', a: 'Yes. It came in with the client\'s email on 2 Oct.', src: ['ok', 'sources'], cap: '<b>memory</b> · indexes → vault → inbox' },
+  { q: 'who founded that startup that emailed me?', path: [3, 2], note: 'nothing in the vault', miss: true, tag: 'memory', a: 'I don\'t know. It\'s not in the vault, and a matching name isn\'t proof.', src: ['no', 'no sources → no claim'], cap: '<b>miss</b> · indexes → vault → nothing found, so no claim' },
 ];
-const feed = document.querySelector('.feed');
-let chatTimer;
-function runChat() {
-  clearTimeout(chatTimer); feed.innerHTML = ''; let i = 0;
+const traceRoot = document.getElementById('trace');
+const trace = traceRoot && (() => {
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const host = traceRoot.querySelector('.stackhost'), feed = traceRoot.querySelector('.feed'), over = traceRoot.querySelector('svg.over'), note = traceRoot.querySelector('.note'), cap = document.querySelector('.trace-cap');
   const tagCol = { brief: P.s[1], tutor: P.s[2], voice: P.s[3], memory: P.s[0] };
-  const step = () => {
-    if (i >= CHAT.length) { chatTimer = setTimeout(runChat, 3500); return; }
-    const m = CHAT[i++];
-    if (m[0] === 'a') {
-      const ty = document.createElement('div'); ty.className = 'typing'; ty.innerHTML = '<i></i><i></i><i></i>'; feed.append(ty);
-      chatTimer = setTimeout(() => { ty.remove(); add(m); chatTimer = setTimeout(step, 1300); }, 900);
-    } else { add(m); chatTimer = setTimeout(step, 700); }
+  // the stack, drawn bottom to top: rhombus, a short tick, then the label
+  const W = 530, gap = 52, A = 92, B = 44, top = 34, cx = 104, H = top + B * 2 + gap * 5 + 8;
+  const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, class: 'stack', role: 'img', 'aria-label': 'Six layers: inputs, inbox, vault, indexes and vectors, skills, night jobs' }, host);
+  const G = LAYERS.map((L, i) => {
+    const cy = top + B + (5 - i) * gap, col = P.s[L[2]], g = sv('g', { class: 'ly', 'data-layer': i }, svg);
+    const p = sv('path', { d: `M${cx - A} ${cy} L${cx} ${cy - B} L${cx + A} ${cy} L${cx} ${cy + B} Z` }, g);
+    for (let k = 1; k < 3; k++) sv('path', { d: `M${cx - A + A * k / 3} ${cy - B * k / 3} L${cx + A * k / 3} ${cy + B - B * k / 3}`, stroke: rgba(col, 0.18), fill: 'none' }, g);
+    sv('path', { d: `M${cx + A + 4} ${cy} H${cx + A + 22}`, stroke: rgba(P.dim, 0.6), fill: 'none' }, g);
+    sv('text', { x: cx + A + 28, y: cy - 2, class: 'lt' }, g).textContent = L[0];
+    sv('text', { x: cx + A + 28, y: cy + 14, class: 'ls' }, g).textContent = L[1];
+    const o = { g, p, col, cy, ax: cx + A + 13 }; light(o, false); return o;
+  });
+  function light(L, on, col) { const c = col || L.col; L.p.setAttribute('fill', rgba(c, on ? 0.32 : 0.1)); L.p.setAttribute('stroke', on ? c : rgba(L.col, 0.55)); L.p.setAttribute('stroke-width', on ? 1.8 : 1); L.g.classList.toggle('lit', on); }
+  const line = sv('polyline', { fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, over), dot = sv('circle', { r: 5, cx: -20, cy: -20 }, over);
+  const box = () => traceRoot.getBoundingClientRect(), k = () => svg.getBoundingClientRect().width / W;
+  const at = (L) => { const s = svg.getBoundingClientRect(), r = box(); return [s.left - r.left + L.ax * k(), s.top - r.top + L.cy * k()]; };
+  const edge = el => { const b = el.getBoundingClientRect(), r = box(); return [b.left - r.left - 6, b.top - r.top + b.height / 2]; };
+  const lane = () => { const s = svg.getBoundingClientRect(); return s.top - box().top + (top - 18) * k(); };
+  const wide = () => innerWidth > 900;
+  const wait = ms => new Promise(r => setTimeout(r, RM ? 0 : ms));
+  // walk a polyline; a layer lights the moment the head reaches its point
+  const travel = (pts, col, ms) => new Promise(res => {
+    if (!wide()) { pts.forEach(p => p.L && light(p.L, true, p.miss ? P.amber : null)); return setTimeout(res, RM ? 0 : ms * 0.6); }
+    line.setAttribute('stroke', col); dot.setAttribute('fill', col);
+    const seg = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])), tot = seg.reduce((a, b) => a + b, 0), t0 = performance.now();
+    (function step(now) {
+      const f = RM ? 1 : Math.min(1, (now - t0) / ms); let d = f * tot, i = 0; const drawn = [pts[0]];
+      while (i < seg.length && d >= seg[i]) { d -= seg[i]; drawn.push(pts[++i]); }
+      let head = pts[i]; if (i < seg.length) { const a = pts[i], b = pts[i + 1], u = d / seg[i]; head = [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; drawn.push(head); }
+      line.setAttribute('points', drawn.map(p => p.join(',')).join(' ')); dot.setAttribute('cx', head[0]); dot.setAttribute('cy', head[1]);
+      for (let j = 0; j <= i; j++) if (pts[j].L) light(pts[j].L, true, pts[j].miss ? P.amber : null);
+      f < 1 ? requestAnimationFrame(step) : res();
+    })(t0);
+  });
+  const bubble = (Q, isA) => {
+    const m = document.createElement('div'); m.className = 'm ' + (isA ? 'a' : 'q');
+    m.innerHTML = isA ? `<span class="tag" style="color:${tagCol[Q.tag]}">${Q.tag}</span><br>${Q.a}${Q.src ? `<span class="src ${Q.src[0]}">${Q.src[0] === 'ok' ? '↳ ' : '✕ '}${Q.src[1]}</span>` : ''}` : Q.q;
+    feed.append(m); while (feed.children.length > 4) feed.firstChild.remove(); return m;
   };
-  const add = m => {
-    const d = document.createElement('div'); d.className = 'm ' + m[0];
-    d.innerHTML = m[0] === 'q' ? m[1] : `<span class="tag" style="color:${tagCol[m[4]]}">${m[4]}</span><br>${m[1]}${m[2] ? `<span class="src ${m[3]}">${m[3] === 'ok' ? '↳ ' : '✕ '}${m[2]}</span>` : ''}`;
-    feed.append(d); requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add('in')));
-    while (feed.children.length > 7) feed.firstChild.remove();
-  };
-  step();
-}
+  const show = m => requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('in')));
+  let visible = false, wake = null;
+  const onScreen = () => visible ? Promise.resolve() : new Promise(r => { wake = r; });
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && wake) { wake(); wake = null; } }, { threshold: 0.25 }).observe(traceRoot);
+  (async () => {
+    for (let n = 0; ; n++) {
+      await onScreen();
+      const Q = TRACE_Q[n % TRACE_Q.length];
+      if (n % TRACE_Q.length === 0) feed.innerHTML = '';
+      G.forEach(L => light(L, false)); line.setAttribute('points', ''); dot.setAttribute('cx', -20); note.classList.remove('in', 'miss');
+      const qb = bubble(Q); show(qb); cap.innerHTML = Q.cap;
+      await wait(800);
+      // down: question → lane above the stack → trunk → each layer in turn
+      const q0 = edge(qb), ly = lane(), tx = at(G[0])[0], hits = Q.path.map((i, j) => Object.assign(at(G[i]), { L: G[i], miss: Q.miss && j === Q.path.length - 1 }));
+      await travel([q0, [q0[0] - 20, q0[1]], [q0[0] - 20, ly], [tx, ly], ...hits], P.bright, 1500 + Q.path.length * 260);
+      const end = hits[hits.length - 1], s = svg.getBoundingClientRect(), r = box();
+      note.textContent = Q.note; note.classList.toggle('miss', !!Q.miss);
+      note.style.left = (s.left - r.left + s.width * 0.94) + 'px'; note.style.top = (end[1] - 14) + 'px'; note.classList.add('in');
+      await wait(1000);
+      // back: up the trunk and over to where the answer will sit, then the answer appears
+      const ab = bubble(Q, true), a0 = edge(ab), ly2 = lane();
+      const hits2 = Q.path.map(i => at(G[i])).reverse();
+      await travel([...hits2, [tx, ly2], [a0[0] - 20, ly2], [a0[0] - 20, a0[1]], a0], Q.miss ? P.amber : P.teal, 1300 + Q.path.length * 200);
+      note.classList.remove('in'); show(ab);
+      await wait(3400);
+    }
+  })();
+  return { vault: t => { const e = svg.querySelector('[data-layer="2"] .ls'); if (e) e.textContent = t; } };
+})();
 
 const COPY = {
   koa: { st: ['Engine', P.blue], h: 'Koa reads bank statements, and refuses when they don\'t add up.', p: 'A deterministic engine that turns statement PDFs into rows. Every result must tie out: opening balance plus every movement equals the closing balance. If it doesn\'t, Koa says so instead of guessing.', li: [['No model', 'in the extraction path'], ['Tie-out', 'or it\'s marked partial'], ['Statements', 'never leave the machine']] },
@@ -400,16 +430,16 @@ function cashew(c, w, h, e) {
 
 function setCopyAll() { document.querySelectorAll('[data-copy]').forEach(el => { const k = COPY[el.dataset.copy]; el.innerHTML = `<span class="kicker" style="color:${k.st[1]}">${k.st[0]}</span><h2>${k.h}</h2><p>${k.p}</p><ul>${k.li.map(l => `<li><b>${l[0]}</b> · ${l[1]}</li>`).join('')}</ul>`; }); }
 setCopyAll();
-const FN = { graph: graphScene, stack: stackScene, koa, kelaro, cashew };
+const FN = { graph: graphScene, koa, kelaro, cashew };
 const scenes = [...document.querySelectorAll('[data-scene]')].map(el => ({ el, k: el.dataset.scene, cv: el.querySelector('canvas'), cap: el.querySelector('.cap'), vis: false, t0: null }));
 /* The graph keeps a near-square world: its height follows the column width, capped by the viewport so it never outgrows the screen. */
-const graphH = w => Math.round(Math.max(380, Math.min(w * 0.8, innerHeight * 0.8, 920)));
+const graphH = w => Math.round(Math.max(380, Math.min(w * 0.85, innerHeight * 0.84, 1000)));
 function fitScene(s) { if (!s.cv) return; const r = s.cv.parentElement.getBoundingClientRect(), d = devicePixelRatio || 1, phone = r.width < 560 && s.el.dataset.hm; const H = s.k === 'graph' ? graphH(r.width) : phone ? +s.el.dataset.hm : +s.el.dataset.h; const LW = phone ? r.width : Math.max(r.width, s.k === 'graph' ? 340 : 640), k = r.width / LW; s.cv.style.height = (H * k) + 'px'; s.cv.width = r.width * d; s.cv.height = H * k * d; const c = s.cv.getContext('2d'); c.setTransform(d * k, 0, 0, d * k, 0, 0); s.g = { c, w: LW, h: H }; }
 scenes.forEach(fitScene); addEventListener('resize', () => scenes.forEach(fitScene));
 /* A scene inside the finance showcase draws only while its pane is the active one; the showcase sets its clock. */
 scenes.forEach(s => { s.pane = s.el.closest('.pane'); });
 const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
-const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) { s.t0 = performance.now() / 1000; if (s.k === 'chat') runChat(); } }), { threshold: 0.25 });
+const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 

@@ -31,13 +31,30 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .cap { font: 13px/1.6 'Geist Mono', monospace; color: var(--dim); margin-top: 6px; min-height: 1.6em; }
 .cap b { font-weight: 400; color: var(--bright); }
 .scene[data-scene=graph] .cap { font-size: clamp(15px, 1.6vw, 20px); margin-top: 14px; }
-/* One block per topic. The ground flips between navy and panel at every topic change, hard edge, no blend. */
-.topic { padding-block: clamp(72px, 12vh, 150px) clamp(56px, 9vh, 110px); }
-.topic.alt { background: var(--panel); }
-.topic.alt .q { background: var(--line); }
-/* A topic's title sits on navy, its content on panel — the same step as hero → Second brain. */
-.topic.title { padding-block: clamp(96px, 16vh, 200px); }
+/* One dark block per chapter. Each chapter title owns a colour: a soft glow behind it and an outlined label above it. */
+.topic { padding-block: clamp(96px, 15vh, 180px) clamp(56px, 9vh, 110px); }
+#vault { --cc: var(--pink); } #finance { --cc: var(--teal); }
+.band { position: relative; isolation: isolate; }
+/* closest-side ends the gradient exactly at the box edge, so the glow fades out evenly in both directions */
+.band[id]::before { content: ''; position: absolute; z-index: -1; pointer-events: none; left: -14%; top: -90%; width: 82%; height: 280%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--cc) 22%, transparent), color-mix(in srgb, var(--cc) 9%, transparent) 55%, transparent); }
+.band[id] .eyebrow { justify-self: start; color: var(--cc); border: 1px solid color-mix(in srgb, var(--cc) 55%, transparent); border-radius: 999px; padding: 3px 12px; }
 .list + .list { margin-top: clamp(96px, 14vh, 160px); }
+
+/* second brain: the query trace, stack on the left, conversation on the right */
+.trace-sec { display: grid; gap: clamp(28px, 5vh, 56px); padding-top: clamp(56px, 9vh, 110px); }
+.trace-copy, .trace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 96px); }
+.trace-copy { align-items: start; }
+.trace { position: relative; align-items: center; }
+.trace svg.stack { width: 100%; max-width: 600px; height: auto; display: block; overflow: visible; }
+.stack .ly path { transition: fill .35s, stroke .35s; }
+.stack .lt { font: 500 13px 'Geist', system-ui; fill: var(--text); transition: fill .35s; }
+.stack .ly.lit .lt { fill: var(--bright); }
+.stack .ls { font: 10.5px 'Geist Mono', monospace; fill: var(--dim); }
+.trace svg.over { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.trace .note { position: absolute; font: 12px 'Geist Mono', monospace; padding: 5px 10px; border-radius: 8px; background: var(--panel); border: 1px solid var(--teal); color: var(--bright); white-space: nowrap; pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .35s, transform .35s; }
+.trace .note.in { opacity: 1; transform: none; }
+.trace .note.miss { border-color: var(--amber); color: var(--amber); }
 
 /* finance showcase: the tools on the left light up in turn, the stage on the right shows the active one */
 .show { display: grid; grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.6fr); gap: clamp(32px, 4vw, 72px); align-items: center; }
@@ -109,6 +126,8 @@ footer { padding: 28px var(--pad) 40px; border-top: 1px solid var(--line); displ
   .row { grid-template-columns: 1fr; gap: 4px; }
   .feed { height: 420px; }
   #top { grid-template-columns: 1fr; min-height: auto; }
+  .trace-copy, .trace { grid-template-columns: 1fr; }
+  .trace .note { display: none; }
   .show { grid-template-columns: 1fr; }
   .tools { grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; padding: 8px; }
   .tools li + li::before, .tools li + li::after { display: none; }
