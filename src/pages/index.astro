@@ -14,21 +14,27 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
   title="Gil Neto — Founder-Engineer & Senior Software Engineer, AI Products · Lisbon / EU Remote"
   description="Senior software engineer, 12 years, working on AI products. Founder-Engineer in Lisbon building agent memory and knowledge systems - capture, retrieval and evaluation - alongside B2B utilities shipped end-to-end. Open to fractional build engagements: bank-data and accounting pipelines."
 >
-<nav class="top" id="nav"><b>Gil Neto</b><ul><li><a href="#vault">Second brain</a></li><li><a href="#finance">Finance</a></li><li><a href="#experience">Experience</a></li><li><a href="#writing">Writing</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+<nav class="top" id="nav"><b>Gil Neto</b><ul><li><a href="#vault">Second brain</a></li><li><a href="#finance">Qedable</a></li><li><a href="#experience">Experience</a></li><li><a href="#writing">Writing</a></li><li><a href="#contact">Contact</a></li></ul></nav>
 
-<section class="split" id="top">
+<section class="hero" id="top">
   <div class="copy">
-    <h1>I build the <span>memory layer</span> LLM agents run on.</h1>
-    <p>Senior engineer, 12 years. The model does judgment, deterministic code does correctness. My own second brain runs on those rules every day, and I ship the B2B tools around it, infrastructure to UI.</p>
-    <div class="links"><a href="#vault">See how it works</a><a href="#writing">Writing</a><a href="#contact">Get in touch</a></div>
-    <div class="stats"><div><b data-n="951" data-stat="notes">951</b><span>notes</span></div><div><b data-n="4078" data-stat="links">4,078</b><span>links</span></div><div><b data-n="1826" data-stat="commits">1,826</b><span>commits</span></div><div><b data-n="94" data-s="%" data-stat="eval">94%</b><span>last eval</span></div></div>
+    <h1><span>The model does judgment.</span> Code does correctness.</h1>
+    <p>Senior engineer, 12 years. I build AI products on that rule, infrastructure to UI: a second brain that runs my days, and finance tools where no model ever produces a number.</p>
+    <div class="links"><a href="#writing">Writing</a><a href="#contact">Get in touch</a></div>
   </div>
-  <div class="scene" data-scene="graph"><canvas></canvas><div class="cap"></div></div>
+  <div class="doors">
+    <a href="#vault" style="--cc:var(--pink)"><span>Second brain</span><b>An agent that remembers, and says when it doesn't know.</b><i>→</i></a>
+    <a href="#finance" style="--cc:var(--teal)"><span>Qedable</span><b>Bank data, verified. AI explains it, never produces it.</b><i>→</i></a>
+  </div>
 </section>
 
 <div class="topic">
-<section class="band" id="vault" data-reveal>
-  <h2>An agent that forgets is a demo. A <span>second brain</span> remembers.</h2>
+<section class="band chapter" id="vault">
+  <div class="copy" data-reveal>
+    <h2>An agent that forgets is a demo. A <span>second brain</span> remembers.</h2>
+    <div class="stats"><div><b data-n="951" data-stat="notes">951</b><span>notes</span></div><div><b data-n="4078" data-stat="links">4,078</b><span>links</span></div><div><b data-n="1826" data-stat="commits">1,826</b><span>commits</span></div><div><b data-n="94" data-s="%" data-stat="eval">94%</b><span>last eval</span></div></div>
+  </div>
+  <div class="scene" data-scene="graph"><canvas></canvas><div class="cap"></div></div>
 </section>
 
 <section class="trace-sec">
@@ -52,8 +58,11 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
 </section>
 
 <div class="topic">
-<section class="band" id="finance" data-reveal>
-  <h2><span>Qedable</span> verifies bank data. AI explains the numbers. It never produces them.</h2>
+<section class="band chapter" id="finance">
+  <div class="copy" data-reveal>
+    <h2><span>Qedable</span> verifies bank data. AI explains the numbers. It never produces them.</h2>
+  </div>
+  <div class="connect-slot"></div>
 </section>
 
 <section class="show" id="tools">

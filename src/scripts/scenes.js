@@ -384,8 +384,8 @@ function cashew(c, w, h, e) {
   const saved = t > 9.4 && t < 11.2 || t > 13.6;
   // scenario selector
   const N = w < 560, tabs = N ? ['Current state', 'Festival in July'] : ['Current state', 'Festival in July', 'New laptop'];
-  let tx = 0; sans(c, 13);
-  tabs.forEach((s, i) => { const bw = c.measureText(s).width + 26, on = (i === 0 && !onPlan) || (i === 1 && onPlan); c.fillStyle = on ? rgba(P.amber, 0.16) : 'transparent'; rr(c, tx, 0, bw, 30, 15); c.fill(); c.strokeStyle = on ? P.amber : P.line; c.stroke(); c.fillStyle = on ? P.bright : P.dim; c.textAlign = 'left'; c.fillText(s, tx + 13, 20); tx += bw + 8; });
+  let tx = 0; sans(c, 13); const TAB = [], BTN = {};
+  tabs.forEach((s, i) => { const bw = c.measureText(s).width + 26, on = (i === 0 && !onPlan) || (i === 1 && onPlan); c.fillStyle = on ? rgba(P.amber, 0.16) : 'transparent'; rr(c, tx, 0, bw, 30, 15); c.fill(); c.strokeStyle = on ? P.amber : P.line; c.stroke(); c.fillStyle = on ? P.bright : P.dim; c.textAlign = 'left'; c.fillText(s, tx + 13, 20); TAB.push([tx + bw / 2, 16]); tx += bw + 8; });
   mono(c, 10); c.fillStyle = P.dim; c.textAlign = N ? 'left' : 'right'; c.fillText('REAL DATA · 2 ASSUMED', N ? 0 : w, N ? 52 : 20); c.textAlign = 'left';
   // levers (left)
   const lw = N ? w : w * 0.42; let y = N ? 82 : 62;
@@ -433,11 +433,20 @@ function cashew(c, w, h, e) {
   // actions
   const ay = h - 44;
   sans(c, 13); let ax = 0;
-  (N ? [['Agent Resolve', t > 3.8 && t < 4.6 && onPlan]] : [['Ask Agent', false], ['Agent Resolve', t > 3.8 && t < 4.6 && onPlan], ['Reset', false]]).forEach(([s, hot]) => { const bw2 = c.measureText(s).width + 26; c.fillStyle = hot ? rgba(P.lav, 0.25) : 'transparent'; rr(c, ax, ay, bw2, 32, 16); c.fill(); c.strokeStyle = hot ? P.lav : P.line; c.stroke(); c.fillStyle = P.text; c.fillText(s, ax + 13, ay + 21); ax += bw2 + 8; });
+  (N ? [['Agent Resolve', t > 3.8 && t < 4.6 && onPlan]] : [['Ask Agent', false], ['Agent Resolve', t > 3.8 && t < 4.6 && onPlan], ['Reset', false]]).forEach(([s, hot]) => { const bw2 = c.measureText(s).width + 26; c.fillStyle = hot ? rgba(P.lav, 0.25) : 'transparent'; rr(c, ax, ay, bw2, 32, 16); c.fill(); c.strokeStyle = hot ? P.lav : P.line; c.stroke(); c.fillStyle = P.text; c.fillText(s, ax + 13, ay + 21); BTN[s] = [ax + bw2 / 2, ay + 17]; ax += bw2 + 8; });
   const sv = 'Save Scenario', bw3 = c.measureText(sv).width + 26, sxp = w - bw3, press = t > 8.8 && t < 9.4;
   c.globalAlpha = diverged ? 1 : 0.35; c.fillStyle = press || saved ? P.amber : rgba(P.amber, 0.12); rr(c, sxp, ay, bw3, 32, 16); c.fill(); c.strokeStyle = P.amber; c.stroke();
   c.fillStyle = press || saved ? P.bg : P.amber; c.fillText(saved && onPlan ? 'Saved ✓' : sv, sxp + 13, ay + 21); c.globalAlpha = 1;
-  if (t > 7.8 && t < 9.4) { const f = 1 - ease(clamp((t - 7.8) / 0.9)), mx = sxp + bw3 / 2 + f * 60, my = ay + 18 + f * 40; c.fillStyle = P.bright; c.beginPath(); c.moveTo(mx, my); c.lineTo(mx + 11, my + 4); c.lineTo(mx + 5, my + 6); c.lineTo(mx + 3, my + 12); c.closePath(); c.fill(); }
+  // the pointer is on screen the whole loop: it clicks the scenario tab, Agent Resolve, Save, then flips back to reality and to the plan again
+  const rest = [gx + bgw * 0.55, gy + gh * 0.55], AR = BTN['Agent Resolve'], SV = [sxp + bw3 / 2, ay + 17];
+  const KF = [[0, ...rest], [0.95, ...TAB[1]], [2.3, gx + bgw * 0.45, base - 480 * scale + 14], [3.95, ...AR], [5.6, lw * 0.55, (N ? 82 : 62) + 58], [7.2, ...rest], [8.95, ...SV], [11.1, ...TAB[0]], [13.5, ...TAB[1]], [15.6, ...rest], [17, ...rest]];
+  let k = 1; while (k < KF.length - 1 && KF[k][0] < t) k++;
+  const A = KF[k - 1], B = KF[k], st = Math.max(A[0], B[0] - 0.8), u = ease(clamp((t - st) / (B[0] - st || 1)));
+  const mx = A[1] + (B[1] - A[1]) * u, my = A[2] + (B[2] - A[2]) * u;
+  [1.0, 4.0, 9.0, 11.2, 13.6].forEach(ct => { const d = t - ct; if (d > 0 && d < 0.45) { c.strokeStyle = rgba(P.bright, 0.6 * (1 - d / 0.45)); c.lineWidth = 1.5; c.beginPath(); c.arc(mx, my, 6 + d * 50, 0, 7); c.stroke(); c.lineWidth = 1; } });
+  const S = 1.35; c.save(); c.translate(mx, my); c.scale(S, S);
+  c.beginPath(); c.moveTo(0, 0); c.lineTo(0, 16); c.lineTo(4, 12.5); c.lineTo(6.8, 18.5); c.lineTo(9.2, 17.4); c.lineTo(6.5, 11.6); c.lineTo(11.6, 11.6); c.closePath();
+  c.fillStyle = P.bright; c.fill(); c.strokeStyle = P.bg; c.lineWidth = 1.1; c.stroke(); c.restore();
   setCap(t < 1 ? '<b>Current state</b>: reality is the baseline' : t < 2.6 ? '<b>new scenario</b>: the agent corrects the goal before planning' : t < 4.2 ? '<b>agent read</b>: on the current path, it doesn\'t fit' : t < 7 ? '<b>Agent Resolve</b>: levers move, each saying what it releases' : t < 8.8 ? '<b>the plan, drawn over reality</b>. Dashed = released by levers.' : t < 11.2 ? '<b>I press save</b>. The agent never does.' : t < 13.6 ? '<b>back to Current state</b>: nothing was mutated' : '<b>Festival in July</b>, saved beside reality');
 }
 
