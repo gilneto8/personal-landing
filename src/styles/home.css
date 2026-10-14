@@ -54,6 +54,8 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .stack .ly.lit .lt { fill: var(--bright); }
 .stack .ls { font: 10.5px 'Geist Mono', monospace; fill: var(--dim); }
 .trace svg.over { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.trace svg.over circle { transition: opacity .4s, transform .4s var(--ease); transform-box: fill-box; transform-origin: center; }
+.trace svg.over circle.out { opacity: 0; transform: scale(.4); }
 .trace .note { position: absolute; font: 12px 'Geist Mono', monospace; padding: 5px 10px; border-radius: 8px; background: var(--panel); border: 1px solid var(--teal); color: var(--bright); white-space: nowrap; pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .35s, transform .35s; }
 .trace .note.in { opacity: 1; transform: none; }
 .trace .note.miss { border-color: var(--amber); color: var(--amber); }

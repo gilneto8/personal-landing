@@ -179,7 +179,7 @@ const trace = traceRoot && (() => {
     const o = { g, p, col, cy, ax: cx + A + 13 }; light(o, false); return o;
   });
   function light(L, on, col) { const c = col || L.col; L.p.setAttribute('fill', rgba(c, on ? 0.32 : 0.1)); L.p.setAttribute('stroke', on ? c : rgba(L.col, 0.55)); L.p.setAttribute('stroke-width', on ? 1.8 : 1); L.g.classList.toggle('lit', on); }
-  const line = sv('polyline', { fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, over), dot = sv('circle', { r: 5, visibility: 'hidden' }, over);
+  const line = sv('polyline', { fill: 'none', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, over), dot = sv('circle', { r: 5, class: 'out' }, over);
   const box = () => traceRoot.getBoundingClientRect(), k = () => svg.getBoundingClientRect().width / W;
   const at = (L) => { const s = svg.getBoundingClientRect(), r = box(); return [s.left - r.left + L.ax * k(), s.top - r.top + L.cy * k()]; };
   const edge = el => { const b = el.getBoundingClientRect(), r = box(); return [b.left - r.left - 6, b.top - r.top + b.height / 2]; };
@@ -191,6 +191,7 @@ const trace = traceRoot && (() => {
   const travel = (pts, col, ms) => new Promise(res => {
     if (!wide()) { pts.forEach(p => p.L && light(p.L, true, p.miss ? P.amber : null)); return setTimeout(res, RM ? 0 : ms * 0.6); }
     line.setAttribute('stroke', col); dot.setAttribute('fill', col);
+    dot.style.transition = 'none'; dot.classList.remove('out'); dot.getBBox(); dot.style.transition = '';
     const seg = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])), cum = [0];
     seg.forEach(l => cum.push(cum[cum.length - 1] + l)); const tot = cum[cum.length - 1];
     const at = d => { let i = 0; while (i < seg.length - 1 && d > cum[i + 1]) i++; const u = seg[i] ? (d - cum[i]) / seg[i] : 0, a = pts[i], b = pts[i + 1]; return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u]; };
@@ -199,7 +200,9 @@ const trace = traceRoot && (() => {
       const f = RM ? 1 : Math.min(1, (now - t0) / ms), h = ease(Math.min(1, f / arrive)) * tot, t = clamp((f - 0.3) / 0.7) * tot;
       const drawn = [at(t)]; cum.forEach((c, k) => { if (c > t && c < h) drawn.push(pts[k]); }); drawn.push(at(h));
       line.setAttribute('points', f >= 1 ? '' : drawn.map(p => p.join(',')).join(' '));
-      const head = at(h); dot.setAttribute('visibility', f >= arrive ? 'hidden' : 'visible'); dot.setAttribute('cx', head[0]); dot.setAttribute('cy', head[1]);
+      const head = at(h); dot.setAttribute('cx', head[0]); dot.setAttribute('cy', head[1]);
+      // the dot waits at the destination, then fades out a beat after the line has gone, like the dots in the tools list
+      if (f >= 1) setTimeout(() => dot.classList.add('out'), RM ? 0 : 220);
       pts.forEach((p, k) => { if (p.L && cum[k] <= h + 0.5) light(p.L, true, p.miss ? P.amber : null); });
       f < 1 ? requestAnimationFrame(step) : res();
     })(t0);
@@ -224,7 +227,7 @@ const trace = traceRoot && (() => {
       await onScreen();
       const Q = TRACE_Q[n % TRACE_Q.length];
       if (n % TRACE_Q.length === 0 && feed.children.length) { feed.style.opacity = 0; await wait(500); feed.innerHTML = ''; feed.style.opacity = 1; }
-      G.forEach(L => light(L, false)); line.setAttribute('points', ''); dot.setAttribute('visibility', 'hidden'); note.classList.remove('in', 'miss');
+      G.forEach(L => light(L, false)); line.setAttribute('points', ''); dot.classList.add('out'); note.classList.remove('in', 'miss');
       const qb = bubble(Q); show(qb); cap.innerHTML = Q.cap;
       await wait(800);
       // down: question → lane above the stack → trunk → each layer in turn
