@@ -483,8 +483,8 @@ function cashew(c, w, h, e) {
   setCap(t < 1 ? '<b>Current state</b>: reality is the baseline' : t < 2.6 ? '<b>new scenario</b>: the agent corrects the goal before planning' : t < 4.2 ? '<b>agent read</b>: on the current path, it doesn\'t fit' : t < 7 ? '<b>Agent Resolve</b>: levers move, each saying what it releases' : t < 8.8 ? '<b>the plan, drawn over reality</b>. Dashed = released by levers.' : t < 11.2 ? '<b>I press save</b>. The agent never does.' : t < 13.6 ? '<b>back to Current state</b>: nothing was mutated' : '<b>Festival in July</b>, saved beside reality');
 }
 
-/* ---------- Qedable, at a glance: where bank data comes from, the three Qedable parts, where it goes ----------
-   Qedable's own parts are teal circles marked Q; everything outside Qedable is a neutral icon on a neutral line.
+/* ---------- Qaravel, at a glance: where bank data comes from, the three Qaravel parts, where it goes ----------
+   Qaravel's own parts are teal circles marked Q; everything outside Qaravel is a neutral icon on a neutral line.
    The split happens inside Qoriander. A sparkle marks the two parts where AI enters; the showcase below explains each. */
 function connect(c, w, h, e) {
   // keep the drawing compact: never wider than 760, centred in whatever room the column gives it
@@ -509,7 +509,7 @@ function connect(c, w, h, e) {
     for (let n = 0; n < 2; n++) { let dd = ((e * 0.22 + i * 0.19 + n / 2) % 1) * tot, k = 0; while (k < seg.length - 1 && dd > seg[k]) { dd -= seg[k]; k++; } const a = pts[k], b = pts[k + 1], u = dd / seg[k];
       c.fillStyle = col === own ? P.teal : P.text; c.beginPath(); c.arc(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, 3.4, 0, 7); c.fill(); }
   });
-  // outside Qedable: neutral icons
+  // outside Qaravel: neutral icons
   const ink = P.text, lab = (x, y, s, al = 'center') => { sans(c, 14); c.fillStyle = P.text; c.textAlign = al; c.fillText(s, x, y); c.textAlign = 'left'; };
   c.strokeStyle = ink; c.lineWidth = 1.6;
   { const [x, y] = ST; c.beginPath(); c.moveTo(x - 10, y - 14); c.lineTo(x + 5, y - 14); c.lineTo(x + 11, y - 8); c.lineTo(x + 11, y + 14); c.lineTo(x - 10, y + 14); c.closePath(); c.stroke(); for (let i = 0; i < 3; i++) { c.beginPath(); c.moveTo(x - 5, y - 3 + i * 6); c.lineTo(x + 6, y - 3 + i * 6); c.stroke(); } }
@@ -517,7 +517,7 @@ function connect(c, w, h, e) {
   { const [x, y] = SH; c.beginPath(); c.roundRect(x - 14, y - 12, 28, 24, 3); c.stroke(); for (let i = 1; i < 3; i++) { c.beginPath(); c.moveTo(x - 14, y - 12 + i * 8); c.lineTo(x + 14, y - 12 + i * 8); c.stroke(); } c.beginPath(); c.moveTo(x - 4, y - 12); c.lineTo(x - 4, y + 12); c.stroke(); }
   c.lineWidth = 1;
   lab(ST[0] - 12, top - 28, 'Bank statement', 'left'); lab(BK[0] - 14, bot + 40, 'Your bank', 'left'); lab(SH[0] + 14, top - 28, 'Spreadsheet', 'right');
-  // inside Qedable: teal circles marked Q
+  // inside Qaravel: teal circles marked Q
   const station = ([x, y], rad, name, sub, left) => {
     c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, rad, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.18); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 2.5; c.stroke(); c.lineWidth = 1;
     sans(c, rad * 0.95, 500); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', x, y + 1); c.textBaseline = 'alphabetic';
