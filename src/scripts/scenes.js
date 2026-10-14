@@ -317,8 +317,8 @@ const CLIENTS = [
 ];
 const NEWROWS = [['06/10', 'TPA — vendas dia', '', '412,30'], ['06/10', 'Fornecedor café', '186,00', ''], ['07/10', 'EDP', '94,12', ''], ['07/10', 'TPA — vendas dia', '', '388,90'], ['07/10', 'Renda loja', '900,00', '']];
 function kelaro(c, w, h, e) {
-  // first 2.4 s: AI sets up each bank link (v2). Then the 06:00 sync runs with no AI at all.
-  const T = e % 15.4, setup = T < 2.4, t = T - 2.4, N = w < 560;
+  // first 4.6 s: AI sets up each bank link (v2), slowly enough to read. Then the 06:00 sync runs with no AI at all.
+  const T = e % 17.6, setup = T < 4.6, t = T - 4.6, N = w < 560;
   // schedule clock
   const lw = N ? w : w * 0.44, ch = N ? 38 : 44, gap = N ? 44 : 52;
   if (setup) {
@@ -337,7 +337,7 @@ function kelaro(c, w, h, e) {
     sans(c, 14); c.fillStyle = P.bright; c.textAlign = 'left'; c.fillText(cl.n, 0, y + 14);
     y += 26;
     cl.acc.forEach(([an, st, n]) => {
-      const start = 1.2 + idx * 0.7, k = clamp((t - start) / 1.1), done = k >= 1, ex = st === 'expired', lk = clamp((T - 0.3 - idx * 0.35) / 0.5);
+      const start = 1.2 + idx * 0.7, k = clamp((t - start) / 1.1), done = k >= 1, ex = st === 'expired', lk = clamp((T - 0.5 - idx * 0.6) / 0.8);
       c.strokeStyle = P.line; rr(c, 0, y, lw, ch, 8); c.stroke();
       if (ci === 1 && t > 4.5) { c.fillStyle = rgba(P.pink, 0.05); c.fill(); }
       const dot = setup ? (lk > 0 ? P.lav : P.dim) : ex ? P.amber : done ? P.teal : k > 0 ? P.blue : P.dim;
@@ -464,7 +464,9 @@ function cashew(c, w, h, e) {
    Qedable's own parts are teal circles marked Q; everything outside Qedable is a neutral icon on a neutral line.
    The split happens inside Qoriander. A sparkle marks the two parts where AI enters; the showcase below explains each. */
 function connect(c, w, h, e) {
-  const R = 34, r = 24, top = 70, bot = h - 90, Q = [w * 0.52, (top + bot) / 2], d = 0.7071;
+  // keep the drawing compact: never wider than 760, centred in whatever room the column gives it
+  const ww = Math.min(w, 760); c.save(); c.translate((w - ww) / 2, 0); w = ww;
+  const R = 26, r = 26, top = 70, bot = h - 90, Q = [w * 0.52, (top + bot) / 2], d = 0.7071;
   const QO = [w * 0.3, top], QA = [w - 60, bot], ST = [34, top], BK = [34, bot], SH = [w - 34, top];
   const E1 = [Q[0] - R * d, Q[1] - R * d], E2 = [Q[0] - R * d, Q[1] + R * d], E3 = [Q[0] + R * d, Q[1] - R * d], E4 = [Q[0] + R * d, Q[1] + R * d];
   const ext = rgba(P.dim, 0.55), own = P.teal;
@@ -493,15 +495,18 @@ function connect(c, w, h, e) {
   c.lineWidth = 1;
   lab(ST[0] - 12, top - 28, 'Bank statement', 'left'); lab(BK[0] - 14, bot + 40, 'Your bank', 'left'); lab(SH[0] + 14, top - 28, 'Spreadsheet', 'right');
   // inside Qedable: teal circles marked Q
-  const station = ([x, y], rad, name, sub) => {
+  const station = ([x, y], rad, name, sub, left) => {
     c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, rad, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.18); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 2.5; c.stroke(); c.lineWidth = 1;
     sans(c, rad * 0.95, 500); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', x, y + 1); c.textBaseline = 'alphabetic';
-    sans(c, 14); c.fillText(name, x, y + rad + 22); if (sub) { sans(c, 12, 400); c.fillStyle = P.dim; c.fillText(sub, x, y + rad + 38); } c.textAlign = 'left';
+    // labels sit under the circle; Qoriander's sit to its left, in the gap between the two incoming lines
+    const lx = left ? x - rad - 14 : x, ly = left ? y - 1 : y + rad + 22; if (left) c.textAlign = 'right';
+    sans(c, 14); c.fillText(name, lx, ly); if (sub) { sans(c, 12, 400); c.fillStyle = P.dim; c.fillText(sub, lx, ly + 16); } c.textAlign = 'left';
   };
-  station(QO, r, 'Qocoa', 'checks every total'); station(Q, R, 'Qoriander', 'keeps the books'); station(QA, r, 'Qashew');
+  station(QO, r, 'Qocoa', 'checks every total'); station(Q, R, 'Qoriander', 'keeps the books', true); station(QA, r, 'Qashew');
   // where AI enters: a sparkle badge on Qoriander and Qashew
   const badge = (x, y) => { c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, 11, 0, 7); c.fill(); c.strokeStyle = P.lav; c.lineWidth = 1.4; c.stroke(); c.lineWidth = 1; sparkle(c, x, y, 6.5); };
   badge(Q[0] + R * d + 4, Q[1] - R * d - 4); badge(QA[0] + r * d + 4, QA[1] - r * d - 4);
+  c.restore();
 }
 
 function setCopyAll() { document.querySelectorAll('[data-copy]').forEach(el => { const k = COPY[el.dataset.copy]; el.innerHTML = `<h2>${k.h}</h2><p>${k.p}</p><ul>${k.li.map(l => `<li><b>${l[0]}</b> · ${l[1]}</li>`).join('')}</ul>`; }); }
@@ -518,27 +523,31 @@ const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* Qocoa and Qoriander play their whole loop in 10 s (Qocoa: both runs, tie-out and refusal); Qashew, the one people interact with, gets 15 s. Loop lengths: koa 20 s, kelaro 15.4 s (setup beat + sync), cashew 17 s. */
-const SPEED = { koa: 2, kelaro: 1.54, cashew: 17 / 15 };
+/* One timer for all three tools: each scene plays its whole loop once in 15 s (Qocoa: both runs; Qoriander: AI link setup, then the sync). Loop lengths in scene time: koa 20 s, kelaro 17.6 s, cashew 17 s. */
+const SPEED = { koa: 20 / 15, kelaro: 17.6 / 15, cashew: 17 / 15 };
 
 /* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
    Each tool stays up for one full loop of its scene (10 s, see SPEED), then the path lights the link to the next one, like a hop in the hero graph.
    The timer only runs while the showcase is on screen. A click jumps to that tool and restarts its loop. */
 const show = document.querySelector('.show');
 const tick = show ? (() => {
-  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 10, kelaro: 10, cashew: 15 };
-  let cur = -1, spent = 0, inView = false, last = performance.now();
+  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 15, kelaro: 15, cashew: 15 };
+  const holds = [...show.querySelectorAll('.hold')];
+  let cur = -1, spent = 0, inView = false, held = false, last = performance.now();
+  const setHold = v => { held = v; holds.forEach((b, j) => { const on = held && j === cur; b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', (on ? 'Resume the tour from ' : 'Stay on ') + btns[j].querySelector('b').firstChild.textContent.trim()); }); };
   const go = i => {
     cur = i; spent = 0;
     btns.forEach((b, j) => { b.classList.toggle('on', j === i); b.classList.toggle('done', j < i); b.style.setProperty('--p', 0); });
     show.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === keys[i]));
     scenes.forEach(s => { if (!s.pane) return; s.vis = live(s); if (s.pane.dataset.pane === keys[i]) s.t0 = performance.now() / 1000; });
+    setHold(held);
   };
   btns.forEach((b, i) => b.addEventListener('click', () => go(i)));
+  holds.forEach((b, i) => b.addEventListener('click', () => { if (i !== cur) { go(i); setHold(true); } else setHold(!held); }));
   new IntersectionObserver(([en]) => { inView = en.isIntersecting; if (inView && cur < 0) go(0); }, { threshold: 0.2 }).observe(show);
   return now => {
     const dt = (now - last) / 1000; last = now;
-    if (!inView || cur < 0 || REDUCE) return;
+    if (!inView || cur < 0 || REDUCE || held) return;
     spent += dt; const d = DWELL[keys[cur]];
     btns[cur].style.setProperty('--p', Math.min(1, spent / d));
     if (spent >= d) go((cur + 1) % keys.length);

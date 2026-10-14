@@ -58,6 +58,7 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .band.chapter { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: clamp(32px, 4vw, 72px); align-items: center; padding-block: clamp(24px, 6vh, 72px); }
 .band.chapter .copy { align-content: center; gap: 28px; }
 .band.chapter h2 { max-width: 14ch; }
+#finance + .show { margin-top: clamp(64px, 11vh, 140px); }
 .band.chapter::before { top: -10%; height: 120%; width: 62%; left: -16%; }
 
 /* second brain: the query trace, stack on the left, conversation on the right */
@@ -86,15 +87,21 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .tools li + li::before, .tools li + li::after { content: ''; position: absolute; left: 50%; top: -44px; width: 1px; height: 44px; background: var(--line); }
 .tools li + li::after { width: 2px; margin-left: -.5px; background: var(--bright); transform: scaleY(0); transform-origin: top; transition: transform .6s var(--ease); }
 .tools li:has(> .done) + li::after { transform: scaleY(1); }
-.tools button { position: relative; overflow: hidden; width: 100%; display: grid; gap: 4px; text-align: left; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; cursor: pointer; transition: border-color .4s, background .4s; }
+.tools button[data-tool] { position: relative; overflow: hidden; width: 100%; display: grid; gap: 4px; text-align: left; padding: 18px 64px 18px 20px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; cursor: pointer; transition: border-color .4s, background .4s; }
 .tools button b { color: var(--bright); font-weight: 500; font-size: 18px; }
 .tools button span { font-size: 14px; color: var(--dim); }
 .tools button b { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .tools button em { font: 400 11.5px 'Geist Mono', monospace; font-style: normal; color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 55%, transparent); border-radius: 999px; padding: 1px 8px; letter-spacing: 0; }
 .tools button.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); }
 .tools button.done { border-color: color-mix(in srgb, var(--c) 45%, var(--line)); }
-.tools button::after { content: ''; position: absolute; right: 20px; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%; background: var(--c); opacity: 0; transform: scale(.4); transition: opacity .4s, transform .4s var(--ease); }
-.tools button.on::after { opacity: 1; transform: none; }
+/* hold: stops the tour on this tool; the scene on the stage keeps looping */
+.tools .hold { position: absolute; right: 16px; top: 50%; width: 32px; height: 32px; margin-top: -16px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--dim); cursor: pointer; display: grid; place-items: center; transition: border-color .3s, color .3s, background .3s; }
+.tools .hold::before { content: ''; width: 9px; height: 10px; background: linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px, currentColor 6px 9px); }
+.tools .hold[aria-pressed="true"]::before { width: 0; height: 0; background: none; border-style: solid; border-width: 5.5px 0 5.5px 9px; border-color: transparent transparent transparent currentColor; margin-left: 2px; }
+.tools li:has(.on) .hold { border-color: color-mix(in srgb, var(--c) 60%, transparent); color: var(--c); }
+.tools .hold[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 18%, transparent); }
+.tools .hold:hover { color: var(--bright); border-color: var(--c); }
+.tools .hold:focus-visible, .tools button[data-tool]:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .tools button i { position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--c); transform: scaleX(var(--p, 0)); transform-origin: left; opacity: 0; }
 .tools button.on i { opacity: 1; }
 .stage { display: grid; background: var(--bg); border: 1px solid var(--line); border-radius: 20px; padding: clamp(20px, 2.5vw, 40px); }
@@ -156,7 +163,8 @@ footer { padding: 28px var(--pad) 40px; border-top: 1px solid var(--line); displ
   .show { grid-template-columns: 1fr; }
   .tools { grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; padding: 8px; }
   .tools li + li::before, .tools li + li::after { display: none; }
-  .tools button { padding: 12px; } .tools button span, .tools button em, .tools button::after { display: none; }
+  .tools button[data-tool] { padding: 12px 40px 12px 12px; } .tools button span, .tools button em { display: none; }
+  .tools .hold { top: 8px; right: 8px; margin-top: 0; width: 26px; height: 26px; }
   .pane .copy { grid-template-columns: 1fr; }
   .pane .copy ul { grid-column: 1; grid-row: auto; }
 }

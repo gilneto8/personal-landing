@@ -72,9 +72,9 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
       <p>Bank data comes in two ways. Qocoa reads statements and ties them out. Qoriander hands verified rows to accountants. Qashew runs the same machinery for one person, and it's where the ledger and the AI boundary were proven first.</p>
     </div>
     <ol class="tools" data-reveal>
-      <li><button type="button" data-tool="koa" style="--c:var(--blue)"><b>Qocoa <em>Engine</em></b><span>the trust layer</span><i></i></button></li>
-      <li><button type="button" data-tool="kelaro" style="--c:var(--pink)"><b>Qoriander <em>Closed beta</em></b><span>the accountant's surface</span><i></i></button></li>
-      <li><button type="button" data-tool="cashew" style="--c:var(--amber)"><b>Qashew <em>In development</em></b><span>the proving ground</span><i></i></button></li>
+      <li style="--c:var(--blue)"><button type="button" data-tool="koa"><b>Qocoa <em>Engine</em></b><span>the trust layer</span><i></i></button><button type="button" class="hold" aria-pressed="false" aria-label="Stay on Qocoa"></button></li>
+      <li style="--c:var(--pink)"><button type="button" data-tool="kelaro"><b>Qoriander <em>Closed beta</em></b><span>the accountant's surface</span><i></i></button><button type="button" class="hold" aria-pressed="false" aria-label="Stay on Qoriander"></button></li>
+      <li style="--c:var(--amber)"><button type="button" data-tool="cashew"><b>Qashew <em>In development</em></b><span>the proving ground</span><i></i></button><button type="button" class="hold" aria-pressed="false" aria-label="Stay on Qashew"></button></li>
     </ol>
   </div>
   <div class="stage">
