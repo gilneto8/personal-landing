@@ -1,4 +1,4 @@
-/* Homepage scenes: the vault (constellation, then the query trace through the stack) and the finance showcase (Koa, Kelaro, Cashew).
+/* Homepage scenes: the vault (constellation, then the query trace through the stack) and the finance showcase (Qocoa, Qoriander, Qashew; keyed by their old names koa, kelaro, cashew).
    Each canvas draws only while on screen and starts its clock the first time it is seen.
    All rows, amounts, names and chat lines are illustrative samples; the four stats are real (vault, 2026-10-08). */
 
@@ -110,7 +110,7 @@ function newQuery(t) {
   const a = Math.floor(rand() * graph.nodes.length); const prev = new Map([[a, -1]]), want = 2 + Math.floor(rand() * 5); let frontier = [a], depth = 0, end = a;
   while (depth < want && frontier.length) { const nx = []; for (const f of frontier) for (const g of graph.adj[f]) if (!prev.has(g)) { prev.set(g, f); nx.push(g); } frontier = nx; depth++; if (nx.length) end = nx[Math.floor(rand() * nx.length)]; }
   const path = []; for (let v = end; v !== -1; v = prev.get(v)) path.unshift(v);
-  const Q = ['what did we decide on rates?', 'when is the pilot call?', 'which bank formats break Koa?', 'what did I learn about bonds?', 'who replied about the contract?'];
+  const Q = ['what did we decide on rates?', 'when is the pilot call?', 'which bank formats break Qocoa?', 'what did I learn about bonds?', 'who replied about the contract?'];
   query = { path, t0: t, q: Q[Math.floor(rand() * Q.length)] };
 }
 function graphScene(c, w, h, e) {
@@ -155,7 +155,7 @@ const LAYERS = [
 const SVGNS = 'http://www.w3.org/2000/svg';
 const sv = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
 const TRACE_Q = [
-  { q: 'what\'s on today?', path: [4, 3, 2], note: 'Today.md · 3 tasks, call at 15:00', tag: 'brief', a: 'Three tasks due, one call at 15:00. The Kelaro pilot is still waiting on a reply.', src: ['ok', 'sources'], cap: '<b>brief</b> · skills → indexes → vault, back with sources' },
+  { q: 'what\'s on today?', path: [4, 3, 2], note: 'Today.md · 3 tasks, call at 15:00', tag: 'brief', a: 'Three tasks due, one call at 15:00. The Qoriander pilot is still waiting on a reply.', src: ['ok', 'sources'], cap: '<b>brief</b> · skills → indexes → vault, back with sources' },
   { q: 'teach me how bonds are priced', path: [4, 2], note: 'Courses/Bonds.md · part 1 of 4', tag: 'tutor', a: 'New course: four parts. Lesson 1 is ready as a 9-minute video with subtitles.', cap: '<b>tutor</b> · skills → vault' },
   { q: 'draft a reply to the recruiter, as me', path: [4, 2], note: 'voice samples · 214 messages', tag: 'voice', a: 'Draft saved in Gmail, in your voice. Not sent — say the word.', cap: '<b>voice</b> · skills → vault' },
   { q: 'are you sure the invoice is due on the 30th?', path: [3, 2, 1], note: 'mail · 2 Oct · invoice due 30th', tag: 'memory', a: 'Yes. It came in with the client\'s email on 2 Oct.', src: ['ok', 'sources'], cap: '<b>memory</b> · indexes → vault → inbox' },
@@ -203,7 +203,13 @@ const trace = traceRoot && (() => {
   const bubble = (Q, isA) => {
     const m = document.createElement('div'); m.className = 'm ' + (isA ? 'a' : 'q');
     m.innerHTML = isA ? `<span class="tag" style="color:${tagCol[Q.tag]}">${Q.tag}</span><br>${Q.a}${Q.src ? `<span class="src ${Q.src[0]}">${Q.src[0] === 'ok' ? '↳ ' : '✕ '}${Q.src[1]}</span>` : ''}` : Q.q;
-    feed.append(m); while (feed.children.length > 4) feed.firstChild.remove(); return m;
+    // FLIP: note where each bubble sits, add the new one, then glide the others from their old place to the new one
+    const before = new Map([...feed.children].map(c => [c, c.getBoundingClientRect().top]));
+    feed.append(m);
+    if (!RM) for (const [c, y] of before) { const d = y - c.getBoundingClientRect().top; if (d) c.animate([{ transform: `translateY(${d}px)` }, { transform: 'none' }], { duration: 600, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }); }
+    // drop only bubbles that have already scrolled past the top edge; with the feed anchored at the bottom nothing else moves
+    setTimeout(() => { const top = feed.getBoundingClientRect().top; [...feed.children].forEach(c => { if (c.getBoundingClientRect().bottom < top) c.remove(); }); }, 700);
+    return m;
   };
   const show = m => requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('in')));
   let visible = false, wake = null;
@@ -213,7 +219,7 @@ const trace = traceRoot && (() => {
     for (let n = 0; ; n++) {
       await onScreen();
       const Q = TRACE_Q[n % TRACE_Q.length];
-      if (n % TRACE_Q.length === 0) feed.innerHTML = '';
+      if (n % TRACE_Q.length === 0 && feed.children.length) { feed.style.opacity = 0; await wait(500); feed.innerHTML = ''; feed.style.opacity = 1; }
       G.forEach(L => light(L, false)); line.setAttribute('points', ''); dot.setAttribute('cx', -20); note.classList.remove('in', 'miss');
       const qb = bubble(Q); show(qb); cap.innerHTML = Q.cap;
       await wait(800);
@@ -225,7 +231,7 @@ const trace = traceRoot && (() => {
       note.style.left = (s.left - r.left + s.width * 0.94) + 'px'; note.style.top = (end[1] - 14) + 'px'; note.classList.add('in');
       await wait(1000);
       // back: up the trunk and over to where the answer will sit, then the answer appears
-      const ab = bubble(Q, true), a0 = edge(ab), ly2 = lane();
+      const ab = bubble(Q, true); await wait(620); const a0 = edge(ab), ly2 = lane();
       const hits2 = Q.path.map(i => at(G[i])).reverse();
       await travel([...hits2, [tx, ly2], [a0[0] - 20, ly2], [a0[0] - 20, a0[1]], a0], Q.miss ? P.amber : P.teal, 1300 + Q.path.length * 200);
       note.classList.remove('in'); show(ab);
@@ -236,9 +242,9 @@ const trace = traceRoot && (() => {
 })();
 
 const COPY = {
-  koa: { st: ['Engine', P.blue], h: 'Koa reads bank statements, and refuses when they don\'t add up.', p: 'A deterministic engine that turns statement PDFs into rows. Every result must tie out: opening balance plus every movement equals the closing balance. If it doesn\'t, Koa says so instead of guessing.', li: [['No model', 'in the extraction path'], ['Tie-out', 'or it\'s marked partial'], ['Statements', 'never leave the machine']] },
-  kelaro: { st: ['Closed beta', P.pink], h: 'Kelaro syncs every client\'s bank into the sheet they already use.', p: 'Each client\'s accounts sync on a schedule, each from exactly where it stopped. New movements are appended to the practice\'s own Excel or Sheets file and tied to the bank balance. An expired bank consent is skipped and flagged, never guessed around.', li: [['Scheduled', 'per account, from the last cursor'], ['Their file', 'appended, not migrated'], ['Tied out', 'or flagged for a human']] },
-  cashew: { st: ['In development', P.amber], h: 'Cashew lets me try a plan before I live it.', p: 'A personal finance manager, one user, self-hosted. A scenario is a plan drawn over my real accounts. It never edits them. Each lever says what it frees up, and every change shows against reality. The assistant can set the levers and argue with the plan, but only I can save it.', li: [['Current state', 'is just the scenario with no levers'], ['Levers', 'each states its own consequence'], ['Save', 'stays a human\'s button']] },
+  koa: { st: ['Engine', P.blue], h: 'Qocoa reads bank statements, and refuses when they don\'t add up.', p: 'A deterministic engine that turns statement PDFs into rows. Every result must tie out: opening balance plus every movement equals the closing balance. If it doesn\'t, Qocoa says so instead of guessing.', li: [['No model', 'in the extraction path'], ['Tie-out', 'or it\'s marked partial'], ['Statements', 'never leave the machine']] },
+  kelaro: { st: ['Closed beta', P.pink], h: 'Qoriander syncs every client\'s bank into the sheet they already use.', p: 'Each client\'s accounts sync on a schedule, each from exactly where it stopped. New movements are appended to the practice\'s own Excel or Sheets file and tied to the bank balance. An expired bank consent is skipped and flagged, never guessed around.', li: [['Scheduled', 'per account, from the last cursor'], ['Their file', 'appended, not migrated'], ['Tied out', 'or flagged for a human']] },
+  cashew: { st: ['In development', P.amber], h: 'Qashew lets me try a plan before I live it.', p: 'A personal finance manager, one user, self-hosted. A scenario is a plan drawn over my real accounts. It never edits them. Each lever says what it frees up, and every change shows against reality. The assistant can set the levers and argue with the plan, but only I can save it.', li: [['Current state', 'is just the scenario with no levers'], ['Levers', 'each states its own consequence'], ['Save', 'stays a human\'s button']] },
 };
 /* ---------- Koa: scan a statement, rebuild the rows, tie out — then a cycle where it refuses ---------- */
 const TX = [['02 Sep', 'Rent — September', -850.00], ['04 Sep', 'Client payment #2214', 1320.00], ['07 Sep', 'Card — groceries', -64.35], ['11 Sep', 'Insurance quarterly', -48.20], ['15 Sep', 'Transfer to savings', -300.00], ['21 Sep', 'Client payment #2219', 480.00], ['28 Sep', 'Electricity', -71.90]];
@@ -443,7 +449,7 @@ const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.fi
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ---------- Finance showcase: Koa → Kelaro → Cashew, one at a time, on a timer ----------
+/* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
    Each tool stays up for one full loop of its scene, then the path lights the link to the next one, like a hop in the hero graph.
    The timer only runs while the showcase is on screen. A click jumps to that tool and restarts its loop. */
 const show = document.querySelector('.show');

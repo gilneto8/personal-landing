@@ -38,6 +38,8 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 /* closest-side ends the gradient exactly at the box edge, so the glow fades out evenly in both directions */
 .band[id]::before { content: ''; position: absolute; z-index: -1; pointer-events: none; left: -14%; top: -90%; width: 82%; height: 280%;
   background: radial-gradient(closest-side, color-mix(in srgb, var(--cc) 22%, transparent), color-mix(in srgb, var(--cc) 9%, transparent) 55%, transparent); }
+.band[id] h2 span { color: var(--cc); }
+.trace .feed { transition: opacity .5s; }
 .band[id] .eyebrow { justify-self: start; color: var(--cc); border: 1px solid color-mix(in srgb, var(--cc) 55%, transparent); border-radius: 999px; padding: 3px 12px; }
 .list + .list { margin-top: clamp(96px, 14vh, 160px); }
 
