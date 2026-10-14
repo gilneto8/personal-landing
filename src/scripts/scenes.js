@@ -582,6 +582,7 @@ requestAnimationFrame(function frame(now) {
   requestAnimationFrame(frame);
 });
 const rio = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); rio.unobserve(en.target); } }), { threshold: 0.15 });
-document.querySelectorAll('[data-reveal]').forEach((el, i) => { el.style.transitionDelay = (el.classList.contains('row') ? (i % 5) * 70 : 0) + 'ms'; rio.observe(el); });
+// rows cascade top to bottom within their own list: the delay counts rows in that list, not every revealed element on the page
+document.querySelectorAll('[data-reveal]').forEach(el => { const k = el.classList.contains('row') ? [...el.parentElement.querySelectorAll(':scope > .row')].indexOf(el) : 0; el.style.transitionDelay = k * 90 + 'ms'; rio.observe(el); });
 addEventListener('scroll', () => document.getElementById('nav').classList.toggle('scrolled', scrollY > 20), { passive: true });
 
