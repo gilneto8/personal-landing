@@ -47,9 +47,9 @@ const CL = [
 const graph = { nodes: [], edges: [], adj: [] };
 CL.forEach((cl, ci) => { for (let i = 0; i < cl.n; i++) { const r = Math.abs(gauss()) * 0.09 + 0.01, a = rand() * 7; graph.nodes.push({ ci, fx: cl.x + Math.cos(a) * r * 1.2, fy: cl.y + Math.sin(a) * r, d: rand() }); } });
 /* Squeeze the layout into the canvas with a margin, labels included, so no cluster runs off an edge. */
-{ const fit1 = (k, lo, hi) => { const v = graph.nodes.map(n => n[k]), a = Math.min(...v), b = Math.max(...v), s = Math.min(1, (hi - lo) / (b - a)), m = (lo + hi) / 2, c = (a + b) / 2;
+{ const fit1 = (k, lo, hi) => { const v = graph.nodes.map(n => n[k]), a = Math.min(...v), b = Math.max(...v), s = k === 'fy' ? (hi - lo) / (b - a) : Math.min(1, (hi - lo) / (b - a)), m = (lo + hi) / 2, c = (a + b) / 2;
     graph.nodes.forEach(n => { n[k] = m + (n[k] - c) * s; }); CL.forEach(cl => { const ck = k === 'fx' ? 'x' : 'y'; cl[ck] = m + (cl[ck] - c) * s; }); };
-  fit1('fx', 0.05, 0.95); fit1('fy', 0.2, 0.94); }
+  fit1('fx', 0.05, 0.95); fit1('fy', 0.14, 0.95); }
 graph.adj = graph.nodes.map(() => []);
 graph.nodes.forEach((n, i) => {
   const k = 2 + Math.floor(rand() * 2);
@@ -62,7 +62,7 @@ graph.nodes.forEach((n, i) => {
 /* Obsidian-style growth: each node spawns beside a node it links to, links pull like springs,
    close nodes push apart, and a weak pull to each node's home spot settles the clusters under their labels.
    Own RNG, so the other scenes keep their seeded samples. */
-const GW = 1000, GH = 560, SPAWN = 2.8, STEP = 1 / 60, LINK = 18, REP = 14;
+const GW = 1000, GH = 700, SPAWN = 2.8, STEP = 1 / 60, LINK = 18, REP = 14;
 const NN = graph.nodes.length;
 let rs = 11; const srand = () => (rs = (rs * 16807) % 2147483647) / 2147483647;
 const sim = { x: new Float32Array(NN), y: new Float32Array(NN), vx: new Float32Array(NN), vy: new Float32Array(NN), born: new Float32Array(NN), from: new Int32Array(NN).fill(-1), live: new Uint8Array(NN), t: 0, alpha: 1, next: 0 };
@@ -435,7 +435,9 @@ function setCopyAll() { document.querySelectorAll('[data-copy]').forEach(el => {
 setCopyAll();
 const FN = { graph: graphScene, stack: stackScene, flow, koa, kelaro, cashew };
 const scenes = [...document.querySelectorAll('[data-scene]')].map(el => ({ el, k: el.dataset.scene, cv: el.querySelector('canvas'), cap: el.querySelector('.cap'), vis: false, t0: null }));
-function fitScene(s) { if (!s.cv) return; const r = s.cv.parentElement.getBoundingClientRect(), d = devicePixelRatio || 1, phone = r.width < 560 && s.el.dataset.hm; const H = phone ? +s.el.dataset.hm : +s.el.dataset.h; const LW = phone ? r.width : Math.max(r.width, s.k === 'graph' ? 340 : 640), k = r.width / LW; s.cv.style.height = (H * k) + 'px'; s.cv.width = r.width * d; s.cv.height = H * k * d; const c = s.cv.getContext('2d'); c.setTransform(d * k, 0, 0, d * k, 0, 0); s.g = { c, w: LW, h: H }; }
+/* The graph keeps a near-square world: its height follows the column width, capped by the viewport so it never outgrows the screen. */
+const graphH = w => Math.round(Math.max(380, Math.min(w * 0.72, innerHeight * 0.72, 820)));
+function fitScene(s) { if (!s.cv) return; const r = s.cv.parentElement.getBoundingClientRect(), d = devicePixelRatio || 1, phone = r.width < 560 && s.el.dataset.hm; const H = s.k === 'graph' ? graphH(r.width) : phone ? +s.el.dataset.hm : +s.el.dataset.h; const LW = phone ? r.width : Math.max(r.width, s.k === 'graph' ? 340 : 640), k = r.width / LW; s.cv.style.height = (H * k) + 'px'; s.cv.width = r.width * d; s.cv.height = H * k * d; const c = s.cv.getContext('2d'); c.setTransform(d * k, 0, 0, d * k, 0, 0); s.g = { c, w: LW, h: H }; }
 scenes.forEach(fitScene); addEventListener('resize', () => scenes.forEach(fitScene));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.vis = en.isIntersecting; if (s.vis && s.t0 === null) { s.t0 = performance.now() / 1000; if (s.k === 'chat') runChat(); } }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
