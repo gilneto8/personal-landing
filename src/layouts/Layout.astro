@@ -9,7 +9,7 @@ interface Props {
 
 const {
   title,
-  description = "Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, building agent memory and knowledge systems - capture, retrieval, evaluation - alongside B2B utilities shipped end-to-end. Open to fractional build engagements: bank-data and accounting pipelines.",
+  description = "Senior software engineer with 12 years across backend, front-end, infrastructure and teams. Founder-engineer in Lisbon who takes products from the first version to production, with AI where it helps. Open to fractional and contract build work. My own products: a second brain for AI agents, and Qaravel, verified bank data.",
   ogImage = "/og-image.png",
   type = "website",
 } = Astro.props;
@@ -87,9 +87,9 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             "@id": "https://gil-neto.com/#gil",
             name: "Gil Neto",
             url: "https://gil-neto.com",
-            jobTitle: "Founder-Engineer & Senior Software Engineer, AI Products",
+            jobTitle: "Founder-Engineer & Senior Software Engineer",
             description:
-              "Senior engineer with 12 years' experience building LLM-backed systems where the model does judgment and deterministic code does correctness. Current focus is the memory and knowledge layer such systems run on: capture, storage, retrieval and staleness detection for an LLM agent's long-term memory, running daily as a second-brain system. Also builds and operates B2B utilities end-to-end: Kelaro (accounting-automation SaaS) and Koa (deterministic document-extraction engine, the deliberate alternative to vision-LLM extraction).",
+              "Senior engineer with 12 years across backend, front-end, infrastructure and teams, who takes products from the first version to production, with AI where it helps. Works on the rule that the model does judgment and deterministic code does correctness. Builds and runs two products of his own: Qaravel, verified bank data for accountants (Qocoa, the deterministic statement-extraction engine, formerly Koa; Qoriander, the accountant's bank-to-spreadsheet sync, formerly Kelaro; Qashew, a personal finance manager), and a second brain that gives an LLM agent persistent long-term memory.",
             email: "gilneto8.work@gmail.com",
             telephone: "+351914847254",
             address: {
@@ -141,6 +141,8 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               "Persistent Memory Architecture",
               "Personal Knowledge Management",
               "Second Brain Systems",
+              "Bank Reconciliation",
+              "Accounting Automation",
               "Knowledge Base Architecture",
               "Context Engineering",
               "Semantic Retrieval",
@@ -150,7 +152,8 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
               name: "Faculdade de Ciências e Tecnologia - Universidade Nova de Lisboa",
             },
             seeks: [
-              "Fractional build engagements: bank-data and accounting pipelines",
+              "Fractional and contract build work: architecture, first working version and handover",
+              "Bank-data and accounting pipelines",
             ],
             sameAs: [
               "https://github.com/gilneto8",
@@ -166,9 +169,9 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             "@type": "WebSite",
             "@id": "https://gil-neto.com/#website",
             url: "https://gil-neto.com",
-            name: "Gil Neto — Founder-Engineer & Senior Software Engineer, AI Products",
+            name: "Gil Neto — Founder-Engineer & Senior Software Engineer",
             description:
-              "Portfolio and writings of Gil Neto, a Lisbon-based founder-engineer and senior software engineer working on AI products, building B2B utilities and LLM-backed systems end-to-end.",
+              "Portfolio and writing of Gil Neto, a Lisbon-based founder-engineer and senior software engineer who builds products end-to-end: Qaravel (verified bank data) and a second brain for AI agents.",
             inLanguage: "en",
             publisher: { "@id": "https://gil-neto.com/#gil" },
           },
@@ -180,7 +183,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Who is Gil Neto?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a Founder-Engineer, building and operating B2B utilities solo from infrastructure to UI, and as a senior software engineer on AI products, building LLM-backed systems for other people. His current focus is the memory and knowledge layer that LLM systems run on: how an agent captures what it learns, where that knowledge is stored, how it is retrieved, and how staleness is detected. He runs a second-brain system on those rules daily, and builds Kelaro (accounting-automation SaaS) and Koa (deterministic document-extraction engine).",
+                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a founder-engineer: contract build work for clients across backend, front-end and infrastructure, alongside two products of his own, built and run solo. Qaravel verifies bank data for accountants (Qocoa extracts and ties out bank statements, Qoriander syncs client bank accounts into the practice's own spreadsheet, Qashew is a personal finance manager), and the second brain gives an LLM agent persistent long-term memory with a scored nightly eval. Both run on one rule: the model does judgment, deterministic code does correctness.",
                 },
               },
               {
@@ -188,7 +191,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Does Gil Neto work on AI and LLM products?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Yes. Gil Neto works as a senior software engineer on AI products, building LLM-backed systems where the model handles judgment and deterministic code handles correctness. That covers agent memory and persistent knowledge architecture, LLM application architecture, retrieval-augmented generation, model evaluation and eval harnesses as release gates, agent orchestration, and document extraction. He is available for fractional build engagements on bank-data and accounting pipelines, based in Lisbon and remote across EU timezones.",
+                  text: "Yes. Gil Neto works as a senior software engineer on AI products, building LLM-backed systems where the model handles judgment and deterministic code handles correctness. That covers agent memory and persistent knowledge architecture, LLM application architecture, retrieval-augmented generation, model evaluation and eval harnesses as release gates, agent orchestration, and document extraction. He is open to fractional and contract build work, based in Lisbon and remote across EU timezones.",
                 },
               },
               {
@@ -196,7 +199,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What AI systems has Gil Neto built?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Koa, a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. Kelaro's LLM-backed pipeline, running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. A second-brain system giving an LLM agent persistent long-term memory: a markdown knowledge base the agent reads and writes, with capture, routing and checkpointing enforced by lifecycle hooks rather than prompts, retrieval split between generated indexes for state and vector search for specific facts, and a scored nightly eval that detects when the index has gone stale. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
+                  text: "Qocoa (formerly Koa), a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. Qoriander's pipeline (formerly Kelaro), running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. A second-brain system giving an LLM agent persistent long-term memory: a markdown knowledge base the agent reads and writes, with capture, routing and checkpointing enforced by lifecycle hooks rather than prompts, retrieval split between generated indexes for state and vector search for specific facts, and a scored nightly eval that detects when the index has gone stale. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
                 },
               },
               {
@@ -204,7 +207,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What kind of work is Gil Neto open to?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Fractional build engagements on bank-data and accounting pipelines: architecture, the first working version, and a handover. Remote-first across EU timezones, based in Lisbon.",
+                  text: "Fractional and contract build work, on whatever the product needs: the architecture, the first working version and the handover. Deepest in bank-data and accounting pipelines, LLM-backed products and agent memory. Remote across EU timezones, based in Lisbon.",
                 },
               },
               {
@@ -228,7 +231,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What products has Gil Neto shipped?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Kelaro (kelaro.io) — accounting-automation SaaS in closed beta with one active pilot in Portugal (a chartered accountant), Netherlands pending; Koa — a deterministic PDF bank-statement extraction engine powering Kelaro, built as the alternative to vision-LLM extraction; and a second-brain memory system for an LLM agent, running daily and documented publicly. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
+                  text: "Qaravel, verified bank data for accountants: Qoriander (formerly Kelaro, kelaro.io), in closed beta with one pilot practice in Portugal, and Qocoa (formerly Koa), the deterministic bank-statement extraction engine behind it, built as the alternative to vision-LLM extraction; and a second-brain memory system for an LLM agent, running daily and documented publicly. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
                 },
               },
               {
@@ -236,7 +239,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Where is Gil Neto based and what languages does he speak?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Available for fractional build work on bank-data and accounting pipelines, across EU timezones.",
+                  text: "Based in Lisbon, Portugal. Native Portuguese, proficient English, elementary Spanish. Open to fractional and contract build work, across EU timezones.",
                 },
               },
             ],

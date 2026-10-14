@@ -1,14 +1,13 @@
 # Gil Neto
 
-> Senior software engineer with 12 years' experience, working on AI products. Founder-Engineer based in Lisbon, Portugal. Current focus is the memory and knowledge layer LLM systems run on: how an agent captures what it learns, where that knowledge lives, how it is retrieved, and how staleness is detected. Also builds and operates B2B utilities end-to-end — infrastructure to UI — solo, on the principle that the model does judgment and deterministic code does correctness. Open to fractional build engagements: bank-data and accounting pipelines. Remote-first across EU timezones.
-
+> Senior software engineer with 12 years across backend, front-end, infrastructure and teams. Founder-engineer based in Lisbon, Portugal, who takes products from the first working version to production, with AI where it helps. Works on the rule that the model does judgment and deterministic code does correctness. Open to fractional and contract build work, on whatever the product needs: the architecture, the first working version and the handover. Main focus today: Qaravel, verified bank data for accountants, and a second brain for AI agents, both his own products. Remote across EU timezones.
 ## Identity
 
 - Name: Gil Neto
-- Title: Founder-Engineer & Senior Software Engineer, AI Products
+- Title: Founder-Engineer & Senior Software Engineer
 - Location: Lisbon, Portugal
 - Availability: Remote (EU timezones), Lisbon on-site
-- Open to: Fractional build - bank-data and accounting pipelines. Architecture, the first working version, and a handover.
+- Open to: Fractional and contract build work: the architecture, the first working version and the handover. Deepest in bank-data and accounting pipelines, LLM-backed products and agent memory.
 - Website: https://gil-neto.com
 - Email: gilneto8.work@gmail.com
 - GitHub: https://github.com/gilneto8
@@ -20,17 +19,19 @@
 What the AI-engineering work actually consists of, with the artifacts rather than adjectives:
 
 - **Persistent memory for LLM agents (second brain).** A markdown knowledge base an LLM agent reads and writes as long-term memory, in daily use. Capture, routing and checkpointing are enforced by lifecycle hooks rather than asked for in prompts. Retrieval runs in two rungs: generated index files for state, vector search for a specific fact, with "not in the corpus" kept as a valid answer. A scored nightly eval against a fixed question set detects when the index has gone stale, and a drift audit checks the model's own previous work.
-- **Deterministic extraction over model extraction (Koa).** Evaluated ML document-understanding for bank-statement parsing and replaced it with a deterministic Python engine. The system forces balances to reconcile and refuses loudly when it cannot, rather than returning a plausible total. A confidence score is not a proof; arithmetic is.
-- **LLM-backed pipelines with the model outside the arithmetic.** Kelaro's pipeline runs on durable Temporal workflows with retries, timeouts and operator-visible state. The model never touches the numbers.
+- **Deterministic extraction over model extraction (Qocoa, formerly Koa).** Evaluated ML document-understanding for bank-statement parsing and replaced it with a deterministic Python engine. The system forces balances to reconcile and refuses loudly when it cannot, rather than returning a plausible total. A confidence score is not a proof; arithmetic is.
+- **LLM-backed pipelines with the model outside the arithmetic.** Qoriander's pipeline (formerly Kelaro) runs on durable Temporal workflows with retries, timeouts and operator-visible state. The model never touches the numbers.
 - **Evaluation practice.** Eval corpora and holdout sets used as release gates for AI quality, rather than shipping on impressions.
 - **Agentic development pipeline.** A two-phase pipeline (`midas`) that resolves every open decision before anything is specified, with a verdict gate between the halves. Built on top of Matt Pocock's wayfinder model. Agents execute settled decisions fast and improvise undecided ones at the same speed, so the gate is the product.
 - **LLM-integration layer at Opplane** (2021–2026), alongside an observability stack and a monolith-to-microservices migration.
 
 ## Work (currently live)
 
-- [Kelaro](https://kelaro.io): Accounting-automation SaaS for fractional CFOs and accountants. Ingests bank PDFs and Open Banking (PSD2) feeds, runs deterministic extraction via Temporal-orchestrated pipeline, emits accountant-ready datasets. One active pilot in Portugal (chartered accountant); Netherlands pending.
-- Koa: Deterministic PDF bank-statement extraction engine, and the deliberate alternative to vision-LLM extraction. Three components — Python/FastAPI engine with pdfplumber + OCR fallback (Tesseract / PaddleOCR), Next.js + Prisma mapper UI for per-bank templates, isolated PII scrub container. Powers Kelaro's extraction pipeline.
-- Second brain: persistent long-term memory for an LLM agent — markdown knowledge base, hook-enforced capture, scheduled batch routing, two-rung retrieval, scored nightly eval and drift audit. Running daily and written up publicly on the blog.
+- **Qaravel**: verified bank data. AI explains the numbers, it never produces them. Three parts under one rule, the numbers are computed, never generated:
+  - **Qocoa** (formerly Koa): deterministic bank-statement extraction engine, the deliberate alternative to vision-LLM extraction. Every result must tie out (opening balance plus every movement equals the closing balance) or it is marked partial. Python/FastAPI engine with per-bank templates and a Next.js mapper UI.
+  - **Qoriander** (formerly Kelaro, currently at https://kelaro.io): syncs each client's bank accounts on a schedule into the accounting practice's own Excel or Google Sheets file, tied to the bank balance. Open Banking (PSD2) feeds plus statement PDFs through Qocoa. Closed beta with one pilot practice in Portugal.
+  - **Qashew** (formerly Cashew): a personal finance manager, one user, self-hosted, where scenarios are drawn over real accounts and the assistant can argue with the plan but never saves it. In development.
+- **Second brain**: persistent long-term memory for an LLM agent. Markdown knowledge base, hook-enforced capture, scheduled batch routing, two-rung retrieval, scored nightly eval and drift audit. Running daily and written up publicly on the blog.
 
 ## Infrastructure
 
@@ -46,7 +47,7 @@ All products run on one self-managed operational surface, owned end-to-end. Stac
 
 ## Experience
 
-- 1/2026 – Present: Independent Founder-Engineer — building and operating Kelaro and Koa, and a second-brain memory system for an LLM agent. Also engaged as a contract senior full-stack engineer on AI product work, where the current brief is the knowledge and memory layer an LLM product runs on.
+- 1/2026 – Present: Independent Founder-Engineer — contract build work for clients, alongside his own products (Qaravel and the second brain), built and run solo.
 - 4/2021 – 1/2026: Lead Software Engineer at Opplane — monolith-to-microservices migration, LLM-integration layer, observability stack, mentoring teams of 4–5.
 - 3/2020 – 4/2021: Senior Software Engineer at Opplane — design systems, front-end architecture, client-facing projects across health and retail.
 - 1/2018 – 2/2020: Front-end Lead Developer at Glartek — industrial-IoT product, enterprise deals with manufacturing and oil & gas leaders.
@@ -62,14 +63,15 @@ Portuguese (native), English (proficient), Spanish (elementary).
 
 ## Writing
 
-Technical writing on infrastructure, AI systems, agents and founder-engineering. Published on gil-neto.com and mirrored to dev.to and Hashnode with canonical URLs pointing back here.
+Technical writing on infrastructure, AI systems, agents, accounting data and founder-engineering. Published on gil-neto.com and mirrored to dev.to and Hashnode with canonical URLs pointing back here.
 
 - [Running 3 SaaS products on a single Hetzner CCX23](https://gil-neto.com/blog/running-3-saas-on-a-single-hetzner-ccx23) — one €30/month box, three products, the architecture and the trade-offs.
 - [Running a second brain on an LLM agent that forgets](https://gil-neto.com/blog/second-brain-hooks-not-prompts) — why better prompts did not fix agent reliability, and what hooks, structure and economics did.
 - [My agent had two rules and obeyed neither](https://gil-neto.com/blog/specification-is-not-decision-making) — two well-written rules that contradicted each other, and why writing a rule is not the same job as making a decision.
 - [The index was lying and the eval knew](https://gil-neto.com/blog/the-index-was-lying-and-the-eval-knew) — six weeks after hooks fixed capture, the memory was still confidently wrong; the nightly eval had been saying so for a month and nobody read the number.
+- [Three exchanges died this year. The mess lands on accountants](https://gil-neto.com/blog/three-exchanges-died-this-year) — AscendEX, BitMEX and CoinEx shut in 2026; the tax year outlives the venue, and an exchange export cannot be tied out the way a bank statement can.
 
 ## Pages
 
-- /: Home — hero, philosophy, projects, experience, stack, contact
+- /: Home — hero, second brain, Qaravel (Qocoa, Qoriander, Qashew), experience, writing, contact
 - /blog: Technical writing index

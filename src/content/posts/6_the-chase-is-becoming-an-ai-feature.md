@@ -31,7 +31,7 @@ There's also a reason the written trail matters here that I haven't seen anyone 
 
 ## What I'm doing with this
 
-I build Kelaro, a tool that syncs a practice's client bank accounts into the spreadsheet the practice already uses, and ties each import to the bank's own balance. This week I picked the chase as the first thing to build on top of it, and the reason is the bank feed.
+I build Qoriander (it started life as Kelaro), a tool that syncs a practice's client bank accounts into the spreadsheet the practice already uses, and ties each import to the bank's own balance. It's one part of Qaravel, the set of tools I'm building around verified bank data. This week I picked the chase as the first thing to build on top of it, and the reason is the bank feed.
 
 A generic document request ("please send us your October documents") is turning into a commodity, and whoever owns the ledger will ship it. However, if you already hold the bank lines, you never need to chase the bank statement, which is exactly what Pennylane chases twice a month. And the ask gets specific: one question for each bank line that doesn't match anything.
 
@@ -56,7 +56,7 @@ Three things I like about that shape:
 
 ## What I don't know yet
 
-- **I haven't built it.** Kelaro is going through a test battery right now, and everything waits on that passing. This is the plan, written down while the market moves under it.
+- **I haven't built it.** Qoriander is going through a test battery right now, and everything waits on that passing. This is the plan, written down while the market moves under it.
 - **I don't know yet what my pilot accountant actually chases.** If most of their monthly chase is payroll inputs or cash receipts, the bank feed can't see those, and the specific question covers less than I think. That's the first thing I'm asking them.
 - **TOConline could add requests at any time.** If the ledger owner here ships the asking half, mine has to be better at the question.
 - **The 68% is a vendor's survey.** I'm using it as a direction, and that's how I'd want you to read it too.
