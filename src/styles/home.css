@@ -66,7 +66,7 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .band.chapter h2 { max-width: 14ch; }
 /* a clear break between the two chapters */
 .topic:has(> #finance), .topic:has(> #experience) { margin-top: var(--chapter-gap); }
-:root { --chapter-gap: clamp(110px, 18vh, 240px); }
+:root { --chapter-gap: clamp(150px, 24vh, 320px); }
 #finance + .show { margin-top: clamp(64px, 11vh, 140px); }
 .band.chapter::before { top: -10%; height: 120%; width: 62%; left: -16%; }
 
