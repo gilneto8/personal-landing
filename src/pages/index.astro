@@ -53,32 +53,36 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
 
 </div>
 
-<div class="topic">
+<div class="topic title">
 <section class="band" id="finance" data-reveal>
   <span class="eyebrow">Finance tools</span>
   <h2>Bank data, verified. AI explains the numbers. It never produces them.</h2>
 </section>
-
-<section class="split">
-  <div class="copy" data-reveal data-copy="flow"></div>
-  <div class="scene" data-scene="flow" data-h="600"><canvas></canvas><div class="cap"></div></div>
-</section>
-<section class="split flip">
-  <div class="copy" data-reveal data-copy="koa"></div>
-  <div class="scene" data-scene="koa" data-h="470" data-hm="680"><canvas></canvas><div class="cap"></div></div>
-</section>
-<section class="split">
-  <div class="copy" data-reveal data-copy="kelaro"></div>
-  <div class="scene" data-scene="kelaro" data-h="500" data-hm="850"><canvas></canvas><div class="cap"></div></div>
-</section>
-<section class="split flip">
-  <div class="copy" data-reveal data-copy="cashew"></div>
-  <div class="scene" data-scene="cashew" data-h="600" data-hm="840"><canvas></canvas><div class="cap"></div></div>
-</section>
-
 </div>
 
 <div class="topic alt">
+<section class="show" id="tools">
+  <div class="show-side">
+    <div class="copy" data-reveal>
+      <span class="kicker" style="color:var(--teal)">How they fit</span>
+      <h2>One rule across three pieces: the numbers are computed, never generated.</h2>
+      <p>Bank data comes in two ways. Koa reads statements and ties them out. Kelaro hands verified rows to accountants. Cashew runs the same machinery for one person, and it's where the ledger and the AI boundary were proven first.</p>
+    </div>
+    <ol class="tools" data-reveal>
+      <li><button type="button" data-tool="koa" style="--c:var(--blue)"><b>Koa</b><span>the trust engine</span><i></i></button></li>
+      <li><button type="button" data-tool="kelaro" style="--c:var(--pink)"><b>Kelaro</b><span>the accountant's surface</span><i></i></button></li>
+      <li><button type="button" data-tool="cashew" style="--c:var(--amber)"><b>Cashew</b><span>the proving ground</span><i></i></button></li>
+    </ol>
+  </div>
+  <div class="stage">
+    <div class="pane" data-pane="koa"><div class="copy" data-copy="koa"></div><div class="scene" data-scene="koa" data-h="470" data-hm="680"><canvas></canvas><div class="cap"></div></div></div>
+    <div class="pane" data-pane="kelaro"><div class="copy" data-copy="kelaro"></div><div class="scene" data-scene="kelaro" data-h="500" data-hm="850"><canvas></canvas><div class="cap"></div></div></div>
+    <div class="pane" data-pane="cashew"><div class="copy" data-copy="cashew"></div><div class="scene" data-scene="cashew" data-h="600" data-hm="840"><canvas></canvas><div class="cap"></div></div></div>
+  </div>
+</section>
+</div>
+
+<div class="topic">
 <section class="list" id="experience">
   <h2 data-reveal>Experience</h2>
   <div class="rows">
@@ -90,9 +94,6 @@ const slugFor = (id: string) => id.replace(/^\d+_/, "");
   </div>
 </section>
 
-</div>
-
-<div class="topic">
 <section class="list" id="writing">
   <h2 data-reveal>Writing <a href="/blog" class="all">All posts →</a></h2>
   <div class="rows">

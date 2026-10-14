@@ -1,4 +1,4 @@
-/* Homepage scenes: the vault (constellation, stack, conversation) and the finance pieces (flow, Koa, Kelaro, Cashew).
+/* Homepage scenes: the vault (constellation, stack, conversation) and the finance showcase (Koa, Kelaro, Cashew).
    Each canvas draws only while on screen and starts its clock the first time it is seen.
    All rows, amounts, names and chat lines are illustrative samples; the four stats are real (vault, 2026-10-08). */
 
@@ -49,7 +49,10 @@ CL.forEach((cl, ci) => { for (let i = 0; i < cl.n; i++) { const r = Math.abs(gau
 /* Squeeze the layout into the canvas with a margin, labels included, so no cluster runs off an edge. */
 { const fit1 = (k, lo, hi) => { const v = graph.nodes.map(n => n[k]), a = Math.min(...v), b = Math.max(...v), s = k === 'fy' ? (hi - lo) / (b - a) : Math.min(1, (hi - lo) / (b - a)), m = (lo + hi) / 2, c = (a + b) / 2;
     graph.nodes.forEach(n => { n[k] = m + (n[k] - c) * s; }); CL.forEach(cl => { const ck = k === 'fx' ? 'x' : 'y'; cl[ck] = m + (cl[ck] - c) * s; }); };
-  fit1('fx', 0.05, 0.95); fit1('fy', 0.14, 0.95); }
+  fit1('fx', 0.09, 0.91); fit1('fy', 0.14, 0.95); }
+/* Depth for the slow camera orbit: each cluster sits on its own plane, notes jitter around it. Fractions of the canvas width. */
+const CLZ = [-0.12, 0.1, -0.06, 0.13, 0, -0.1];
+graph.nodes.forEach((n, i) => { n.z = CLZ[n.ci] + (n.d - 0.5) * 0.08 + Math.sin(i * 12.9898) * 0.03; });
 graph.adj = graph.nodes.map(() => []);
 graph.nodes.forEach((n, i) => {
   const k = 2 + Math.floor(rand() * 2);
@@ -114,7 +117,10 @@ function graphScene(c, w, h, e) {
   if (REDUCE) { if (sim.alpha) settleNow(); }
   else { let n = 0; while (sim.t < t && n++ < 4) simStep(); if (sim.t < t - 0.25) sim.t = t; }
   const sx = w / GW, sy = h / GH, ta = sim.t;
-  const pos = graph.nodes.map((n, i) => ({ x: sim.x[i] * sx + Math.sin(t * 0.3 + n.d * 9) * 2, y: sim.y[i] * sy + Math.cos(t * 0.27 + n.d * 7) * 2 }));
+  // camera circles the graph once every 50 s: yaw and pitch a quarter-turn apart, mild perspective
+  const ang = REDUCE ? 0 : t * Math.PI * 2 / 50, th = 0.28 * Math.sin(ang), ph = 0.1 * Math.cos(ang), ct = Math.cos(th), st = Math.sin(th), cp = Math.cos(ph), sp = Math.sin(ph), F = w * 3, cx = w / 2, cy = h / 2;
+  const proj = (x, y, z) => { const dx = x - cx, x1 = dx * ct + z * st, z1 = -dx * st + z * ct, dy = y - cy, y1 = dy * cp + z1 * sp, z2 = -dy * sp + z1 * cp, k = F / (F + z2); return { x: cx + x1 * k, y: cy + y1 * k, k }; };
+  const pos = graph.nodes.map((n, i) => proj(sim.x[i] * sx + Math.sin(t * 0.3 + n.d * 9) * 2, sim.y[i] * sy + Math.cos(t * 0.27 + n.d * 7) * 2, n.z * w));
   c.lineWidth = 0.6;
   for (let i = 0; i < graph.edges.length; i += 1) {
     const [a, b] = graph.edges[i]; if (!sim.live[a] || !sim.live[b]) continue;
@@ -122,8 +128,8 @@ function graphScene(c, w, h, e) {
     c.strokeStyle = same ? rgba(P.s[CL[graph.nodes[a].ci].c], 0.08 + 0.22 * (1 - f)) : rgba(P.dim, 0.05 + 0.15 * (1 - f));
     c.beginPath(); c.moveTo(pos[a].x, pos[a].y); c.lineTo(pos[b].x, pos[b].y); c.stroke();
   }
-  graph.nodes.forEach((n, i) => { if (!sim.live[i]) return; const g = ease(clamp((ta - sim.born[i]) / 0.35)); c.fillStyle = rgba(P.s[CL[n.ci].c], 0.35 + 0.4 * n.d); c.beginPath(); c.arc(pos[i].x, pos[i].y, (1 + n.d * 1.4) * g, 0, 7); c.fill(); });
-  CL.forEach((cl, ci) => { c.font = '500 12px Geist, system-ui'; c.fillStyle = rgba(P.bright, 0.8 * ease(clamp((ta - clBorn[ci] - 0.3) / 0.8))); c.textAlign = 'center'; c.fillText(cl.name, w * cl.x, h * cl.y - h * 0.12); });
+  graph.nodes.forEach((n, i) => { if (!sim.live[i]) return; const g = ease(clamp((ta - sim.born[i]) / 0.35)); c.fillStyle = rgba(P.s[CL[n.ci].c], 0.35 + 0.4 * n.d); c.beginPath(); c.arc(pos[i].x, pos[i].y, (1 + n.d * 1.4) * g * pos[i].k, 0, 7); c.fill(); });
+  CL.forEach((cl, ci) => { c.font = '500 12px Geist, system-ui'; c.fillStyle = rgba(P.bright, 0.8 * ease(clamp((ta - clBorn[ci] - 0.3) / 0.8))); c.textAlign = 'center'; const lp = proj(w * cl.x, h * cl.y - h * 0.12, CLZ[ci] * w); c.fillText(cl.name, lp.x, lp.y); });
   if (sim.next < NN || ta < SPAWN + 0.8) { setCap(`<b>${sim.next.toLocaleString('en')} notes</b> · linking…`); return; }
   if (!query || t - query.t0 > 5) newQuery(t);
   const qe = t - query.t0, steps = query.path.length - 1, k = REDUCE ? steps : Math.min(steps, qe / 0.55);
@@ -203,8 +209,6 @@ const COPY = {
   koa: { st: ['Engine', P.blue], h: 'Koa reads bank statements, and refuses when they don\'t add up.', p: 'A deterministic engine that turns statement PDFs into rows. Every result must tie out: opening balance plus every movement equals the closing balance. If it doesn\'t, Koa says so instead of guessing.', li: [['No model', 'in the extraction path'], ['Tie-out', 'or it\'s marked partial'], ['Statements', 'never leave the machine']] },
   kelaro: { st: ['Closed beta', P.pink], h: 'Kelaro syncs every client\'s bank into the sheet they already use.', p: 'Each client\'s accounts sync on a schedule, each from exactly where it stopped. New movements are appended to the practice\'s own Excel or Sheets file and tied to the bank balance. An expired bank consent is skipped and flagged, never guessed around.', li: [['Scheduled', 'per account, from the last cursor'], ['Their file', 'appended, not migrated'], ['Tied out', 'or flagged for a human']] },
   cashew: { st: ['In development', P.amber], h: 'Cashew lets me try a plan before I live it.', p: 'A personal finance manager, one user, self-hosted. A scenario is a plan drawn over my real accounts. It never edits them. Each lever says what it frees up, and every change shows against reality. The assistant can set the levers and argue with the plan, but only I can save it.', li: [['Current state', 'is just the scenario with no levers'], ['Levers', 'each states its own consequence'], ['Save', 'stays a human\'s button']] },
-  flow: { st: ['How they fit', P.teal], h: 'One rule across three pieces: the numbers are computed, never generated.', p: 'Bank data comes in two ways. Koa reads statements and ties them out. Kelaro hands verified rows to accountants. Cashew runs the same machinery for one person, and it\'s where the ledger and the AI boundary were proven first.', li: [['Koa', 'the trust engine'], ['Kelaro', 'the accountant\'s surface'], ['Cashew', 'the proving ground']] },
-  puzzle: { st: ['How they fit', P.teal], h: 'Three pieces of the same puzzle.', p: 'Each one stands on its own. Together they make one claim: verified numbers, where people already work, with AI kept to explaining and proposing.', li: [['Koa', 'extract and tie out'], ['Kelaro', 'into the accountant\'s sheet'], ['Cashew', 'personal ledger and scenarios']] },
 };
 /* ---------- Koa: scan a statement, rebuild the rows, tie out — then a cycle where it refuses ---------- */
 const TX = [['02 Sep', 'Rent — September', -850.00], ['04 Sep', 'Client payment #2214', 1320.00], ['07 Sep', 'Card — groceries', -64.35], ['11 Sep', 'Insurance quarterly', -48.20], ['15 Sep', 'Transfer to savings', -300.00], ['21 Sep', 'Client payment #2219', 480.00], ['28 Sep', 'Electricity', -71.90]];
@@ -394,55 +398,46 @@ function cashew(c, w, h, e) {
   setCap(t < 1 ? '<b>Current state</b>: reality is the baseline' : t < 2.6 ? '<b>new scenario</b>: the agent corrects the goal before planning' : t < 4.2 ? '<b>agent read</b>: on the current path, it doesn\'t fit' : t < 7 ? '<b>Agent Resolve</b>: levers move, each saying what it releases' : t < 8.8 ? '<b>the plan, drawn over reality</b>. Dashed = released by levers.' : t < 11.2 ? '<b>I press save</b>. The agent never does.' : t < 13.6 ? '<b>back to Current state</b>: nothing was mutated' : '<b>Festival in July</b>, saved beside reality');
 }
 
-/* ---------- Together · flow: top to bottom, with the AI boundary drawn in ---------- */
-function flow(c, w, h, e) {
-  const box = (x, y, bw, bh, title, sub, col, lit) => {
-    c.fillStyle = rgba(col, lit ? 0.16 : 0.08); rr(c, x, y, bw, bh, 10); c.fill(); c.strokeStyle = rgba(col, lit ? 1 : 0.55); c.lineWidth = lit ? 1.5 : 1; c.stroke(); c.lineWidth = 1;
-    sans(c, 16); c.fillStyle = P.bright; c.textAlign = 'center'; c.fillText(title, x + bw / 2, y + bh / 2 - 2);
-    mono(c, 11); c.fillStyle = P.dim; c.fillText(sub, x + bw / 2, y + bh / 2 + 18);
-  };
-  const N = {
-    pdf: [w * 0.05, 20, w * 0.3, 60], ob: [w * 0.65, 20, w * 0.3, 60],
-    koa: [w * 0.02, 170, w * 0.36, 80], kel: [w * 0.02, 360, w * 0.36, 80], cas: [w * 0.62, 360, w * 0.36, 80],
-  };
-  const mid = n => [n[0] + n[2] / 2, n[1] + n[3] / 2], top = n => [n[0] + n[2] / 2, n[1]], bot = n => [n[0] + n[2] / 2, n[1] + n[3]];
-  const edges = [[bot(N.pdf), top(N.koa), P.lav], [bot(N.koa), top(N.kel), P.blue], [bot(N.ob), [N.kel[0] + N.kel[2] * 0.8, N.kel[1]], P.blue], [bot(N.ob), top(N.cas), P.amber]];
-  edges.forEach(([a, b, col], i) => {
-    c.strokeStyle = rgba(col, 0.35); c.beginPath(); c.moveTo(a[0], a[1]); c.bezierCurveTo(a[0], (a[1] + b[1]) / 2, b[0], (a[1] + b[1]) / 2, b[0], b[1]); c.stroke();
-    for (let k = 0; k < 4; k++) { const f = ((e * 0.35 + k / 4 + i * 0.13) % 1), u = 1 - f; const my = (a[1] + b[1]) / 2; const x = u * u * u * a[0] + 3 * u * u * f * a[0] + 3 * u * f * f * b[0] + f * f * f * b[0], y = u * u * u * a[1] + 3 * u * u * f * my + 3 * u * f * f * my + f * f * f * b[1]; c.fillStyle = col; c.beginPath(); c.arc(x, y, 2.4, 0, 7); c.fill(); }
-  });
-  // donor link: Cashew proved what Kelaro inherits
-  const a = [N.cas[0], N.cas[1] + N.cas[3] / 2], b = [N.kel[0] + N.kel[2], N.kel[1] + N.kel[3] / 2];
-  c.setLineDash([3, 5]); c.strokeStyle = rgba(P.amber, 0.6); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke(); c.setLineDash([]);
-  mono(c, 10); c.fillStyle = P.amber; c.textAlign = 'center'; c.fillText('proven here first:', (a[0] + b[0]) / 2, a[1] - 22); c.fillText('ledger · AI boundary', (a[0] + b[0]) / 2, a[1] - 8);
-  const hl = Math.floor(e / 2.5) % 3;
-  box(...N.pdf, 'Bank statements', 'PDF', P.lav, false); box(...N.ob, 'Open Banking', 'PSD2 feeds', P.blue, false);
-  box(...N.koa, 'Koa', 'extract · tie out · or refuse', P.lav, hl === 0);
-  box(...N.kel, 'Kelaro', 'into the accountant\'s sheet', P.pink, hl === 1);
-  box(...N.cas, 'Cashew', 'one person\'s ledger · scenarios', P.amber, hl === 2);
-  // AI boundary
-  const by = 490; c.setLineDash([8, 6]); c.strokeStyle = rgba(P.teal, 0.8); c.beginPath(); c.moveTo(0, by); c.lineTo(w, by); c.stroke(); c.setLineDash([]);
-  mono(c, 11); c.textAlign = 'left'; c.fillStyle = P.teal; c.fillText('AI BOUNDARY', 0, by - 10);
-  c.textAlign = 'right'; c.fillStyle = P.dim; c.fillText('above: every number is computed', w, by - 10);
-  sans(c, 13, 400); c.textAlign = 'center'; c.fillStyle = P.text;
-  c.fillText('AI explains a line', N.kel[0] + N.kel[2] / 2, by + 34); c.fillText('AI proposes a change', N.cas[0] + N.cas[2] / 2, by + 34);
-  mono(c, 10); c.fillStyle = P.dim; c.fillText('read-only', N.kel[0] + N.kel[2] / 2, by + 52); c.fillText('you press save', N.cas[0] + N.cas[2] / 2, by + 52);
-  setCap(['<b>Koa</b> reads statements and ties them out, or refuses', '<b>Kelaro</b> delivers verified rows into the accountant\'s own template', '<b>Cashew</b> runs the same rules for one person, and proved them first'][hl]);
-}
-
-
 function setCopyAll() { document.querySelectorAll('[data-copy]').forEach(el => { const k = COPY[el.dataset.copy]; el.innerHTML = `<span class="kicker" style="color:${k.st[1]}">${k.st[0]}</span><h2>${k.h}</h2><p>${k.p}</p><ul>${k.li.map(l => `<li><b>${l[0]}</b> · ${l[1]}</li>`).join('')}</ul>`; }); }
 setCopyAll();
-const FN = { graph: graphScene, stack: stackScene, flow, koa, kelaro, cashew };
+const FN = { graph: graphScene, stack: stackScene, koa, kelaro, cashew };
 const scenes = [...document.querySelectorAll('[data-scene]')].map(el => ({ el, k: el.dataset.scene, cv: el.querySelector('canvas'), cap: el.querySelector('.cap'), vis: false, t0: null }));
 /* The graph keeps a near-square world: its height follows the column width, capped by the viewport so it never outgrows the screen. */
-const graphH = w => Math.round(Math.max(380, Math.min(w * 0.72, innerHeight * 0.72, 820)));
+const graphH = w => Math.round(Math.max(380, Math.min(w * 0.8, innerHeight * 0.8, 920)));
 function fitScene(s) { if (!s.cv) return; const r = s.cv.parentElement.getBoundingClientRect(), d = devicePixelRatio || 1, phone = r.width < 560 && s.el.dataset.hm; const H = s.k === 'graph' ? graphH(r.width) : phone ? +s.el.dataset.hm : +s.el.dataset.h; const LW = phone ? r.width : Math.max(r.width, s.k === 'graph' ? 340 : 640), k = r.width / LW; s.cv.style.height = (H * k) + 'px'; s.cv.width = r.width * d; s.cv.height = H * k * d; const c = s.cv.getContext('2d'); c.setTransform(d * k, 0, 0, d * k, 0, 0); s.g = { c, w: LW, h: H }; }
 scenes.forEach(fitScene); addEventListener('resize', () => scenes.forEach(fitScene));
-const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.vis = en.isIntersecting; if (s.vis && s.t0 === null) { s.t0 = performance.now() / 1000; if (s.k === 'chat') runChat(); } }), { threshold: 0.25 });
+/* A scene inside the finance showcase draws only while its pane is the active one; the showcase sets its clock. */
+scenes.forEach(s => { s.pane = s.el.closest('.pane'); });
+const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
+const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) { s.t0 = performance.now() / 1000; if (s.k === 'chat') runChat(); } }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Finance showcase: Koa → Kelaro → Cashew, one at a time, on a timer ----------
+   Each tool stays up for one full loop of its scene, then the path lights the link to the next one, like a hop in the hero graph.
+   The timer only runs while the showcase is on screen. A click jumps to that tool and restarts its loop. */
+const show = document.querySelector('.show');
+const tick = show ? (() => {
+  const btns = [...show.querySelectorAll('[data-tool]')], keys = btns.map(b => b.dataset.tool), DWELL = { koa: 20, kelaro: 13, cashew: 17 };
+  let cur = -1, spent = 0, inView = false, last = performance.now();
+  const go = i => {
+    cur = i; spent = 0;
+    btns.forEach((b, j) => { b.classList.toggle('on', j === i); b.classList.toggle('done', j < i); b.style.setProperty('--p', 0); });
+    show.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === keys[i]));
+    scenes.forEach(s => { if (!s.pane) return; s.vis = live(s); if (s.pane.dataset.pane === keys[i]) s.t0 = performance.now() / 1000; });
+  };
+  btns.forEach((b, i) => b.addEventListener('click', () => go(i)));
+  new IntersectionObserver(([en]) => { inView = en.isIntersecting; if (inView && cur < 0) go(0); }, { threshold: 0.2 }).observe(show);
+  return now => {
+    const dt = (now - last) / 1000; last = now;
+    if (!inView || cur < 0 || REDUCE) return;
+    spent += dt; const d = DWELL[keys[cur]];
+    btns[cur].style.setProperty('--p', Math.min(1, spent / d));
+    if (spent >= d) go((cur + 1) % keys.length);
+  };
+})() : () => {};
 requestAnimationFrame(function frame(now) {
+  tick(now);
   for (const s of scenes) { if (!s.vis || !s.cv) continue; const e = REDUCE ? 8 : now / 1000 - s.t0; CAP = s.cap; s.g.c.clearRect(0, 0, s.g.w, s.g.h); FN[s.k](s.g.c, s.g.w, s.g.h, Math.max(0, e)); }
   requestAnimationFrame(frame);
 });

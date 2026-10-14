@@ -6,8 +6,9 @@ nav.top b { color: var(--bright); font-weight: 500; }
 nav.top ul { list-style: none; display: flex; gap: 26px; padding: 0; color: var(--dim); }
 nav.top ul a { transition: color .3s; } nav.top ul a:hover { color: var(--bright); }
 section { padding: 0 var(--pad); }
-.split { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr); gap: 56px; align-items: center; padding-block: clamp(32px, 5vh, 64px); }
-#top { padding-block: clamp(32px, 6vh, 80px); }
+.split { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr); gap: 56px; align-items: center; padding-block: clamp(48px, 9vh, 110px); }
+/* The hero is the whole first screen (less the bar); the site proper starts on the first scroll. */
+#top { min-height: calc(100svh - 60px); grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.5fr); padding-block: 24px; }
 .split.flip { grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr); }
 .split.flip .copy { order: 2; }
 .copy { display: grid; gap: 18px; align-content: center; }
@@ -34,6 +35,36 @@ h2 { font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 3.3rem); line-height: 1.0
 .topic { padding-block: clamp(72px, 12vh, 150px) clamp(56px, 9vh, 110px); }
 .topic.alt { background: var(--panel); }
 .topic.alt .q { background: var(--line); }
+/* A topic's title sits on navy, its content on panel — the same step as hero → Second brain. */
+.topic.title { padding-block: clamp(96px, 16vh, 200px); }
+.list + .list { margin-top: clamp(96px, 14vh, 160px); }
+
+/* finance showcase: the tools on the left light up in turn, the stage on the right shows the active one */
+.show { display: grid; grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.6fr); gap: clamp(32px, 4vw, 72px); align-items: center; }
+.show-side { display: grid; gap: 40px; align-content: center; }
+.show-side h2 { font-size: clamp(1.6rem, 2.4vw, 2.4rem); }
+.tools { list-style: none; margin: 0; padding: 16px; display: grid; gap: 44px; background: var(--bg); border: 1px solid var(--line); border-radius: 18px; }
+.tools li { position: relative; }
+.tools li + li::before, .tools li + li::after { content: ''; position: absolute; left: 50%; top: -44px; width: 1px; height: 44px; background: var(--line); }
+.tools li + li::after { width: 2px; margin-left: -.5px; background: var(--bright); transform: scaleY(0); transform-origin: top; transition: transform .6s var(--ease); }
+.tools li:has(> .done) + li::after { transform: scaleY(1); }
+.tools button { position: relative; overflow: hidden; width: 100%; display: grid; gap: 4px; text-align: left; padding: 18px 20px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; cursor: pointer; transition: border-color .4s, background .4s; }
+.tools button b { color: var(--bright); font-weight: 500; font-size: 18px; }
+.tools button span { font-size: 14px; color: var(--dim); }
+.tools button.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 12%, transparent); }
+.tools button.done { border-color: color-mix(in srgb, var(--c) 45%, var(--line)); }
+.tools button::after { content: ''; position: absolute; right: 20px; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%; background: var(--c); opacity: 0; transform: scale(.4); transition: opacity .4s, transform .4s var(--ease); }
+.tools button.on::after { opacity: 1; transform: none; }
+.tools button i { position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--c); transform: scaleX(var(--p, 0)); transform-origin: left; opacity: 0; }
+.tools button.on i { opacity: 1; }
+.stage { display: grid; background: var(--bg); border: 1px solid var(--line); border-radius: 20px; padding: clamp(20px, 2.5vw, 40px); }
+.pane { grid-area: 1 / 1; display: grid; gap: 28px; align-content: start; opacity: 0; visibility: hidden; transition: opacity .4s var(--ease), visibility 0s .4s; }
+.pane.on { opacity: 1; visibility: visible; transition: opacity .7s var(--ease) .15s; }
+.pane .copy { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); column-gap: 48px; align-content: start; }
+.pane .copy > * { grid-column: 1; }
+.pane .copy ul { grid-column: 2; grid-row: 1 / span 3; align-self: end; }
+.pane .copy h2 { font-size: clamp(1.5rem, 2.2vw, 2.2rem); max-width: 24ch; }
+.pane .copy p { max-width: 52ch; }
 .band { padding-bottom: clamp(8px, 2vh, 24px); display: grid; gap: 14px; }
 .band .eyebrow { font-size: 15px; color: var(--dim); }
 .band h2 { max-width: 20ch; font-size: clamp(2.2rem, 4.4vw, 4.4rem); }
@@ -73,10 +104,17 @@ footer { padding: 28px var(--pad) 40px; border-top: 1px solid var(--line); displ
 [data-reveal].in { opacity: 1; transform: none; }
 @media (max-width: 900px) {
   nav.top ul { display: none; }
-  .split, .split.flip { grid-template-columns: 1fr; gap: 28px; min-height: auto; padding-block: 28px; }
+  .split, .split.flip { grid-template-columns: 1fr; gap: 28px; min-height: auto; padding-block: 44px; }
   .split.flip .copy { order: 0; }
   .row { grid-template-columns: 1fr; gap: 4px; }
   .feed { height: 420px; }
+  #top { grid-template-columns: 1fr; min-height: auto; }
+  .show { grid-template-columns: 1fr; }
+  .tools { grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; padding: 8px; }
+  .tools li + li::before, .tools li + li::after { display: none; }
+  .tools button { padding: 12px; } .tools button span, .tools button::after { display: none; }
+  .pane .copy { grid-template-columns: 1fr; }
+  .pane .copy ul { grid-column: 1; grid-row: auto; }
 }
 @media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; } }
 .list h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
