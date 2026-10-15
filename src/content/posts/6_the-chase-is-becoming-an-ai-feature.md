@@ -1,7 +1,7 @@
 ---
 title: "The chase is becoming an AI feature. In Portugal, nobody asks yet"
 description: "Xero and Pennylane are automating the most hated monthly job in a small practice: asking clients for missing documents. Portuguese software receives documents but never asks for them, and the useful version of the ask starts at the bank line."
-pubDate: 2026-10-14  # placeholder - set on the ship date
+pubDate: 2026-10-16
 draft: true
 tags:
   - accounting
