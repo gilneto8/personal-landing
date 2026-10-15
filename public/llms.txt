@@ -74,4 +74,5 @@ Technical writing on infrastructure, AI systems, agents, accounting data and fou
 ## Pages
 
 - /: Home — hero, second brain, Qaravel (Qocoa, Qoriander, Qashew), experience, writing, contact
+- /work: Work with me — three ways to start (paid scoping session, fixed-scope build, review), how a build runs, price floors, and a booking link
 - /blog: Technical writing index

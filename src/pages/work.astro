@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { BOOKING_URL, PRICES, eur } from "../config/work";
+import "../styles/global.css";
+import "../styles/home.css";
+---
+
+<Layout
+  title="Work with me · Gil Neto"
+  description="Fixed-scope build work, priced per deliverable: a paid scoping session, a build from architecture to handover, or a review of an existing system. Senior engineer in Lisbon, remote across EU timezones."
+>
+<nav class="top" id="nav"><a href="/"><b>Gil Neto</b></a><ul><li><a href="/#vault">Second brain</a></li><li><a href="/#finance">Qaravel</a></li><li><a href="/#writing">Writing</a></li><li><a href="/work" aria-current="page">Work with me</a></li></ul></nav>
+
+<section class="hero work-hero">
+  <div class="copy">
+    <span class="kicker" style="color:var(--teal)">Work with me</span>
+    <h1><span>Fixed scope.</span> Priced per deliverable.</h1>
+    <p>I take a product from the first version to production: backend, front-end, infrastructure, and AI where it helps. You see a written plan before you pay for a build, and every deliverable comes with its own acceptance test.</p>
+    <div class="work-ctas">
+      <a class="btn-pill" href={BOOKING_URL} rel="noopener">Book a 30-minute intro call</a>
+      <a class="btn-line" href="mailto:gilneto8.work@gmail.com">gilneto8.work@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<section class="list work-block" id="shapes">
+  <h2>Three ways to start</h2>
+  <div class="rows">
+    <div class="row"><span class="when">from {eur(PRICES.scoping)}</span><span class="what">Scoping session</span><span class="why">A paid session on your problem. It ends with a written plan and a quote, and both are yours to keep, whoever builds it.</span></div>
+    <div class="row"><span class="when">from {eur(PRICES.build)}</span><span class="what">Fixed-scope build</span><span class="why">The architecture, the first working version and the handover. Priced per deliverable, so the risk of the work running long is mine.</span></div>
+    <div class="row"><span class="when">from {eur(PRICES.review)}</span><span class="what">Review</span><span class="why">A look at a system you already run: architecture, data correctness, where the AI is allowed to decide. You get a written report with what to fix first.</span></div>
+  </div>
+</section>
+
+<section class="list work-block" id="how">
+  <h2>How a build runs</h2>
+  <div class="rows">
+    <div class="row"><span class="when">01 · Scope</span><span class="what">Decisions before code</span><span class="why">Every open question gets an answer, or gets marked out of scope, before anything is built. Each deliverable gets a price and an acceptance test we agree on up front.</span></div>
+    <div class="row"><span class="when">02 · Build</span><span class="what">The first working version</span><span class="why">The model does judgment, deterministic code does correctness. Anywhere money or records are involved, the numbers are computed and checked, never generated.</span></div>
+    <div class="row"><span class="when">03 · Handover</span><span class="what">Yours to run</span><span class="why">Documentation good enough for another engineer to take over, and the code and accounts in your name. Ownership moves to you on payment.</span></div>
+  </div>
+</section>
+
+<section class="list work-block" id="deepest">
+  <h2>Where I'm deepest</h2>
+  <div class="rows">
+    <div class="row"><span class="when">Finance data</span><span class="what">Bank-data and accounting pipelines</span><span class="why">Open banking feeds, statement extraction, reconciliation, and getting the result into the spreadsheet or system people already use.</span></div>
+    <div class="row"><span class="when">AI products</span><span class="what">LLM-backed products that hold up</span><span class="why">Evals as release gates, the model kept out of the arithmetic, and a clear line on what it is allowed to decide.</span></div>
+    <div class="row"><span class="when">Agents</span><span class="what">Memory for AI agents</span><span class="why">Capture, retrieval and a nightly test that says when the agent's knowledge has gone stale.</span></div>
+  </div>
+</section>
+
+<section class="list work-block" id="proof">
+  <h2>What I've built: Qaravel</h2>
+  <div class="rows">
+    <a class="row" href="/#finance"><span class="when">Qocoa</span><span class="what">Reads bank statements, refuses when they don't add up</span><span class="why">Opening balance plus every movement must equal the closing balance, or the result is marked partial. No model in the extraction path.</span></a>
+    <a class="row" href="/#finance"><span class="when">Qoriander</span><span class="what">Syncs client banks into the accountant's own sheet</span><span class="why">Each account on a schedule, from exactly where it stopped, tied to the bank balance. In closed beta with a practice in Portugal.</span></a>
+    <a class="row" href="/#finance"><span class="when">Qashew</span><span class="what">A plan tried before it's lived</span><span class="why">Scenarios drawn over real accounts. The assistant can argue with the plan, but only a person can save it.</span></a>
+    <a class="row" href="/blog/three-exchanges-died-this-year"><span class="when">Writing</span><span class="what">Three exchanges died this year. The mess lands on accountants</span><span class="why">Why an exchange export can't be tied out the way a bank statement can.</span></a>
+  </div>
+</section>
+
+<section class="contact work-block">
+  <h2>Let's scope <span>it.</span></h2>
+  <p style="max-width:52ch">Thirty minutes, no charge, to see whether it's a fit and which of the three shapes makes sense. Remote across EU timezones, based in Lisbon.</p>
+  <a class="btn" href={BOOKING_URL} rel="noopener">Book a call</a>
+</section>
+
+<footer><span>© 2026 Gil Neto</span><span><a href="https://github.com/gilneto8" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/gil-neto-7b44946a" rel="noopener">LinkedIn</a> · <a href="/rss.xml">RSS</a> · <a href="/blog">Blog</a></span><span>Portuguese · English · Spanish</span></footer>
+</Layout>
+
+<script>
+  const nav = document.getElementById("nav");
+  const onScroll = () => nav?.classList.toggle("scrolled", window.scrollY > 8);
+  onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+</script>
+
+<style>
+  .work-hero { min-height: auto; grid-template-columns: 1fr; padding-block: clamp(72px, 14vh, 160px) clamp(40px, 8vh, 96px); }
+  .work-hero h1 { max-width: 18ch; }
+  .work-ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+  .btn-pill { border: 1px solid var(--teal); background: var(--teal); color: var(--bg); border-radius: 999px; padding: 14px 26px; font-size: 16px; font-weight: 500; transition: background .3s, color .3s; }
+  .btn-pill:hover { background: transparent; color: var(--bright); }
+  .btn-line { border: 1px solid var(--line); color: var(--bright); border-radius: 999px; padding: 14px 26px; font-size: 16px; transition: border-color .3s; }
+  .btn-line:hover { border-color: var(--pink); }
+  .work-block { padding-block: clamp(48px, 9vh, 110px); }
+  .work-block .row .when { color: var(--teal); }
+  #how .row .when, #deepest .row .when { color: var(--dim); }
+  nav.top ul a[aria-current="page"] { color: var(--bright); }
+  @media (max-width: 900px) { .work-ctas a { text-align: center; flex: 1 1 100%; } }
+</style>
