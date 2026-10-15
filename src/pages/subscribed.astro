@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
+import "../styles/home.css";
+---
+
+<Layout title="Subscribed · Gil Neto" description="Your subscription to new posts on gil-neto.com is confirmed.">
+<nav class="top" id="nav"><a href="/"><b>Gil Neto</b></a><ul><li><a href="/blog">Writing</a></li><li><a href="/work">Work with me</a></li></ul></nav>
+<section class="contact sub-ok">
+  <span class="kicker" style="color:var(--teal)">Subscription confirmed</span>
+  <h2>You're <span>in.</span></h2>
+  <p style="max-width:52ch">You'll get one email when a new post goes out. Every email has an unsubscribe link at the bottom.</p>
+  <div class="links"><a href="/blog">Read the latest posts</a><a href="/">Back to gil-neto.com</a></div>
+</section>
+</Layout>
+
+<style>
+  .sub-ok { min-height: calc(100svh - 140px); padding-block: 80px; }
+  .sub-ok h2 span { color: var(--teal); }
+</style>
