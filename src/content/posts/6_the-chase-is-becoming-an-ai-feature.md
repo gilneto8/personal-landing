@@ -31,7 +31,7 @@ There's also a reason the written trail matters here that I haven't seen anyone 
 
 ## What I'm doing with this
 
-I build Qoriander (it started life as Kelaro), a tool that syncs a practice's client bank accounts into the spreadsheet the practice already uses, and ties each import to the bank's own balance. It's one part of Qaravel, the set of tools I'm building around verified bank data. This week I picked the chase as the first thing to build on top of it, and the reason is the bank feed.
+I build Qoriander, former Kelaro, a tool that syncs a practice's client bank accounts into the spreadsheet the practice already uses, and ties each import to the bank's own balance. It's one part of Qaravel, the set of tools I'm building around verified bank data. This week I picked the chase as the first thing to build on top of it, and the reason is the bank feed.
 
 A generic document request ("please send us your October documents") is turning into a commodity, and whoever owns the ledger will ship it. However, if you already hold the bank lines, you never need to chase the bank statement, which is exactly what Pennylane chases twice a month. And the ask gets specific: one question for each bank line that doesn't match anything.
 

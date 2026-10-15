@@ -19,8 +19,8 @@
 What the AI-engineering work actually consists of, with the artifacts rather than adjectives:
 
 - **Persistent memory for LLM agents (second brain).** A markdown knowledge base an LLM agent reads and writes as long-term memory, in daily use. Capture, routing and checkpointing are enforced by lifecycle hooks rather than asked for in prompts. Retrieval runs in two rungs: generated index files for state, vector search for a specific fact, with "not in the corpus" kept as a valid answer. A scored nightly eval against a fixed question set detects when the index has gone stale, and a drift audit checks the model's own previous work.
-- **Deterministic extraction over model extraction (Qocoa, formerly Koa).** Evaluated ML document-understanding for bank-statement parsing and replaced it with a deterministic Python engine. The system forces balances to reconcile and refuses loudly when it cannot, rather than returning a plausible total. A confidence score is not a proof; arithmetic is.
-- **LLM-backed pipelines with the model outside the arithmetic.** Qoriander's pipeline (formerly Kelaro) runs on durable Temporal workflows with retries, timeouts and operator-visible state. The model never touches the numbers.
+- **Deterministic extraction over model extraction (Qocoa, former Koa).** Evaluated ML document-understanding for bank-statement parsing and replaced it with a deterministic Python engine. The system forces balances to reconcile and refuses loudly when it cannot, rather than returning a plausible total. A confidence score is not a proof; arithmetic is.
+- **LLM-backed pipelines with the model outside the arithmetic.** The pipeline of Qoriander, former Kelaro, runs on durable Temporal workflows with retries, timeouts and operator-visible state. The model never touches the numbers.
 - **Evaluation practice.** Eval corpora and holdout sets used as release gates for AI quality, rather than shipping on impressions.
 - **Agentic development pipeline.** A two-phase pipeline (`midas`) that resolves every open decision before anything is specified, with a verdict gate between the halves. Built on top of Matt Pocock's wayfinder model. Agents execute settled decisions fast and improvise undecided ones at the same speed, so the gate is the product.
 - **LLM-integration layer at Opplane** (2021–2026), alongside an observability stack and a monolith-to-microservices migration.
@@ -28,9 +28,9 @@ What the AI-engineering work actually consists of, with the artifacts rather tha
 ## Work (currently live)
 
 - **Qaravel**: verified bank data. AI explains the numbers, it never produces them. Three parts under one rule, the numbers are computed, never generated:
-  - **Qocoa** (formerly Koa): deterministic bank-statement extraction engine, the deliberate alternative to vision-LLM extraction. Every result must tie out (opening balance plus every movement equals the closing balance) or it is marked partial. Python/FastAPI engine with per-bank templates and a Next.js mapper UI.
-  - **Qoriander** (formerly Kelaro, currently at https://kelaro.io): syncs each client's bank accounts on a schedule into the accounting practice's own Excel or Google Sheets file, tied to the bank balance. Open Banking (PSD2) feeds plus statement PDFs through Qocoa. Closed beta with one pilot practice in Portugal.
-  - **Qashew** (formerly Cashew): a personal finance manager, one user, self-hosted, where scenarios are drawn over real accounts and the assistant can argue with the plan but never saves it. In development.
+  - **Qocoa, former Koa:** deterministic bank-statement extraction engine, the deliberate alternative to vision-LLM extraction. Every result must tie out (opening balance plus every movement equals the closing balance) or it is marked partial. Python/FastAPI engine with per-bank templates and a Next.js mapper UI.
+  - **Qoriander, former Kelaro** (currently at https://kelaro.io): syncs each client's bank accounts on a schedule into the accounting practice's own Excel or Google Sheets file, tied to the bank balance. Open Banking (PSD2) feeds plus statement PDFs through Qocoa. Closed beta with one pilot practice in Portugal.
+  - **Qashew, former Cashew:** a personal finance manager, one user, self-hosted, where scenarios are drawn over real accounts and the assistant can argue with the plan but never saves it. In development.
 - **Second brain**: persistent long-term memory for an LLM agent. Markdown knowledge base, hook-enforced capture, scheduled batch routing, two-rung retrieval, scored nightly eval and drift audit. Running daily and written up publicly on the blog.
 
 ## Infrastructure
