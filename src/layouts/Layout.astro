@@ -9,7 +9,7 @@ interface Props {
 
 const {
   title,
-  description = "Senior software engineer with 12 years across backend, front-end, infrastructure and teams. Founder-engineer in Lisbon who takes products from the first version to production, with AI where it helps. Open to fractional and contract build work. My own products: a second brain for AI agents, and Qaravel, verified bank data.",
+  description = "Senior software engineer with 12 years across backend, front-end, infrastructure and teams. Founder-engineer in Lisbon who takes products from the first version to production, with AI where it helps. Open to fractional and contract build work. My own products: a second brain for AI agents, and Damasqo, verified bank data.",
   ogImage = "/og-image.png",
   type = "website",
 } = Astro.props;
@@ -89,7 +89,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             url: "https://gil-neto.com",
             jobTitle: "Founder-Engineer & Senior Software Engineer",
             description:
-              "Senior engineer with 12 years across backend, front-end, infrastructure and teams, who takes products from the first version to production, with AI where it helps. Works on the rule that the model does judgment and deterministic code does correctness. Builds and runs two products of his own: Qaravel, verified bank data for accountants (Qocoa, former Koa, the deterministic statement-extraction engine; Qoriander, former Kelaro, the accountant's bank-to-spreadsheet sync; Qashew, former Cashew, a personal finance manager), and a second brain that gives an LLM agent persistent long-term memory.",
+              "Senior engineer with 12 years across backend, front-end, infrastructure and teams, who takes products from the first version to production, with AI where it helps. Works on the rule that the model does judgment and deterministic code does correctness. Builds and runs two products of his own: Damasqo, verified bank data for accountants (Damasqo Capture, former Koa, the deterministic statement-extraction engine; Damasqo Flow, former Kelaro, the accountant's bank-to-spreadsheet sync; Damasqo Hub, former Cashew, a personal finance manager), and a second brain that gives an LLM agent persistent long-term memory.",
             email: "gilneto8.work@gmail.com",
             telephone: "+351914847254",
             address: {
@@ -171,7 +171,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
             url: "https://gil-neto.com",
             name: "Gil Neto — Founder-Engineer & Senior Software Engineer",
             description:
-              "Portfolio and writing of Gil Neto, a Lisbon-based founder-engineer and senior software engineer who builds products end-to-end: Qaravel (verified bank data) and a second brain for AI agents.",
+              "Portfolio and writing of Gil Neto, a Lisbon-based founder-engineer and senior software engineer who builds products end-to-end: Damasqo (verified bank data) and a second brain for AI agents.",
             inLanguage: "en",
             publisher: { "@id": "https://gil-neto.com/#gil" },
           },
@@ -183,7 +183,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "Who is Gil Neto?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a founder-engineer: contract build work for clients across backend, front-end and infrastructure, alongside two products of his own, built and run solo. Qaravel verifies bank data for accountants (Qocoa extracts and ties out bank statements, Qoriander syncs client bank accounts into the practice's own spreadsheet, Qashew is a personal finance manager), and the second brain gives an LLM agent persistent long-term memory with a scored nightly eval. Both run on one rule: the model does judgment, deterministic code does correctness.",
+                  text: "Gil Neto is a senior software engineer with 12 years' experience, based in Lisbon, Portugal. He works as a founder-engineer: contract build work for clients across backend, front-end and infrastructure, alongside two products of his own, built and run solo. Damasqo verifies bank data for accountants (Capture extracts and ties out bank statements, Flow syncs client bank accounts into the practice's own spreadsheet, Hub is a personal finance manager), and the second brain gives an LLM agent persistent long-term memory with a scored nightly eval. Both run on one rule: the model does judgment, deterministic code does correctness.",
                 },
               },
               {
@@ -199,7 +199,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What AI systems has Gil Neto built?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Qocoa, former Koa, a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. the pipeline of Qoriander, former Kelaro, running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. A second-brain system giving an LLM agent persistent long-term memory: a markdown knowledge base the agent reads and writes, with capture, routing and checkpointing enforced by lifecycle hooks rather than prompts, retrieval split between generated indexes for state and vector search for specific facts, and a scored nightly eval that detects when the index has gone stale. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
+                  text: "Damasqo Capture, former Koa, a deterministic document-extraction engine built as the deliberate alternative to vision-LLM extraction for bank statements: it forces balances to reconcile and refuses loudly rather than returning a plausible total. the pipeline of Damasqo Flow, former Kelaro, running on durable Temporal workflows with the model kept out of the arithmetic. An agentic development pipeline called midas, which resolves every open decision before anything is specified, built on top of Matt Pocock's wayfinder model. A second-brain system giving an LLM agent persistent long-term memory: a markdown knowledge base the agent reads and writes, with capture, routing and checkpointing enforced by lifecycle hooks rather than prompts, retrieval split between generated indexes for state and vector search for specific facts, and a scored nightly eval that detects when the index has gone stale. Earlier, the LLM-integration layer at Opplane between 2021 and 2026.",
                 },
               },
               {
@@ -231,7 +231,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? Astro.url).href;
                 name: "What products has Gil Neto shipped?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: "Qaravel, verified bank data for accountants: Qoriander, former Kelaro (kelaro.io), in closed beta with one pilot practice in Portugal, and Qocoa, former Koa, the deterministic bank-statement extraction engine behind it, built as the alternative to vision-LLM extraction; and a second-brain memory system for an LLM agent, running daily and documented publicly. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
+                  text: "Damasqo, verified bank data for accountants: Damasqo Flow, former Kelaro (kelaro.io), in closed beta with one pilot practice in Portugal, and Damasqo Capture, former Koa, the deterministic bank-statement extraction engine behind it, built as the alternative to vision-LLM extraction; and a second-brain memory system for an LLM agent, running daily and documented publicly. Previously: Lead Engineer at Opplane driving monolith-to-microservices migration and LLM-integration pipelines; Front-end Lead at Glartek shipping the core industrial-IoT product.",
                 },
               },
               {

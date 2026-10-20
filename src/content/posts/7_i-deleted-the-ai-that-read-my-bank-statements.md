@@ -79,7 +79,7 @@ A bank statement carries its own checksum. There's an opening balance at the top
                                     accounts      REJECT
 ```
 
-That's Qocoa, former Koa. Per-bank YAML templates, a Python engine that runs the template over the PDF, out comes a normalized ledger, and the tie-out sits at the end as a hard gate. It refuses rather than guesses, and refusing is a fine outcome - I'd much rather tell someone their statement needs a manual look than hand them a file that quietly poisons their books.
+That's Damasqo Capture, former Koa. Per-bank YAML templates, a Python engine that runs the template over the PDF, out comes a normalized ledger, and the tie-out sits at the end as a hard gate. It refuses rather than guesses, and refusing is a fine outcome - I'd much rather tell someone their statement needs a manual look than hand them a file that quietly poisons their books.
 
 Everything is Decimal, never float, for the same reason. The engine has a 91-test suite behind it and a target of five seconds a page on the same server, no GPU, because the whole point is that this needs no inference at all.
 

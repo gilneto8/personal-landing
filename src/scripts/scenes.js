@@ -1,4 +1,4 @@
-/* Homepage scenes: the vault (constellation, then the query trace through the stack) and the finance showcase (Qocoa, Qoriander, Qashew; keyed by their old names koa, kelaro, cashew).
+/* Homepage scenes: the vault (constellation, then the query trace through the stack) and the finance showcase (Capture, Flow, Hub; keyed by their old names koa, kelaro, cashew).
    Each canvas draws only while on screen and starts its clock the first time it is seen.
    All rows, amounts, names and chat lines are illustrative samples; the four stats are real (vault, 2026-10-08). */
 
@@ -114,7 +114,7 @@ function newQuery(t) {
   const a = Math.floor(rand() * graph.nodes.length); const prev = new Map([[a, -1]]), want = 2 + Math.floor(rand() * 5); let frontier = [a], depth = 0, end = a;
   while (depth < want && frontier.length) { const nx = []; for (const f of frontier) for (const g of graph.adj[f]) if (!prev.has(g)) { prev.set(g, f); nx.push(g); } frontier = nx; depth++; if (nx.length) end = nx[Math.floor(rand() * nx.length)]; }
   const path = []; for (let v = end; v !== -1; v = prev.get(v)) path.unshift(v);
-  const Q = ['what did we decide on rates?', 'when is the pilot call?', 'which bank formats break Qocoa?', 'what did I learn about bonds?', 'who replied about the contract?'];
+  const Q = ['what did we decide on rates?', 'when is the pilot call?', 'which bank formats break Capture?', 'what did I learn about bonds?', 'who replied about the contract?'];
   query = { path, t0: t, q: Q[Math.floor(rand() * Q.length)] };
 }
 function graphScene(c, w, h, e) {
@@ -159,7 +159,7 @@ const LAYERS = [
 const SVGNS = 'http://www.w3.org/2000/svg';
 const sv = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
 const TRACE_Q = [
-  { q: 'what\'s on today?', path: [4, 3, 2], note: 'Today.md · 3 tasks, call at 15:00', tag: 'brief', a: 'Three tasks due, one call at 15:00. The Qoriander pilot is still waiting on a reply.', src: ['ok', 'sources'], cap: '<b>brief</b> · skills → indexes → vault, back with sources' },
+  { q: 'what\'s on today?', path: [4, 3, 2], note: 'Today.md · 3 tasks, call at 15:00', tag: 'brief', a: 'Three tasks due, one call at 15:00. The Flow pilot is still waiting on a reply.', src: ['ok', 'sources'], cap: '<b>brief</b> · skills → indexes → vault, back with sources' },
   { q: 'teach me how bonds are priced', path: [4, 2], note: 'Courses/Bonds.md · part 1 of 4', tag: 'tutor', a: 'New course: four parts. Lesson 1 is ready as a 9-minute video with subtitles.', cap: '<b>tutor</b> · skills → vault' },
   { q: 'draft a reply to the recruiter, as me', path: [4, 2], note: 'voice samples · 214 messages', tag: 'voice', a: 'Draft saved in Gmail, in your voice. Not sent — say the word.', cap: '<b>voice</b> · skills → vault' },
   { q: 'are you sure the invoice is due on the 30th?', path: [3, 2, 1], note: 'mail · 2 Oct · invoice due 30th', tag: 'memory', a: 'Yes. It came in with the client\'s email on 2 Oct.', src: ['ok', 'sources'], cap: '<b>memory</b> · indexes → vault → inbox' },
@@ -253,9 +253,9 @@ const trace = traceRoot && (() => {
 })();
 
 const COPY = {
-  koa: { st: ['Engine', P.blue], h: 'Qocoa reads bank statements, and refuses when they don\'t add up.', p: 'A deterministic engine that turns statement PDFs into rows. Every result must tie out: opening balance plus every movement equals the closing balance. If it doesn\'t, Qocoa says so instead of guessing.', li: [['No model', 'in the extraction path'], ['Tie-out', 'or it\'s marked partial'], ['Statements', 'deleted once read, results gone in 30 min']] },
-  kelaro: { st: ['Closed beta', P.pink], h: 'Qoriander syncs every client\'s bank into the sheet they already use.', p: 'Each client\'s accounts sync on a schedule, each from exactly where it stopped. New movements are appended to the practice\'s own Excel or Sheets file and tied to the bank balance. An expired bank consent is skipped and flagged, never guessed around.', li: [['Scheduled', 'per account, from the last cursor'], ['Their file', 'appended, not migrated'], ['Tied out', 'or flagged for a human']] },
-  cashew: { st: ['In development', P.amber], h: 'Qashew lets me try a plan before I live it.', p: 'A personal finance manager, one user, self-hosted. A scenario is a plan drawn over my real accounts. It never edits them. Each lever says what it frees up, and every change shows against reality. The assistant can set the levers and argue with the plan, but only I can save it.', li: [['Current state', 'is just the scenario with no levers'], ['Levers', 'each states its own consequence'], ['Save', 'stays a human\'s button']] },
+  koa: { st: ['Engine', P.blue], h: 'Capture reads bank statements, and refuses when they don\'t add up.', p: 'A deterministic engine that turns statement PDFs into rows. Every result must tie out: opening balance plus every movement equals the closing balance. If it doesn\'t, Capture says so instead of guessing.', li: [['No model', 'in the extraction path'], ['Tie-out', 'or it\'s marked partial'], ['Statements', 'deleted once read, results gone in 30 min']] },
+  kelaro: { st: ['Closed beta', P.pink], h: 'Flow syncs every client\'s bank into the sheet they already use.', p: 'Each client\'s accounts sync on a schedule, each from exactly where it stopped. New movements are appended to the practice\'s own Excel or Sheets file and tied to the bank balance. An expired bank consent is skipped and flagged, never guessed around.', li: [['Scheduled', 'per account, from the last cursor'], ['Their file', 'appended, not migrated'], ['Tied out', 'or flagged for a human']] },
+  cashew: { st: ['In development', P.amber], h: 'Hub lets me try a plan before I live it.', p: 'A personal finance manager, one user, self-hosted. A scenario is a plan drawn over my real accounts. It never edits them. Each lever says what it frees up, and every change shows against reality. The assistant can set the levers and argue with the plan, but only I can save it.', li: [['Current state', 'is just the scenario with no levers'], ['Levers', 'each states its own consequence'], ['Save', 'stays a human\'s button']] },
 };
 /* ---------- Koa: scan a statement, rebuild the rows, tie out — then a cycle where it refuses ---------- */
 const TX = [['02 Sep', 'Rent — September', -850.00], ['04 Sep', 'Client payment #2214', 1320.00], ['07 Sep', 'Card — groceries', -64.35], ['11 Sep', 'Insurance quarterly', -48.20], ['15 Sep', 'Transfer to savings', -300.00], ['21 Sep', 'Client payment #2219', 480.00], ['28 Sep', 'Electricity', -71.90]];
@@ -399,7 +399,7 @@ function kelaro(c, w, h, e) {
     sans(c, 12); c.fillStyle = P.teal; c.textAlign = 'left'; c.fillText(N ? '+5 rows · ties to the bank ✓' : '+5 rows appended · balance ties to the bank ✓', sx + 8, fy + (N ? 17 : 20)); c.globalAlpha = 1;
     mono(c, 10); c.fillStyle = P.dim; c.fillText(N ? 'next sync from 07/10 06:00' : 'next sync from 07/10 06:00 · nothing fetched twice', sx, sy + rh * 13 + 22);
   }
-  setCap(setup && T < 2.8 ? '<b>you choose</b> the accounts and the sheet, then ask the AI to link them (v2)' : setup ? '<b>connecting</b>: the AI sets up the link between each bank and Qoriander, once' : t < 0.8 ? '<b>06:00</b> scheduled sync, and no AI from here on' : t < 3.4 ? '<b>syncing</b> each account from where it stopped' : t < 6.2 ? '<b>appending</b> new movements to the client\'s own sheet' : t < 9 ? '<b>tied out</b>. One expired consent skipped and flagged, nothing guessed.' : `<b>${total || 52} new movements</b> across three clients, before the accountant opens the laptop`);
+  setCap(setup && T < 2.8 ? '<b>you choose</b> the accounts and the sheet, then ask the AI to link them (v2)' : setup ? '<b>connecting</b>: the AI sets up the link between each bank and Flow, once' : t < 0.8 ? '<b>06:00</b> scheduled sync, and no AI from here on' : t < 3.4 ? '<b>syncing</b> each account from where it stopped' : t < 6.2 ? '<b>appending</b> new movements to the client\'s own sheet' : t < 9 ? '<b>tied out</b>. One expired consent skipped and flagged, nothing guessed.' : `<b>${total || 52} new movements</b> across three clients, before the accountant opens the laptop`);
 }
 
 /* ---------- Cashew: scenarios. A plan drawn over real accounts, compared to reality, saved by a human ---------- */
@@ -483,9 +483,9 @@ function cashew(c, w, h, e) {
   setCap(t < 1 ? '<b>Current state</b>: reality is the baseline' : t < 2.6 ? '<b>new scenario</b>: the agent corrects the goal before planning' : t < 4.2 ? '<b>agent read</b>: on the current path, it doesn\'t fit' : t < 7 ? '<b>Agent Resolve</b>: levers move, each saying what it releases' : t < 8.8 ? '<b>the plan, drawn over reality</b>. Dashed = released by levers.' : t < 11.2 ? '<b>I press save</b>. The agent never does.' : t < 13.6 ? '<b>back to Current state</b>: nothing was mutated' : '<b>Festival in July</b>, saved beside reality');
 }
 
-/* ---------- Qaravel, at a glance: where bank data comes from, the three Qaravel parts, where it goes ----------
-   Qaravel's own parts are teal circles marked Q; everything outside Qaravel is a neutral icon on a neutral line.
-   The split happens inside Qoriander. A sparkle marks the two parts where AI enters; the showcase below explains each. */
+/* ---------- Damasqo, at a glance: where bank data comes from, the three Damasqo parts, where it goes ----------
+   Damasqo's own parts are teal circles marked with their initial; everything outside Damasqo is a neutral icon on a neutral line.
+   The split happens inside Flow. A sparkle marks the two parts where AI enters; the showcase below explains each. */
 function connect(c, w, h, e) {
   // keep the drawing compact: never wider than 760, centred in whatever room the column gives it
   const ww = Math.min(w, 760); c.save(); c.translate((w - ww) / 2, 0); w = ww;
@@ -509,7 +509,7 @@ function connect(c, w, h, e) {
     for (let n = 0; n < 2; n++) { let dd = ((e * 0.22 + i * 0.19 + n / 2) % 1) * tot, k = 0; while (k < seg.length - 1 && dd > seg[k]) { dd -= seg[k]; k++; } const a = pts[k], b = pts[k + 1], u = dd / seg[k];
       c.fillStyle = col === own ? P.teal : P.text; c.beginPath(); c.arc(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, 3.4, 0, 7); c.fill(); }
   });
-  // outside Qaravel: neutral icons
+  // outside Damasqo: neutral icons
   const ink = P.text, lab = (x, y, s, al = 'center') => { sans(c, 14); c.fillStyle = P.text; c.textAlign = al; c.fillText(s, x, y); c.textAlign = 'left'; };
   c.strokeStyle = ink; c.lineWidth = 1.6;
   { const [x, y] = ST; c.beginPath(); c.moveTo(x - 10, y - 14); c.lineTo(x + 5, y - 14); c.lineTo(x + 11, y - 8); c.lineTo(x + 11, y + 14); c.lineTo(x - 10, y + 14); c.closePath(); c.stroke(); for (let i = 0; i < 3; i++) { c.beginPath(); c.moveTo(x - 5, y - 3 + i * 6); c.lineTo(x + 6, y - 3 + i * 6); c.stroke(); } }
@@ -517,16 +517,16 @@ function connect(c, w, h, e) {
   { const [x, y] = SH; c.beginPath(); c.roundRect(x - 14, y - 12, 28, 24, 3); c.stroke(); for (let i = 1; i < 3; i++) { c.beginPath(); c.moveTo(x - 14, y - 12 + i * 8); c.lineTo(x + 14, y - 12 + i * 8); c.stroke(); } c.beginPath(); c.moveTo(x - 4, y - 12); c.lineTo(x - 4, y + 12); c.stroke(); }
   c.lineWidth = 1;
   lab(ST[0] - 12, top - 28, 'Bank statement', 'left'); lab(BK[0] - 14, bot + 40, 'Your bank', 'left'); lab(SH[0] + 14, top - 28, 'Spreadsheet', 'right');
-  // inside Qaravel: teal circles marked Q
+  // inside Damasqo: teal circles marked with each part's initial
   const station = ([x, y], rad, name, sub, left) => {
     c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, rad, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.18); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 2.5; c.stroke(); c.lineWidth = 1;
-    sans(c, rad * 0.95, 500); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', x, y + 1); c.textBaseline = 'alphabetic';
-    // labels sit under the circle; Qoriander's sit to its left, in the gap between the two incoming lines
+    sans(c, rad * 0.95, 500); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(name[0], x, y + 1); c.textBaseline = 'alphabetic';
+    // labels sit under the circle; Flow's sit to its left, in the gap between the two incoming lines
     const lx = left ? x - rad - 14 : x, ly = left ? y - 1 : y + rad + 22; if (left) c.textAlign = 'right';
     sans(c, 14); c.fillText(name, lx, ly); if (sub) { sans(c, 12, 400); c.fillStyle = P.dim; c.fillText(sub, lx, ly + 16); } c.textAlign = 'left';
   };
-  station(QO, r, 'Qocoa', 'checks every total'); station(Q, R, 'Qoriander', 'keeps the books', true); station(QA, r, 'Qashew');
-  // where AI enters: a sparkle badge on Qoriander and Qashew
+  station(QO, r, 'Capture', 'checks every total'); station(Q, R, 'Flow', 'keeps the books', true); station(QA, r, 'Hub');
+  // where AI enters: a sparkle badge on Flow and Hub
   const badge = (x, y) => { c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, 11, 0, 7); c.fill(); c.strokeStyle = P.lav; c.lineWidth = 1.4; c.stroke(); c.lineWidth = 1; sparkle(c, x, y, 6.5); };
   badge(Q[0] + R * d + 4, Q[1] - R * d - 4); badge(QA[0] + r * d + 4, QA[1] - r * d - 4);
   c.restore();
@@ -546,10 +546,10 @@ const live = s => s.inView && (!s.pane || s.pane.classList.contains('on'));
 const io = new IntersectionObserver(es => es.forEach(en => { const s = scenes.find(x => x.el === en.target); s.inView = en.isIntersecting; s.vis = live(s); if (s.vis && s.t0 === null) s.t0 = performance.now() / 1000; }), { threshold: 0.25 });
 scenes.forEach(s => io.observe(s.el));
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* One timer for all three tools: each scene plays its whole loop once in 15 s (Qocoa: both runs; Qoriander: AI link setup, then the sync). Loop lengths in scene time: koa 20 s, kelaro 19.6 s, cashew 17 s. */
+/* One timer for all three tools: each scene plays its whole loop once in 15 s (Capture: both runs; Flow: AI link setup, then the sync). Loop lengths in scene time: koa 20 s, kelaro 19.6 s, cashew 17 s. */
 const SPEED = { koa: 20 / 15, kelaro: 19.6 / 15, cashew: 17 / 15 };
 
-/* ---------- Finance showcase: Qocoa → Qoriander → Qashew, one at a time, on a timer ----------
+/* ---------- Finance showcase: Capture → Flow → Hub, one at a time, on a timer ----------
    Each tool stays up for one full loop of its scene (10 s, see SPEED), then the path lights the link to the next one, like a hop in the hero graph.
    The timer only runs while the showcase is on screen. A click jumps to that tool and restarts its loop. */
 const show = document.querySelector('.show');
@@ -613,7 +613,7 @@ addEventListener('scroll', () => document.getElementById('nav').classList.toggle
     c.stroke(); if (k >= 2) { c.fillStyle = P.pink; c.beginPath(); c.arc(...path[2], 3.5, 0, 7); c.fill(); }
     c.globalAlpha = 1; c.lineWidth = 1;
   }
-  // qaravel: the chapter chart in miniature; grey from outside, teal inside, dots flowing through three Q stations
+  // qaravel: the chapter chart in miniature; grey from outside, teal inside, dots flowing through the three Damasqo stations
   function qaravel(c, w, h, t) {
     const QO = [w * 0.34, h * 0.3], QR = [w * 0.6, h * 0.55], QA = [w * 0.88, h * 0.78];
     const routes = [[[4, QO[1]], QO, '#8a97b8'], [[4, h * 0.82], [QR[0] - 26, h * 0.82], QR, '#8a97b8'], [QO, [QR[0] - 18, QO[1]], QR, P.teal], [QR, [QA[0] - 22, QR[1] + 6], QA, P.teal]];
@@ -621,7 +621,7 @@ addEventListener('scroll', () => document.getElementById('nav').classList.toggle
       const seg = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])), tot = seg.reduce((a, b) => a + b, 0); let d = ((t * 0.5) % 1) * tot, i = 0; while (i < seg.length - 1 && d > seg[i]) { d -= seg[i]; i++; } const a = pts[i], b = pts[i + 1], u = d / seg[i];
       c.fillStyle = col === P.teal ? P.teal : P.text; c.beginPath(); c.arc(a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, 2.6, 0, 7); c.fill(); });
     c.lineWidth = 1;
-    [QO, QR, QA].forEach(([x, y]) => { c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, 11, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.2); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 1.8; c.stroke(); c.lineWidth = 1; sans(c, 11, 600); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('Q', x, y + 0.5); c.textBaseline = 'alphabetic'; c.textAlign = 'left'; });
+    [QO, QR, QA].forEach(([x, y], i) => { c.fillStyle = P.bg; c.beginPath(); c.arc(x, y, 11, 0, 7); c.fill(); c.fillStyle = rgba(P.teal, 0.2); c.fill(); c.strokeStyle = P.teal; c.lineWidth = 1.8; c.stroke(); c.lineWidth = 1; sans(c, 11, 600); c.fillStyle = P.bright; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('CFH'[i], x, y + 0.5); c.textBaseline = 'alphabetic'; c.textAlign = 'left'; });
     sparkle(c, QR[0] + 11, QR[1] - 11, 3.6); sparkle(c, QA[0] + 11, QA[1] - 11, 3.6);
   }
   let last = performance.now();
