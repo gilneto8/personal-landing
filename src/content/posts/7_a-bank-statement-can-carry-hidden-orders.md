@@ -2,7 +2,7 @@
 title: "A bank statement can carry hidden orders for an AI"
 description: "WhatsApp's help pages had text only a chatbot could read. I planted the same kind of text in a bank statement and ran it through my extractor. The money held, the hidden order didn't get stopped."
 pubDate: 2026-10-22
-draft: true
+draft: false
 tags:
   - llm
   - prompt-injection
