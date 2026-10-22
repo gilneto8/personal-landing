@@ -12,7 +12,7 @@ const { variant = "home" } = Astro.props;
       <input id={`sub-email-${variant}`} type="email" name="EMAIL" required autocomplete="email" placeholder="you@company.com" />
       <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" class="sub-trap" />
       <input type="hidden" name="locale" value="en" />
-      <button type="submit">Subscribe</button>
+      <button type="submit" data-umami-event="subscribe-click" data-umami-event-where={variant}>Subscribe</button>
     </div>
     <p class="sub-note" data-sub-note>You'll get one email to confirm. Unsubscribe from any email.</p>
   </form>

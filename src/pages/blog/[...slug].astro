@@ -15,6 +15,24 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
+const slugFor = (id: string) => id.replace(/^\d+_/, "");
+const slug = slugFor(post.id);
+
+// Two other posts to read next: most shared tags first, then newest.
+const readNext = (await getCollection("posts", ({ data }) => !data.draft))
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({
+    p,
+    shared: p.data.tags.filter((t: string) => post.data.tags.includes(t)).length,
+  }))
+  .sort(
+    (a, b) =>
+      b.shared - a.shared ||
+      b.p.data.pubDate.getTime() - a.p.data.pubDate.getTime(),
+  )
+  .slice(0, 2)
+  .map(({ p }) => p);
+
 const canonical =
   post.data.canonical ??
   new URL(`/blog/${post.id.replace(/^\d+_/, "")}`, Astro.site ?? Astro.url)
@@ -56,7 +74,7 @@ const blogPostingJsonLd = {
       >
     </div>
 
-    <article>
+    <article data-read-depth={slug}>
       <header class="mb-12">
         <div class="flex flex-wrap gap-2 mb-4">
           {
@@ -93,18 +111,72 @@ const blogPostingJsonLd = {
         <Content />
       </div>
     </article>
+    {
+      readNext.length > 0 && (
+        <nav class="read-next" aria-label="Read next">
+          <span class="read-next-kicker">Read next</span>
+          <ul>
+            {readNext.map((p) => (
+              <li>
+                <a
+                  href={`/blog/${slugFor(p.id)}`}
+                  data-umami-event="read-next"
+                  data-umami-event-from={slug}
+                  data-umami-event-to={slugFor(p.id)}
+                >
+                  <span class="read-next-title">{p.data.title}</span>
+                  <span class="read-next-desc">{p.data.description}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
     <Subscribe variant="post" />
     <footer class="post-cta">
       <div>
         <span class="post-cta-kicker">Open to fractional and contract build work</span>
         <p>The architecture, the first working version and the handover. Remote across EU timezones, based in Lisbon.</p>
       </div>
-      <a class="post-cta-btn" href="/work">How I work, and prices</a>
+      <a class="post-cta-btn" href="/work" data-umami-event="post-cta-work" data-umami-event-from={slug}>How I work, and prices</a>
     </footer>
   </main>
 </Layout>
 
+<script>
+  // Scroll depth through the article body, sent once per milestone, so a
+  // one-page visit still shows whether the post was read.
+  const article = document.querySelector<HTMLElement>("article[data-read-depth]");
+  if (article) {
+    const post = article.dataset.readDepth;
+    const sent = new Set<number>();
+    const check = () => {
+      const r = article.getBoundingClientRect();
+      const seen = (window.innerHeight - r.top) / r.height;
+      for (const m of [25, 50, 75, 100]) {
+        if (seen * 100 >= m && !sent.has(m)) {
+          const umami = (window as any).umami;
+          if (!umami) return; // tracker not loaded yet: retry on the next scroll
+          sent.add(m);
+          umami.track("read-depth", { post, depth: m });
+        }
+      }
+      if (sent.size === 4) window.removeEventListener("scroll", check);
+    };
+    window.addEventListener("scroll", check, { passive: true });
+  }
+</script>
+
 <style>
+  .read-next { margin: 56px 0; padding-top: 32px; border-top: 1px solid var(--line); }
+  .read-next-kicker { font-size: 14px; color: var(--teal); display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+  .read-next-kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .read-next ul { display: grid; gap: 20px; }
+  .read-next a { display: grid; gap: 6px; }
+  .read-next-title { font-size: 1.25rem; font-weight: 500; color: var(--bright); transition: color .3s; }
+  .read-next a:hover .read-next-title, .read-next a:focus-visible .read-next-title { color: var(--teal); }
+  .read-next-desc { color: var(--text); max-width: 65ch; }
   .post-cta { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; }
   .post-cta-kicker { font-size: 14px; color: var(--pink); display: flex; align-items: center; gap: 8px; }
   .post-cta-kicker::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
