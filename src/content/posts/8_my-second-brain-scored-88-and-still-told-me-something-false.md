@@ -2,7 +2,7 @@
 title: "My second brain scored 88% and still told me something false"
 description: "My agent's nightly exam passed 42 of 48 questions on the same morning it showed me a payment as unconfirmed. The exam checked whether it could find what my notes say. It never checked whether the notes were true."
 pubDate: 2026-10-29
-draft: true
+draft: false
 tags:
   - llm
   - agents
