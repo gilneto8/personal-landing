@@ -25,31 +25,41 @@ const tested = Object.keys(summ).sort((a, b) => summ[b].score - summ[a].score);
 // ── the plug: the brain stays put; models take turns in its model slot ─────────────────────
 const SHELF = ["Opus 5.5", "Fable 5.2", "Haiku 5.5", "Sonnet 5.5", "Gemini 4 Neon"];
 const SHELF_COLOR = ["#7aa2ff", "#ffb547", "#2ec4b6", "#c792ea", "#ff5d8f"];
-const FIXED: [string, string][] = [["Notes", "markdown, git"], ["Tools", "index · search"], ["Rules", "AGENTS.md"], ["Seam", "one env file"]];
+// What sits under the model, in the order a request goes through it.
+const FIXED: [string, string][] = [
+  ["Seam", "picks the model and the agent tool"],
+  ["Rules", "AGENTS.md: what the model must follow"],
+  ["Tools", "index · search · lint, no model inside"],
+  ["Notes", "markdown in git"],
+];
 function plug(): string {
   const W = 560, cw = 98, ch = 28, gap = 8, shelfY = 22;
   const sx = (i: number) => (W - (SHELF.length * cw + (SHELF.length - 1) * gap)) / 2 + i * (cw + gap);
-  const bx = 20, by = 150, bw = W - 40, bh = 190, slotW = 150, slotH = 34, slotX = (W - slotW) / 2, slotY = by + 30;
+  const slotW = 150, slotH = 34, bw = 380, bx = (W - bw) / 2, by = 140, slotX = (W - slotW) / 2, slotY = by + 30;
+  const rowH = 40, rowGap = 12, rowY0 = slotY + slotH + 40, rowX = bx + 20, rowW = bw - 40;
+  const bh = rowY0 - by + FIXED.length * (rowH + rowGap) + 8;
   let g = `<text class="ax" x="${W / 2}" y="10" text-anchor="middle">models · any company</text>`;
-  // connectors: from each chip down to the slot, drawn while that chip is in use
   SHELF.forEach((_, i) => {
     const x = sx(i) + cw / 2, y0 = shelfY + ch, ym = shelfY + ch + 44;
     g += `<path class="wire" style="--i:${i};--c:${SHELF_COLOR[i]}" pathLength="1" d="M${x} ${y0} V${ym} H${W / 2} V${slotY}"/>`;
   });
   g += `<rect class="brain" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="16"/><text class="ax" x="${bx + 16}" y="${by + 20}">second brain</text>`;
-  g += `<rect class="slot" x="${slotX}" y="${slotY}" width="${slotW}" height="${slotH}" rx="10"/><text class="ax" x="${W / 2}" y="${slotY + slotH + 16}" text-anchor="middle">model slot</text>`;
+  // the spine: one line from the slot down through every layer
+  const lastMid = rowY0 + (FIXED.length - 1) * (rowH + rowGap) + rowH / 2;
+  g += `<line class="spine" x1="${W / 2}" y1="${slotY + slotH}" x2="${W / 2}" y2="${lastMid}" pathLength="1"/>`;
+  g += `<rect class="slot" x="${slotX}" y="${slotY}" width="${slotW}" height="${slotH}" rx="10"/><text class="ax" x="${slotX + slotW + 10}" y="${slotY + 21}">model slot</text>`;
   g += `<circle class="port" cx="${W / 2}" cy="${slotY}" r="3"/>`;
-  const fw = (bw - 32 - 3 * 10) / 4;
   FIXED.forEach(([a, b], i) => {
-    const x = bx + 16 + i * (fw + 10), y = by + 108;
-    g += `<rect class="fix" x="${x}" y="${y}" width="${fw}" height="58" rx="10"/><text class="lb" x="${x + 12}" y="${y + 24}">${a}</text><text class="ax" x="${x + 12}" y="${y + 42}">${b}</text>`;
+    const y = rowY0 + i * (rowH + rowGap);
+    g += `<g class="layer" style="--i:${i}"><rect class="fix" x="${rowX}" y="${y}" width="${rowW}" height="${rowH}" rx="10"/><circle class="joint" cx="${W / 2}" cy="${y}" r="2.5"/>
+      <text class="lb" x="${rowX + 14}" y="${y + 25}">${a}</text><text class="ax" x="${rowX + rowW - 14}" y="${y + 25}" text-anchor="end">${b}</text></g>`;
   });
   SHELF.forEach((n, i) => {
     const x = sx(i);
     g += `<g class="chip" style="--i:${i};--c:${SHELF_COLOR[i]}"><rect x="${x}" y="${shelfY}" width="${cw}" height="${ch}" rx="8"/><text class="lb" x="${x + cw / 2}" y="${shelfY + 18}" text-anchor="middle">${n}</text></g>`;
     g += `<text class="lb inslot" style="--i:${i}" x="${W / 2}" y="${slotY + 22}" text-anchor="middle">${n}</text>`;
   });
-  return `<svg viewBox="0 0 ${W} ${by + bh + 2}" role="img" aria-label="The second brain stays the same; models take turns in its model slot">${g}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${by + bh + 2}" role="img" aria-label="The second brain stays the same; models take turns in its model slot, above the seam, rules, tools and notes">${g}</svg>`;
 }
 
 // ── the bench loop: five steps on a ring, a light going round ──────────────────────────────
@@ -401,7 +411,12 @@ const payload = {
   .plug :global(.brain) { fill: none; stroke: var(--line); }
   .plug :global(.slot) { fill: none; stroke: var(--pink); stroke-dasharray: 4 4; }
   .plug :global(.port) { fill: var(--pink); }
-  .plug :global(.fix) { fill: none; stroke: var(--line); }
+  .plug :global(.fix) { fill: var(--bg); stroke: var(--line); }
+  .plug :global(.joint) { fill: var(--pink); }
+  .plug :global(.spine) { stroke: var(--pink); stroke-opacity: .55; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s var(--ease) .5s; }
+  .plug.in :global(.spine) { stroke-dashoffset: 0; }
+  .plug :global(.layer) { opacity: 0; transform: translateY(8px); transition: opacity .6s var(--ease), transform .6s var(--ease); transition-delay: calc(.4s + var(--i) * 90ms); }
+  .plug.in :global(.layer) { opacity: 1; transform: none; }
   .plug :global(.chip rect) { fill: var(--bg); stroke: color-mix(in srgb, var(--c) 45%, var(--line)); }
   .plug :global(.chip) { opacity: 0; transform: translateY(-10px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--i) * 80ms); }
   .plug.in :global(.chip) { opacity: 1; transform: none; }
@@ -472,8 +487,8 @@ const payload = {
     .lab-pair { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .wipe, .plug :global(.chip), .loop :global(.st), .rel :global(.nd) { transition: none; clip-path: none; opacity: 1; transform: none; }
-    .rel :global(.lk), .loop :global(.ring) { stroke-dashoffset: 0; transition: none; }
+    .wipe, .plug :global(.chip), .plug :global(.layer), .loop :global(.st), .rel :global(.nd) { transition: none; clip-path: none; opacity: 1; transform: none; }
+    .rel :global(.lk), .loop :global(.ring), .plug :global(.spine) { stroke-dashoffset: 0; transition: none; }
     .swap b, .plug :global(.inslot), .plug :global(.chip rect), .plug :global(.wire), .loop :global(.halo), .chart :global(*) { animation: none !important; }
     .swap b:first-child, .plug :global(.inslot:first-of-type) { opacity: 1; transform: none; }
     .loop :global(.orb) { display: none; }
