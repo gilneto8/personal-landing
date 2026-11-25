@@ -25,7 +25,7 @@ const nm = (id: string) => byId[id]?.name ?? id;
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 const usd = (v: number) => (v < 0.1 ? `$${v.toFixed(3)}` : `$${v.toFixed(2)}`);
 const SUITES = ["vault", "finance", "ops", "code"];
-const SUITE_LABEL: Record<string, string> = { vault: "Vault recall", finance: "Finance (PT)", ops: "Vault operations", code: "Code fixes" };
+const SUITE_LABEL: Record<string, string> = { vault: "Recall", finance: "Recall (PT)", ops: "Operations", code: "Code fixes" };
 const nTasks = Object.values(cycle.suites as Record<string, number>).reduce((a, b) => a + b, 0);
 const dateLabel = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
@@ -128,7 +128,7 @@ const maxSolved = Math.max(...tested.map((m) => summ[m].cost_per_solved ?? 0));
   <div class="copy">
     <span class="kicker" style="color:var(--amber)">Lab · model bench</span>
     <h1><span>Any model.</span> Measured on my own work.</h1>
-    <p>My second brain does not depend on one AI model. Its notes, tools and rules are plain files, and the model is a setting. To choose that setting, I test the newest models on tasks taken from my own notes, finances and code, and I keep every result so I can see a model get better, worse, cheaper or pricier over time.</p>
+    <p>My second brain does not depend on one AI model. Its notes, tools and rules are plain files, and the model is a setting. To choose that setting, I test the newest models on a fixed set of internal, consistent tasks, and I keep every result so I can see a model get better, worse, cheaper or pricier over time.</p>
   </div>
 </section>
 
@@ -147,9 +147,9 @@ const maxSolved = Math.max(...tested.map((m) => summ[m].cost_per_solved ?? 0));
 <section class="lab-block" id="method">
   <h2>How a model is tested</h2>
   <div class="rows">
-    <div class="row"><span class="when">01 · Freeze</span><span class="what">Tasks from my own material</span><span class="why">A versioned task set. The first one, bench-v1, has {nTasks} tasks: {cycle.suites.vault} vault recall, {cycle.suites.finance} finance questions answered in Portuguese, {cycle.suites.ops} vault operations, and {cycle.suites.code} real bug fixes from Damasqo Hub, former Cashew. The material is private, so no model has seen it in training.</span></div>
+    <div class="row"><span class="when">01 · Freeze</span><span class="what">Internal, consistent tasks</span><span class="why">A versioned set of internal tasks that stays the same between runs, so results compare. The first one, bench-v1, has {nTasks} tasks across recall, recall in Portuguese, operations and code fixes. The material is private, so no model has seen it in training.</span></div>
     <div class="row"><span class="when">02 · Sandbox</span><span class="what">A fresh container per attempt</span><span class="why">The agent tool works inside a throwaway container, run by Harbor, an open-source benchmark runner. When the cycle ends, everything it created is removed, and the run checks that nothing is left.</span></div>
-    <div class="row"><span class="when">03 · Grade</span><span class="what">Tests and scripts first</span><span class="why">Code fixes are graded by the tests from the real fix commit. Facts and conventions are graded by scripts. A judge model only grades writing, and it comes from a company with no model in that cycle.</span></div>
+    <div class="row"><span class="when">03 · Grade</span><span class="what">Tests and scripts first</span><span class="why">Code fixes are graded by the tests from the real fix. Facts and conventions are graded by scripts. A judge model only grades writing, and it comes from a company with no model in that cycle.</span></div>
     <div class="row"><span class="when">04 · Record</span><span class="what">Score, cost, tokens, time</span><span class="why">Every attempt keeps its score, cost, tokens, time and the agent tool's version, plus each model's list price that day. Trends compare only tasks that stayed identical.</span></div>
     <div class="row"><span class="when">05 · Decide</span><span class="what">A recommendation, never a switch</span><span class="why">The report recommends. Nothing changes automatically: I change a model myself, or it stays. No provider that trains on my data is used, and a key that runs out of credits is stopped, never retried.</span></div>
   </div>
@@ -192,7 +192,7 @@ const maxSolved = Math.max(...tested.map((m) => summ[m].cost_per_solved ?? 0));
     })}<p class="note">Overall score of each attempt round, on an 80–100% scale.</p></div></div>
   </div>
   <div class="lab-card caveat">
-    <p><b>Read with care.</b> bench-v1 is a first draft. Most tasks are single lookups graded on key facts, so all four models land between 88% and 95%, and the attempt spread is up to 7 points. A grader bug of mine scored six vault-operation attempts of Haiku, Sonnet and Opus at zero; it was fixed during the run, before Fable's turn. The next task set adds multi-step recall, calculations, safety traps, code review and writing in my voice, where models should pull apart.</p>
+    <p><b>Read with care.</b> bench-v1 is a first draft. Most tasks are single lookups graded on key facts, so all four models land between 88% and 95%, and the attempt spread is up to 7 points. A grader bug of mine scored six operation attempts of Haiku, Sonnet and Opus at zero; it was fixed during the run, before Fable's turn. The next task set adds multi-step recall, calculations, safety traps, code review and writing in my voice, where models should pull apart.</p>
   </div>
 </section>
 
