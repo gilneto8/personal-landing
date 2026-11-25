@@ -22,37 +22,32 @@ const FAMILY_COLOR: Record<string, string> = {
 const models = (cat.models as any[]).map((m) => ({ ...m, color: FAMILY_COLOR[m.family] ?? "#8a97b8" }));
 const tested = Object.keys(summ).sort((a, b) => summ[b].score - summ[a].score);
 
-// ── the stack: six isometric slabs, bottom (Notes) to top (Model) ──────────────────────────
-const LAYERS: [string, string, boolean][] = [
-  ["Notes", "Markdown in git", false],
-  ["Tools", "index, lint, search; no model inside", false],
-  ["Rules", "AGENTS.md, plain text", false],
-  ["Seam", "one env file, one adapter per tool", false],
-  ["Agent tool", "Claude Code, Gemini CLI, a neutral agent", true],
-  ["Model", "one setting per role", true],
-];
-const SWAP_MODEL = ["Opus 5.5", "Fable 5.2", "Haiku 5.5", "Gemini 4 Neon"];
-const SWAP_TOOL = ["Claude Code", "Gemini CLI", "neutral agent", "Claude Code"];
-function stack(): string {
-  const cx = 230, hw = 170, hd = 62, th = 12, gap = 66, y0 = 360;
-  let g = "";
-  LAYERS.forEach(([name, what, live], i) => {
-    const y = y0 - i * gap;
-    const top = `${cx},${y} ${cx + hw},${y + hd} ${cx},${y + 2 * hd} ${cx - hw},${y + hd}`;
-    const left = `${cx - hw},${y + hd} ${cx},${y + 2 * hd} ${cx},${y + 2 * hd + th} ${cx - hw},${y + hd + th}`;
-    const right = `${cx},${y + 2 * hd} ${cx + hw},${y + hd} ${cx + hw},${y + hd + th} ${cx},${y + 2 * hd + th}`;
-    const swap = live ? (name === "Model" ? SWAP_MODEL : SWAP_TOOL) : [];
-    g += `<g class="sl${live ? " live" : ""}" style="--i:${i}">
-      <polygon class="sd" points="${left}"/><polygon class="sd r" points="${right}"/><polygon class="tp" points="${top}"/>
-      ${swap.map((t, k) => `<text class="sw" style="--k:${k}" x="${cx}" y="${y + hd + 6}" text-anchor="middle">${t}</text>`).join("")}
-      <line class="ld" x1="${cx + hw}" y1="${y + hd}" x2="${cx + hw + 34}" y2="${y + hd}"/>
-      <text class="ln" x="${cx + hw + 44}" y="${y + hd - 2}">${name}</text><text class="lw" x="${cx + hw + 44}" y="${y + hd + 17}">${what}</text>
-    </g>`;
+// ── the plug: the brain stays put; models take turns in its model slot ─────────────────────
+const SHELF = ["Opus 5.5", "Fable 5.2", "Haiku 5.5", "Sonnet 5.5", "Gemini 4 Neon"];
+const SHELF_COLOR = ["#7aa2ff", "#ffb547", "#2ec4b6", "#c792ea", "#ff5d8f"];
+const FIXED: [string, string][] = [["Notes", "Markdown in git"], ["Tools", "index · lint · search"], ["Rules", "AGENTS.md"], ["Seam", "one env file"]];
+const PLUG_S = 15;   // one full turn through the shelf
+function plug(): string {
+  const W = 720, cw = 124, ch = 44, gap = 12;
+  const sx = (i: number) => (W - (SHELF.length * cw + (SHELF.length - 1) * gap)) / 2 + i * (cw + gap);
+  const shelfY = 30, slotY = 200, slotX = (W - 220) / 2;
+  let g = `<text class="cap" x="${W / 2}" y="16" text-anchor="middle">models, any company</text>`;
+  // the brain: one fixed block with its four layers, and the slot on top
+  g += `<rect class="brain" x="40" y="${slotY - 26}" width="${W - 80}" height="250" rx="22"/>`;
+  g += `<text class="cap" x="64" y="${slotY - 2}">second brain</text>`;
+  g += `<rect class="slot" x="${slotX}" y="${slotY + 8}" width="220" height="56" rx="14"/><text class="cap" x="${W / 2}" y="${slotY + 84}" text-anchor="middle">model slot · one setting</text>`;
+  FIXED.forEach(([a, b], i) => {
+    const x = 64 + i * ((W - 128) / 4), y = slotY + 110;
+    g += `<rect class="fix" x="${x}" y="${y}" width="${(W - 128) / 4 - 12}" height="74" rx="12"/><text class="fa" x="${x + 16}" y="${y + 32}">${a}</text><text class="fb" x="${x + 16}" y="${y + 54}">${b}</text>`;
   });
-  // a signal rising through the layers, over and over
-  const yb = y0 + hd, yt = y0 - 5 * gap + hd;
-  g += `<circle class="pulse" cx="${cx}" cy="${yb}" r="5"><animate attributeName="cy" values="${yb};${yt}" dur="4.8s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .2 1"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="4.8s" repeatCount="indefinite"/></circle>`;
-  return `<svg viewBox="0 0 700 520" role="img" aria-label="Six layers of the second brain; the agent tool and the model can change">${g}</svg>`;
+  // the shelf: each chip, in turn, drops into the slot and goes back up
+  SHELF.forEach((n, i) => {
+    const x = sx(i);
+    g += `<g class="chip" style="--i:${i};--c:${SHELF_COLOR[i]}"><rect x="${x}" y="${shelfY}" width="${cw}" height="${ch}" rx="12"/><text x="${x + cw / 2}" y="${shelfY + 28}" text-anchor="middle">${n}</text></g>`;
+    // the same model, dropping straight down into the slot while its chip is lit
+    g += `<text class="inslot" style="--i:${i};--c:${SHELF_COLOR[i]}" x="${W / 2}" y="${slotY + 43}" text-anchor="middle">${n}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} 460" role="img" aria-label="The second brain stays the same; models take turns in its model slot">${g}</svg>`;
 }
 
 // ── the bench loop: five steps on a ring, a light going round ──────────────────────────────
@@ -132,11 +127,11 @@ const payload = {
 <div class="topic">
 <section class="band chapter" id="agnostic" style="--cc:var(--pink)">
   <div class="copy">
-    <h2 class="wipe">Six layers. <span>Two of them</span> can change.</h2>
-    <p data-reveal>Notes, tools and rules are plain files. One seam names the agent tool and the model. Swap those two, and the rest moves as it is.</p>
+    <h2 class="wipe">The brain stays. <span>The model plugs in.</span></h2>
+    <p data-reveal>Notes, tools and rules are plain files, and one seam names the model. Any model, from any company, goes in the same slot. Nothing else changes.</p>
     <p class="quiet" data-reveal>Still to do: the night jobs call one agent tool directly in 14 places. Moving them behind the seam is next.</p>
   </div>
-  <div class="viz stack" data-draw><Fragment set:html={stack()} /></div>
+  <div class="viz plug" data-draw><Fragment set:html={plug()} /></div>
 </section>
 </div>
 
@@ -288,15 +283,18 @@ const payload = {
     return Y;
   }
   function scatter(vis: any[]) {
+    const all = D.models.filter((m: any) => D.latest[m.id]);
     const pts = vis.filter((m) => D.latest[m.id]);
-    note.textContent = pts.length ? "Latest round. Up is better, left is cheaper. Hover a model for its breakdown." : "No tested model in this selection yet.";
-    if (!pts.length) return;
-    const xs = pts.map((m) => D.latest[m.id].cost_per_task);
+    note.textContent = pts.length ? "Latest round. Up is better, left is cheaper. Hover a model for its breakdown. Faint dots: filtered out." : "No tested model in this selection yet.";
+    if (!all.length) return;
+    const xs = all.map((m: any) => D.latest[m.id].cost_per_task);   // fixed scale: filtering never moves a point
     const lo = Math.log10(Math.min(...xs) / 2), hi = Math.log10(Math.max(...xs) * 2);
     const X = (v: number) => L + ((Math.log10(v) - lo) / (hi - lo || 1)) * (W - L - R - 140);
     const Y = axisY(0.8, 1, METRIC.score.fmt);
     for (const v of [0.001, 0.01, 0.1, 1, 10]) if (Math.log10(v) > lo && Math.log10(v) < hi) svg.append(el("text", { x: X(v), y: H - B + 24, class: "ax", "text-anchor": "middle" }, money(v)));
     svg.append(el("text", { x: L, y: H - 12, class: "ax" }, "API-equivalent cost per task, log scale"));
+    const shown = new Set(pts.map((m) => m.id));
+    all.filter((m: any) => !shown.has(m.id)).forEach((m: any) => { const s = D.latest[m.id]; svg.append(el("circle", { cx: X(s.cost_per_task), cy: Y(s.score), r: 6, fill: m.color, opacity: 0.18 })); });
     pts.forEach((m, i) => {
       const s = D.latest[m.id], g = el("g", { class: "pt", style: `--i:${i}` });
       g.append(el("circle", { cx: X(s.cost_per_task), cy: Y(s.score), r: 26, fill: m.color, opacity: 0.12 }), el("circle", { cx: X(s.cost_per_task), cy: Y(s.score), r: 8, fill: m.color }),
@@ -310,7 +308,8 @@ const payload = {
     rows.sort((a, b) => (f.higher ? b.v - a.v : a.v - b.v));
     note.textContent = rows.length ? `${f.label}, latest round. ${f.higher ? "Higher" : "Lower"} is better.` : "No data for this selection yet.";
     if (!rows.length) return;
-    const hi = Math.max(...rows.map((r) => r.v)) * 1.12 || 1, lo = k === "score" ? Math.max(0, Math.min(...rows.map((r) => r.v)) - 0.1) : 0;
+    const allv = D.models.map((m: any) => latestVal(m.id, k)).filter((v: any) => v != null) as number[];   // fixed scale across filters
+    const hi = Math.max(...allv) * 1.12 || 1, lo = k === "score" ? Math.max(0, Math.min(...allv) - 0.1) : 0;
     const Y = axisY(lo, hi, f.fmt);
     const bw = Math.max(16, Math.min(70, (W - L - R) / rows.length - 28));
     rows.forEach(({ m, v }, i) => {
@@ -327,10 +326,11 @@ const payload = {
   function time(vis: any[]) {
     const k = st.metric, f = METRIC[k];
     const ser = vis.map((m) => ({ m, s: series(m.id, k) })).filter((r) => r.s.length);
-    const dates = [...new Set(ser.flatMap((r) => r.s.map((p) => p.date)))].sort();
+    const allSer = D.models.map((m: any) => series(m.id, k)).filter((x: any[]) => x.length);   // fixed axes across filters
+    const dates = [...new Set(allSer.flat().map((p: any) => p.date))].sort() as string[];
     note.textContent = !ser.length ? "No data for this selection yet." : dates.length < 2 ? `${f.label}. One round so far: every new round adds a point, and the lines start at the second.` : `${f.label} across ${dates.length} ${k === "price" ? "snapshots" : "rounds"}.${k === "price" ? "" : " Only tasks that stayed identical count."}`;
     if (!ser.length) return;
-    const vals = ser.flatMap((r) => r.s.map((p) => p.v));
+    const vals = allSer.flat().map((p: any) => p.v) as number[];
     let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.15 || hi * 0.1 || 1; lo = Math.max(0, lo - pad); hi += pad;
     const Y = axisY(lo, hi, f.fmt);
     const X = (d: string) => dates.length < 2 ? L + (W - L - R - 240) / 2 : L + 20 + (dates.indexOf(d) / (dates.length - 1)) * (W - L - R - 260);
@@ -388,22 +388,22 @@ const payload = {
   .viz :global(.lb) { fill: var(--bright); font-size: 16px; }
   .viz :global(.lb.off) { fill: var(--dim); }
 
-  /* the stack: slabs drop into place, lowest first; a signal rises through them; the top two keep changing */
-  .stack :global(.sl) { opacity: 0; transform: translateY(-40px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i) * 120ms); }
-  .stack.in :global(.sl) { opacity: 1; transform: none; }
-  .stack :global(.tp) { fill: color-mix(in srgb, var(--panel) 92%, transparent); stroke: var(--line); stroke-width: 1.2; transition: fill .4s, stroke .4s; }
-  .stack :global(.sd) { fill: var(--bg); stroke: var(--line); }
-  .stack :global(.sd.r) { fill: color-mix(in srgb, var(--bg) 70%, black); }
-  .stack :global(.live .tp) { stroke: var(--pink); fill: color-mix(in srgb, var(--pink) 10%, var(--panel)); }
-  .stack :global(.live .sd) { stroke: color-mix(in srgb, var(--pink) 50%, var(--line)); }
-  .stack :global(.sl:hover .tp) { fill: color-mix(in srgb, var(--cc) 22%, var(--panel)); stroke: var(--cc); }
-  .stack :global(.ld) { stroke: var(--line); }
-  .stack :global(.ln) { fill: var(--bright); font-size: 17px; font-weight: 500; }
-  .stack :global(.live .ln) { fill: var(--pink); }
-  .stack :global(.lw) { fill: var(--dim); font-size: 13.5px; }
-  .stack :global(.sw) { fill: var(--bright); font-size: 15px; opacity: 0; transform-box: fill-box; animation: swaptext 9.6s var(--ease) infinite; animation-delay: calc(var(--k) * 2.4s); }
-  .stack :global(.pulse) { fill: var(--pink); filter: drop-shadow(0 0 6px var(--pink)); }
-  @keyframes swaptext { 0% { opacity: 0; transform: translateY(10px); } 4%, 19% { opacity: 1; transform: none; } 23%, 100% { opacity: 0; transform: translateY(-10px); } }
+  /* the plug: chips leave the shelf one at a time, drop into the slot, and go back; everything moves vertically except the short glide over the slot */
+  .plug :global(.cap) { fill: var(--dim); font-size: 13px; }
+  .plug :global(.brain) { fill: #1b2540; stroke: #2e3b5e; }
+  .plug :global(.slot) { fill: #161f35; stroke: #ff5d8f; stroke-dasharray: 6 6; }
+  .plug :global(.fix) { fill: #161f35; stroke: #2e3b5e; }
+  .plug :global(.fa) { fill: var(--bright); font-size: 17px; font-weight: 500; }
+  .plug :global(.fb) { fill: var(--dim); font-size: 13px; }
+  .plug :global(.chip rect) { fill: #161f35; stroke: var(--c); stroke-width: 1.5; }
+  .plug :global(.chip text) { fill: var(--bright); font-size: 15px; }
+  .plug :global(.chip) { opacity: 0; transform: translateY(-16px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--i) * 90ms); }
+  .plug.in :global(.chip) { opacity: 1; transform: none; }
+  .plug.in :global(.chip rect) { animation: lit 15s var(--ease) infinite; animation-delay: calc(1s + var(--i) * 3s); }
+  @keyframes lit { 0%, 20%, 100% { fill: #161f35; stroke-width: 1.5; } 4%, 16% { fill: #26324f; stroke-width: 3; } }
+  .plug :global(.inslot) { fill: var(--bright); font-size: 19px; font-weight: 500; opacity: 0; }
+  .plug.in :global(.inslot) { animation: drop 15s var(--ease) infinite; animation-delay: calc(1s + var(--i) * 3s); }
+  @keyframes drop { 0% { opacity: 0; transform: translateY(-26px); } 4%, 16% { opacity: 1; transform: none; } 20%, 100% { opacity: 0; transform: translateY(14px); } }
 
   /* the loop: the ring draws in, then a light goes round; each step glows as it passes */
   .loop :global(.ring) { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.6s var(--ease); }
@@ -464,13 +464,13 @@ const payload = {
     .lab-pair { grid-template-columns: 1fr; }
     .viz :global(.lb) { font-size: 22px; } .viz :global(.ax) { font-size: 18px; }
     .loop :global(.sn) { font-size: 30px; } .loop :global(.sw2) { display: none; } .loop :global(.c1) { font-size: 44px; } .loop :global(.c2) { font-size: 20px; }
-    .stack :global(.ln) { font-size: 26px; } .stack :global(.lw) { display: none; } .stack :global(.sw) { font-size: 22px; }
+    .plug :global(.chip text) { font-size: 18px; } .plug :global(.fb) { display: none; } .plug :global(.fa) { font-size: 22px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .wipe, .stack :global(.sl), .loop :global(.st), .rel :global(.nd) { transition: none; clip-path: none; opacity: 1; transform: none; }
+    .wipe, .plug :global(.chip), .loop :global(.st), .rel :global(.nd) { transition: none; clip-path: none; opacity: 1; transform: none; }
     .rel :global(.lk), .loop :global(.ring) { stroke-dashoffset: 0; transition: none; }
-    .swap b, .stack :global(.sw), .loop :global(.halo), .chart :global(*) { animation: none !important; }
-    .swap b:first-child, .stack :global(.sw:first-of-type) { opacity: 1; transform: none; }
-    .stack :global(.pulse), .loop :global(.orb) { display: none; }
+    .swap b, .plug :global(.inslot), .plug :global(.chip rect), .loop :global(.halo), .chart :global(*) { animation: none !important; }
+    .swap b:first-child, .plug :global(.inslot:first-of-type) { opacity: 1; transform: none; }
+    .loop :global(.orb) { display: none; }
   }
 </style>
