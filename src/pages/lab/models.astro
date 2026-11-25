@@ -1,103 +1,130 @@
 ---
 // Unlisted: no link from the site, noindex, kept out of the sitemap (Gil, 2026-11-25).
 // Data: src/data/model-bench.json, written by `python3 report.py --export` in the model-bench repo.
-// Visual identity = the home page: chapters with a colour glow, big type, little text per screen,
-// motion only upward or in depth (Gil's taste), triggered once when a block scrolls into view.
+// Identity = the home page: chapters with a colour glow, big type, little text per screen.
+// Motion only upward, in depth, or around a loop (Gil's taste); reveals play once on scroll.
 import Layout from "../../layouts/Layout.astro";
 import "../../styles/global.css";
 import "../../styles/home.css";
 import data from "../../data/model-bench.json";
 
-type Summ = { score: number; suite: Record<string, number>; attempts: number; rounds: number[];
-  spread: number; cost_per_task: number; cost_per_solved: number | null; secs: number | null; tokens_per_task: number };
-
-const cat = data.catalog;
-const models = cat.models as any[];
-const byId = Object.fromEntries(models.map((m) => [m.id, m]));
-const cycle = data.cycles[data.cycles.length - 1];
-const summ = cycle.summary as Record<string, Summ>;
-const tested = Object.keys(summ).sort((a, b) => summ[b].score - summ[a].score);
-const COLOR: Record<string, string> = {
-  "claude-fable-5-2": "var(--amber)", "claude-opus-5-5": "var(--blue)",
-  "claude-sonnet-5-5": "var(--lav)", "claude-haiku-5-5": "var(--teal)",
-};
-const col = (id: string) => COLOR[id] ?? "var(--dim)";
-const nm = (id: string) => byId[id]?.name ?? id;
-const pct = (v: number) => `${Math.round(v * 100)}%`;
-const usd = (v: number) => (v < 0.1 ? `$${v.toFixed(3)}` : `$${v.toFixed(2)}`);
-const SUITES = ["vault", "finance", "ops", "code"];
-const SUITE_LABEL: Record<string, string> = { vault: "Recall", finance: "Recall (PT)", ops: "Operations", code: "Code fixes" };
+const cat = data.catalog as any;
+const cycle = data.cycles[data.cycles.length - 1] as any;
+const summ = cycle.summary as Record<string, any>;
 const nTasks = Object.values(cycle.suites as Record<string, number>).reduce((a, b) => a + b, 0);
 const dateLabel = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
-// The stack: six slabs, top to bottom. The top two are the ones that change.
-const LAYERS: [string, string, boolean][] = [
-  ["Model", "one setting per role", true],
-  ["Agent tool", "Claude Code, Gemini CLI, a neutral agent", true],
-  ["Seam", "one env file, one adapter per tool", false],
-  ["Rules", "AGENTS.md, plain text", false],
-  ["Tools", "index, lint, search, no model inside", false],
-  ["Notes", "Markdown in git", false],
-];
-const SWAP = ["Opus 5.5", "Fable 5.2", "Haiku 5.5", "Gemini 4 Neon", "Sonnet 5.5", "Gemini 4 Hydrogen"];
+// One colour per family, used everywhere on the page.
+const FAMILY_COLOR: Record<string, string> = {
+  Fable: "#ffb547", Opus: "#7aa2ff", Sonnet: "#c792ea", Haiku: "#2ec4b6",
+  "Gemini Neon": "#ff5d8f", "Gemini Argon": "#ff8a65", "Gemini Carbon": "#9fb3d9", "Gemini Hydrogen": "#7fe3c4", "Gemini Flash": "#e6d27a",
+};
+const models = (cat.models as any[]).map((m) => ({ ...m, color: FAMILY_COLOR[m.family] ?? "#8a97b8" }));
+const tested = Object.keys(summ).sort((a, b) => summ[b].score - summ[a].score);
 
-// Score against cost: log x. Points rise into place.
-function scatter(): string {
-  const W = 620, H = 340, L = 50, R = 120, T = 24, B = 50;
-  const xs = tested.map((m) => summ[m].cost_per_task);
-  const lo = Math.log10(Math.min(...xs) / 2), hi = Math.log10(Math.max(...xs) * 2);
-  const X = (v: number) => L + ((Math.log10(v) - lo) / (hi - lo)) * (W - L - R);
-  const Y = (v: number) => T + (1 - (v - 0.8) / 0.2) * (H - T - B);
+// ── the stack: six isometric slabs, bottom (Notes) to top (Model) ──────────────────────────
+const LAYERS: [string, string, boolean][] = [
+  ["Notes", "Markdown in git", false],
+  ["Tools", "index, lint, search; no model inside", false],
+  ["Rules", "AGENTS.md, plain text", false],
+  ["Seam", "one env file, one adapter per tool", false],
+  ["Agent tool", "Claude Code, Gemini CLI, a neutral agent", true],
+  ["Model", "one setting per role", true],
+];
+const SWAP_MODEL = ["Opus 5.5", "Fable 5.2", "Haiku 5.5", "Gemini 4 Neon"];
+const SWAP_TOOL = ["Claude Code", "Gemini CLI", "neutral agent", "Claude Code"];
+function stack(): string {
+  const cx = 230, hw = 170, hd = 62, th = 12, gap = 66, y0 = 360;
   let g = "";
-  for (const v of [0.8, 0.9, 1]) g += `<line x1="${L}" x2="${W - R + 80}" y1="${Y(v)}" y2="${Y(v)}" class="gl"/><text x="${L - 10}" y="${Y(v) + 4}" class="ax" text-anchor="end">${pct(v)}</text>`;
-  for (const v of [0.01, 0.1, 1]) if (Math.log10(v) > lo && Math.log10(v) < hi) g += `<text x="${X(v)}" y="${H - B + 22}" class="ax" text-anchor="middle">${usd(v)}</text>`;
-  g += `<text x="${L}" y="${H - 6}" class="ax">cost per task, log scale</text>`;
-  tested.forEach((m, i) => {
-    const s = summ[m], x = X(s.cost_per_task), y = Y(s.score);
-    g += `<g class="pt" style="--i:${i}"><circle cx="${x}" cy="${y}" r="22" fill="${col(m)}" opacity=".12"/><circle cx="${x}" cy="${y}" r="6" fill="${col(m)}"/>`;
-    g += `<text x="${x + 14}" y="${y - 6}" class="lb">${nm(m)}</text><text x="${x + 14}" y="${y + 12}" class="ax">${pct(s.score)} · ${usd(s.cost_per_task)}</text></g>`;
+  LAYERS.forEach(([name, what, live], i) => {
+    const y = y0 - i * gap;
+    const top = `${cx},${y} ${cx + hw},${y + hd} ${cx},${y + 2 * hd} ${cx - hw},${y + hd}`;
+    const left = `${cx - hw},${y + hd} ${cx},${y + 2 * hd} ${cx},${y + 2 * hd + th} ${cx - hw},${y + hd + th}`;
+    const right = `${cx},${y + 2 * hd} ${cx + hw},${y + hd} ${cx + hw},${y + hd + th} ${cx},${y + 2 * hd + th}`;
+    const swap = live ? (name === "Model" ? SWAP_MODEL : SWAP_TOOL) : [];
+    g += `<g class="sl${live ? " live" : ""}" style="--i:${i}">
+      <polygon class="sd" points="${left}"/><polygon class="sd r" points="${right}"/><polygon class="tp" points="${top}"/>
+      ${swap.map((t, k) => `<text class="sw" style="--k:${k}" x="${cx}" y="${y + hd + 6}" text-anchor="middle">${t}</text>`).join("")}
+      <line class="ld" x1="${cx + hw}" y1="${y + hd}" x2="${cx + hw + 34}" y2="${y + hd}"/>
+      <text class="ln" x="${cx + hw + 44}" y="${y + hd - 2}">${name}</text><text class="lw" x="${cx + hw + 44}" y="${y + hd + 17}">${what}</text>
+    </g>`;
   });
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Score against cost per task">${g}</svg>`;
+  // a signal rising through the layers, over and over
+  const yb = y0 + hd, yt = y0 - 5 * gap + hd;
+  g += `<circle class="pulse" cx="${cx}" cy="${yb}" r="5"><animate attributeName="cy" values="${yb};${yt}" dur="4.8s" repeatCount="indefinite" calcMode="spline" keySplines=".4 0 .2 1"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="4.8s" repeatCount="indefinite"/></circle>`;
+  return `<svg viewBox="0 0 700 520" role="img" aria-label="Six layers of the second brain; the agent tool and the model can change">${g}</svg>`;
 }
 
-// Tools to models: lines draw themselves (stroke-dashoffset), nodes fade up.
+// ── the bench loop: five steps on a ring, a light going round ──────────────────────────────
+const STEPS: [string, string][] = [
+  ["Freeze", "same tasks every time"],
+  ["Run", "fresh sandbox per attempt"],
+  ["Grade", "tests, scripts, yes/no checks"],
+  ["Record", "score, cost, tokens, time"],
+  ["Decide", "I make the change"],
+];
+const LOOP_S = 12;
+function loop(): string {
+  const cx = 300, cy = 270, r = 170;
+  let g = `<circle class="ring" cx="${cx}" cy="${cy}" r="${r}" pathLength="1"/>`;
+  STEPS.forEach(([name, what], i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / STEPS.length;
+    const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+    const lx = cx + (r + 34) * Math.cos(a), ly = cy + (r + 34) * Math.sin(a);
+    const anchor = Math.abs(Math.cos(a)) < 0.2 ? "middle" : Math.cos(a) > 0 ? "start" : "end";
+    const dy = Math.sin(a) < -0.9 ? -16 : Math.sin(a) > 0.5 ? 14 : 0;
+    g += `<g class="st" style="--d:${(i * LOOP_S) / STEPS.length}s"><circle class="halo" cx="${x}" cy="${y}" r="18"/><circle class="node" cx="${x}" cy="${y}" r="7"/>
+      <text class="sn" x="${lx}" y="${ly + dy}" text-anchor="${anchor}">${name}</text><text class="sw2" x="${lx}" y="${ly + dy + 19}" text-anchor="${anchor}">${what}</text></g>`;
+  });
+  g += `<circle class="orb" r="6"><animateMotion dur="${LOOP_S}s" repeatCount="indefinite" path="M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx - 0.01} ${cy - r}"/></circle>`;
+  g += `<text class="c1" x="${cx}" y="${cy - 6}" text-anchor="middle">${nTasks} tasks</text><text class="c2" x="${cx}" y="${cy + 22}" text-anchor="middle">again for every new model</text>`;
+  return `<svg viewBox="-150 0 900 560" role="img" aria-label="The bench loop: freeze, run, grade, record, decide, and again">${g}</svg>`;
+}
+
+// ── tools → models, with today's list price on each model ──────────────────────────────────
 function relations(): string {
   const agents = Object.entries(cat.agents as Record<string, any>);
-  const rowH = 38, H = models.length * rowH + 20, W = 620;
+  const rowH = 46, H = models.length * rowH + 20, W = 760;
   const ay = (i: number) => 10 + ((i + 0.5) * (H - 20)) / agents.length;
   const my = (i: number) => 10 + (i + 0.5) * rowH;
   let lines = "", nodes = "";
   models.forEach((m, i) => {
     const ai = agents.findIndex(([k]) => k === m.agent);
     const on = m.status === "tested";
-    lines += `<path pathLength="1" style="--i:${i}" class="ln ${m.status}" d="M168 ${ay(ai)} C 280 ${ay(ai)}, 300 ${my(i)}, 400 ${my(i)}" stroke="${on ? col(m.id) : "var(--dim)"}"/>`;
-    nodes += `<g class="nd" style="--i:${i}"><circle cx="408" cy="${my(i)}" r="${on ? 5 : 3.5}" fill="${on ? col(m.id) : "var(--dim)"}"/><text x="422" y="${my(i) + 5}" class="${on ? "lb" : "lb off"}">${m.name}</text></g>`;
+    lines += `<path pathLength="1" style="--i:${i}" class="lk ${m.status}" d="M190 ${ay(ai)} C 300 ${ay(ai)}, 320 ${my(i)}, 420 ${my(i)}" stroke="${on ? m.color : "var(--dim)"}"/>`;
+    const price = m.price_in != null ? `$${m.price_in.toFixed(2)} in · $${m.price_out.toFixed(2)} out` : "";
+    nodes += `<g class="nd" style="--i:${i}"><circle cx="428" cy="${my(i)}" r="${on ? 6 : 4}" fill="${on ? m.color : "var(--dim)"}"/>
+      <text x="444" y="${my(i) - 2}" class="${on ? "lb" : "lb off"}">${m.name}</text>
+      <text x="444" y="${my(i) + 15}" class="ax">${m.status === "judge" ? "judge · " : m.status === "available" ? "next · " : ""}${price}</text></g>`;
   });
-  agents.forEach(([k, a]) => {
-    const i = agents.findIndex(([kk]) => kk === k);
-    nodes += `<g class="nd" style="--i:0"><circle cx="160" cy="${ay(i)}" r="5" fill="${k === "claude-code" ? "var(--bright)" : "var(--dim)"}"/><text x="146" y="${ay(i) - 2}" class="lb" text-anchor="end">${a.name.split(" (")[0]}</text><text x="146" y="${ay(i) + 16}" class="ax" text-anchor="end">${a.state}</text></g>`;
+  agents.forEach(([k, a], i) => {
+    nodes += `<g class="nd" style="--i:0"><circle cx="182" cy="${ay(i)}" r="6" fill="${k === "claude-code" ? "var(--bright)" : "var(--dim)"}"/><text x="166" y="${ay(i) - 2}" class="lb" text-anchor="end">${a.name.split(" (")[0]}</text><text x="166" y="${ay(i) + 16}" class="ax" text-anchor="end">${a.state}</text></g>`;
   });
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Which agent tool runs which model">${lines}${nodes}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Which agent tool runs which model, with list prices">${lines}${nodes}</svg>`;
 }
 
-// Cost per solved task: vertical columns that grow upward.
-const maxSolved = Math.max(...tested.map((m) => summ[m].cost_per_solved ?? 0));
-const bySolved = tested.slice().sort((a, b) => (summ[a].cost_per_solved ?? 0) - (summ[b].cost_per_solved ?? 0));
-const nCycles = data.cycles.length;
+// everything the metrics chart needs, as one JSON blob for the client script
+const payload = {
+  models: models.map(({ id, name, provider, family, version, status, color }) => ({ id, name, provider, family, version, status, color })),
+  latest: Object.fromEntries(tested.map((m) => [m, { ...summ[m], date: cycle.date }])),
+  trends: data.trends,
+  prices: (data as any).prices ?? [],
+  suites: { vault: "Recall", finance: "Recall (PT)", ops: "Operations", code: "Code fixes" },
+};
 ---
 
 <Layout title="Model bench · Gil Neto" description="How my second brain stays independent of any one AI model, and how I test the newest models on a fixed set of internal tasks." noindex>
-<nav class="top" id="nav"><a href="/"><b>Gil Neto</b></a><ul><li><a href="#agnostic">Model-agnostic</a></li><li><a href="#bench">The bench</a></li><li><a href="#results">Results</a></li><li><a href="/work">Work with me</a></li></ul></nav>
+<nav class="top" id="nav"><a href="/"><b>Gil Neto</b></a><ul><li><a href="#agnostic">Model-agnostic</a></li><li><a href="#bench">The bench</a></li><li><a href="#metrics">Metrics</a></li><li><a href="/work">Work with me</a></li></ul></nav>
 
 <section class="hero lab-hero" id="top">
   <div class="copy">
     <h1 class="wipe"><span>Any model.</span> Measured on the same work, every time.</h1>
     <p data-reveal>My second brain doesn't depend on one AI model. The model is a setting, and I choose it with numbers: the newest models, run on a fixed set of internal tasks, with every result kept.</p>
-    <div class="links" data-reveal><a href="#results">See the results</a><a href="#agnostic">How it stays agnostic</a></div>
+    <div class="links" data-reveal><a href="#metrics">See the metrics</a><a href="#agnostic">How it stays agnostic</a></div>
   </div>
   <div class="swapper" aria-hidden="true" data-reveal>
     <small>model in use</small>
-    <div class="swap">{SWAP.map((n, i) => <b style={`--i:${i}`}>{n}</b>)}</div>
+    <div class="swap">{["Opus 5.5", "Fable 5.2", "Haiku 5.5", "Gemini 4 Neon", "Sonnet 5.5", "Gemini 4 Hydrogen"].map((n, i) => <b style={`--i:${i}`}>{n}</b>)}</div>
     <span>everything else stays the same</span>
   </div>
 </section>
@@ -109,109 +136,239 @@ const nCycles = data.cycles.length;
     <p data-reveal>Notes, tools and rules are plain files. One seam names the agent tool and the model. Swap those two, and the rest moves as it is.</p>
     <p class="quiet" data-reveal>Still to do: the night jobs call one agent tool directly in 14 places. Moving them behind the seam is next.</p>
   </div>
-  <div class="slabs">
-    {LAYERS.map(([name, what, swap], i) => (
-      <div class={swap ? "slab live" : "slab"} style={`--i:${LAYERS.length - 1 - i}`}>
-        <b>{name}</b><span>{what}</span>
-      </div>
-    ))}
-  </div>
+  <div class="viz stack" data-draw><Fragment set:html={stack()} /></div>
 </section>
 </div>
 
 <div class="topic">
 <section class="band chapter" id="bench" style="--cc:var(--blue)">
   <div class="copy">
-    <h2 class="wipe">The same <span>{nTasks} tasks</span>, for every model.</h2>
-    <p data-reveal>A fixed set of internal, consistent tasks, private, so no model has seen them in training. Each attempt runs in a throwaway sandbox, and nothing is left behind.</p>
+    <h2 class="wipe">One loop, <span>over and over</span>.</h2>
+    <p data-reveal>Each new model, and each new version of the task set, goes round the same loop. The tasks are internal and consistent, private, so no model has seen them in training.</p>
+    <p class="quiet" data-reveal>Every attempt runs in a throwaway sandbox, and nothing is left behind.</p>
   </div>
-  <ol class="chain">
-    <li><b>Freeze</b><span>one versioned task set, the same between runs</span></li>
-    <li><b>Run</b><span>each model, in a fresh sandbox per attempt</span></li>
-    <li><b>Grade</b><span>tests and scripts; a judge only applies fixed yes/no checks</span></li>
-    <li><b>Record</b><span>score, cost, tokens, time, the tool's version</span></li>
-    <li><b>Decide</b><span>the report recommends; I change a model myself</span></li>
-  </ol>
+  <div class="viz loop" data-draw><Fragment set:html={loop()} /></div>
 </section>
 
 <section class="lab-pair">
   <div class="copy">
-    <h2 class="wipe small">Models, and the tools that run them.</h2>
-    <p data-reveal>Lit: tested. Grey: available, next in line. The judge comes from a company with no model in that round.</p>
-    <ul class="prices" data-reveal>{models.map((m) => (
-      <li><i style={`background:${m.status === "tested" ? col(m.id) : "var(--line)"}`}></i><b>{m.name}</b><span>{m.status}</span><em>{m.price_in != null ? `$${m.price_in.toFixed(2)} / $${m.price_out.toFixed(2)}` : ""}</em></li>
-    ))}</ul>
-    <p class="quiet" data-reveal>List price per million tokens, in / out, OpenRouter, {dateLabel(data.exported)}.</p>
+    <h2 class="wipe small">The models, and the tools that run them.</h2>
+    <p data-reveal>Coloured: tested. Grey: next in line, or the judge. The judge always comes from a company with no model in that round.</p>
+    <p class="quiet" data-reveal>List price per million tokens, OpenRouter, {dateLabel(data.exported)}.</p>
   </div>
   <div class="viz rel" data-draw><Fragment set:html={relations()} /></div>
 </section>
 </div>
 
 <div class="topic">
-<section class="band chapter" id="results" style="--cc:var(--amber)">
+<section class="band chapter" id="metrics" style="--cc:var(--amber)">
   <div class="copy">
-    <h2 class="wipe">First round. <span>Close</span>, by design.</h2>
-    <p data-reveal>{dateLabel(cycle.date)}, bench-{cycle.bench}: {tested.length} models, {nTasks} tasks, {summ[tested[0]].attempts} attempts each. Mostly single lookups, so the scores sit close together. The next set adds harder, multi-step tasks.</p>
-    <div class="stats" data-reveal>{tested.map((m) => (
-      <div><b style={`color:${col(m)}`}>{pct(summ[m].score)}</b><span>{nm(m)}</span></div>
-    ))}</div>
+    <h2 class="wipe">Every round, <span>every metric</span>.</h2>
+    <p data-reveal>{dateLabel(cycle.date)} was round one: {tested.length} models, {nTasks} tasks, {summ[tested[0]].attempts} attempts each. Mostly single lookups, so the scores sit close. Each new round adds a point per model, so a model getting better or worse, cheaper or pricier, shows up here.</p>
   </div>
-  <div class="viz" data-draw><Fragment set:html={scatter()} /></div>
 </section>
 
-<section class="lab-grid3">
-  <div>
-    <h3>Cost per solved task</h3>
-    <div class="cols" data-draw>{bySolved.map((m, i) => (
-      <div style={`--i:${i};--h:${Math.max(((summ[m].cost_per_solved ?? 0) / maxSolved) * 100, 2)}%;--c:${col(m)}`}><b>{usd(summ[m].cost_per_solved ?? 0)}</b><i></i><span>{nm(m)}</span></div>
-    ))}</div>
-  </div>
-  <div data-reveal>
-    <h3>Score by kind of task</h3>
-    <div class="dots">
-      <div class="drow head"><span></span>{SUITES.map((x) => <span>{SUITE_LABEL[x]}</span>)}</div>
-      {tested.map((m) => (
-        <div class="drow"><span>{nm(m)}</span>{SUITES.map((x) => (
-          <span><i style={`--s:${summ[m].suite[x] ?? 0};--c:${col(m)}`}></i><small>{pct(summ[m].suite[x] ?? 0)}</small></span>
-        ))}</div>
-      ))}
+<section class="explorer" id="explorer" data-reveal>
+  <div class="ctl">
+    <div class="seg" role="tablist" aria-label="View">
+      <button type="button" data-view="scatter" class="on">Score against cost</button>
+      <button type="button" data-view="bars">Each model</button>
+      <button type="button" data-view="time">Over time</button>
+    </div>
+    <div class="seg metric" role="tablist" aria-label="Metric">
+      <button type="button" data-metric="score" class="on">Score</button>
+      <button type="button" data-metric="usd">Cost per task</button>
+      <button type="button" data-metric="solved">Cost per solved task</button>
+      <button type="button" data-metric="tokens">Tokens per task</button>
+      <button type="button" data-metric="spread">Spread</button>
+      <button type="button" data-metric="price">List price</button>
     </div>
   </div>
-  <div>
-    <h3>Steady across attempts?</h3>
-    <div class="cols range" data-draw>{tested.map((m, i) => {
-      const lo = Math.min(...summ[m].rounds), hi = Math.max(...summ[m].rounds);
-      return <div style={`--i:${i};--lo:${(lo - 0.8) * 500}%;--hi:${(hi - 0.8) * 500}%;--c:${col(m)}`}><b>{pct(lo)}–{pct(hi)}</b><i></i><span>{nm(m)}</span></div>;
-    })}</div>
+  <div class="ctl filters">
+    <div class="chips" data-filter="provider"></div>
+    <div class="chips" data-filter="family"></div>
+    <label class="tog"><input type="checkbox" id="latestOnly" checked /> Latest version of each family</label>
   </div>
+  <div class="chart"><svg id="chart" viewBox="0 0 1000 440" role="img" aria-label="Benchmark metrics"></svg><div class="tip" id="tip" hidden></div></div>
+  <p class="quiet" id="chartNote"></p>
 </section>
-<p class="lab-note" data-reveal>A grader bug of mine scored six operation attempts of Haiku, Sonnet and Opus at zero. It was fixed during the run, before Fable's turn. Costs are what the same run would cost on each company's API; the Claude runs used a subscription.</p>
-</div>
-
-<div class="topic">
-<section class="list" id="time">
-  <h2 class="wipe">Over time</h2>
-  <p class="lab-lead" data-reveal>{nCycles < 2 ? "One round so far. Every new round adds a point per model: better or worse, cheaper or pricier. Only tasks that stayed identical count, so a new task set never looks like a model change." : `${nCycles} rounds so far.`}</p>
-  <div class="rows">{tested.map((m) => {
-    const t = (data.trends as any)[m] ?? [];
-    return <div class="row" data-reveal><span class="when">{t.map((p: any) => dateLabel(p.date)).join(" · ")}</span><span class="what"><i class="dot" style={`background:${col(m)}`}></i>{nm(m)}</span><span class="why">{t.map((p: any) => `${pct(p.score)} · ${usd(p.usd)} per task · ${Math.round(p.tokens / 1000)}k tokens`).join(" → ")}</span></div>;
-  })}</div>
-</section>
+<p class="lab-note" data-reveal>Round one note: a grader bug of mine scored six operation attempts of Haiku, Sonnet and Opus at zero, fixed during the run before Fable's turn. Costs are what the same run would cost on each company's API; the Claude runs used a subscription.</p>
 </div>
 
 <footer><span>© 2026 Gil Neto</span><span><a href="/">gil-neto.com</a></span><span>Data as of {dateLabel(data.exported)}</span></footer>
+<script type="application/json" id="bench-data" set:html={JSON.stringify(payload)}></script>
 </Layout>
 
 <script>
-  // Reveal once when a block enters the viewport. Vertical and depth motion only.
+  // Reveal once when a block enters the viewport.
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px" });
-  document.querySelectorAll("[data-reveal], .wipe, [data-draw], .chain, .slabs").forEach((el) => io.observe(el));
+  document.querySelectorAll("[data-reveal], .wipe, [data-draw]").forEach((el) => io.observe(el));
   const nav = document.getElementById("nav");
   addEventListener("scroll", () => nav?.classList.toggle("scrolled", scrollY > 8), { passive: true });
+
+  // ── metrics explorer ─────────────────────────────────────────────────────────────────────
+  const D = JSON.parse(document.getElementById("bench-data")!.textContent!);
+  const svg = document.getElementById("chart") as unknown as SVGSVGElement;
+  const tip = document.getElementById("tip")!;
+  const note = document.getElementById("chartNote")!;
+  const M: Record<string, any> = Object.fromEntries(D.models.map((m: any) => [m.id, m]));
+  const st = { view: "scatter", metric: "score", providers: new Set<string>(), families: new Set<string>(), latest: true };
+  const money = (v: number) => (v < 0.1 ? `$${v.toFixed(3)}` : `$${v.toFixed(2)}`);
+  const METRIC: Record<string, { label: string; fmt: (v: number) => string; higher: boolean }> = {
+    score: { label: "Score", fmt: (v) => `${Math.round(v * 100)}%`, higher: true },
+    usd: { label: "API-equivalent USD per task", fmt: money, higher: false },
+    solved: { label: "API-equivalent USD per solved task", fmt: money, higher: false },
+    tokens: { label: "Tokens per task", fmt: (v) => `${Math.round(v / 1000)}k`, higher: false },
+    spread: { label: "Spread across attempts (lower is steadier)", fmt: (v) => `${Math.round(v * 100)} pts`, higher: false },
+    price: { label: "List price, USD per 1M output tokens", fmt: (v) => `$${v.toFixed(2)}`, higher: false },
+  };
+  const vnum = (v: string) => v.split(".").map(Number).reduce((a, b, i) => a + b / 100 ** i, 0);
+  const latestIds = () => {
+    const best: Record<string, any> = {};
+    for (const m of D.models) if (!best[m.family] || vnum(m.version) > vnum(best[m.family].version)) best[m.family] = m;
+    return new Set(Object.values(best).map((m: any) => m.id));
+  };
+  const visible = () => {
+    const Lt = latestIds();
+    return D.models.filter((m: any) => (!st.providers.size || st.providers.has(m.provider)) && (!st.families.size || st.families.has(m.family)) && (!st.latest || Lt.has(m.id)));
+  };
+  const latestVal = (id: string, k: string): number | null => {
+    const s = D.latest[id];
+    if (k === "price") { const p = D.prices.filter((p: any) => p.model === id).sort((a: any, b: any) => a.date.localeCompare(b.date)).pop(); return p ? p.out : null; }
+    if (!s) return null;
+    return k === "score" ? s.score : k === "usd" ? s.cost_per_task : k === "solved" ? s.cost_per_solved : k === "tokens" ? s.tokens_per_task : k === "spread" ? s.spread : null;
+  };
+  const series = (id: string, k: string): { date: string; v: number }[] => {
+    if (k === "price") return D.prices.filter((p: any) => p.model === id).map((p: any) => ({ date: p.date, v: p.out }));
+    const t = D.trends[id] ?? [];
+    const key = k === "usd" ? "usd" : k === "tokens" ? "tokens" : k === "score" ? "score" : null;
+    if (key) return t.map((p: any) => ({ date: p.date, v: p[key] }));
+    const v = latestVal(id, k); return v == null ? [] : [{ date: D.latest[id].date, v }];
+  };
+
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag: string, attrs: Record<string, any> = {}, text?: string) => {
+    const e = document.createElementNS(NS, tag); for (const [a, v] of Object.entries(attrs)) e.setAttribute(a, String(v)); if (text != null) e.textContent = text; return e;
+  };
+  const showTip = (ev: Event, html: string) => {
+    tip.innerHTML = html; tip.hidden = false;
+    const box = (svg.parentElement as HTMLElement).getBoundingClientRect();
+    const r = (ev.currentTarget as Element).getBoundingClientRect();
+    tip.style.left = `${Math.max(170, Math.min(r.left - box.left + r.width / 2, box.width - 170))}px`; tip.style.top = `${r.top - box.top - 12}px`;
+  };
+  const hideTip = () => (tip.hidden = true);
+  const hover = (node: Element, html: string) => {
+    node.setAttribute("tabindex", "0");
+    node.addEventListener("mouseenter", (e) => showTip(e, html)); node.addEventListener("focus", (e) => showTip(e, html));
+    node.addEventListener("mouseleave", hideTip); node.addEventListener("blur", hideTip);
+  };
+  const detail = (id: string) => {
+    const s = D.latest[id], m = M[id];
+    if (!s) return `<b style="color:${m.color}">${m.name}</b><br>not tested yet`;
+    const kinds = Object.entries(D.suites).map(([k, l]) => `${l} ${Math.round((s.suite[k] ?? 0) * 100)}%`).join(" · ");
+    return `<b style="color:${m.color}">${m.name}</b><br>${METRIC.score.fmt(s.score)} · ${money(s.cost_per_task)} per task · median ${Math.round(s.secs ?? 0)} s<br><span>${kinds}</span>`;
+  };
+
+  const W = 1000, H = 440, L = 70, R = 30, T = 30, B = 70;
+  function draw() {
+    svg.replaceChildren(); hideTip();
+    const vis = visible();
+    document.querySelector(".metric")!.classList.toggle("off", st.view === "scatter");
+    if (st.view === "scatter") return scatter(vis);
+    if (st.view === "bars") return bars(vis);
+    return time(vis);
+  }
+  function axisY(lo0: number, hi0: number, fmt: (v: number) => string) {
+    // round the range to a "nice" step (1, 2, 2.5 or 5 x 10^n) so ticks read as plain numbers
+    const raw = (hi0 - lo0) / 4 || 1, mag = 10 ** Math.floor(Math.log10(raw));
+    const step = [1, 2, 2.5, 5, 10].map((f) => f * mag).find((v) => v >= raw)!;
+    const lo = Math.floor(lo0 / step) * step, hi = Math.ceil(hi0 / step) * step;
+    const Y = (v: number) => T + (1 - (v - lo) / (hi - lo || 1)) * (H - T - B);
+    for (let v = lo; v <= hi + step / 2; v += step) svg.append(el("line", { x1: L, x2: W - R, y1: Y(v), y2: Y(v), class: "gl" }), el("text", { x: L - 10, y: Y(v) + 4, class: "ax", "text-anchor": "end" }, fmt(v)));
+    return Y;
+  }
+  function scatter(vis: any[]) {
+    const pts = vis.filter((m) => D.latest[m.id]);
+    note.textContent = pts.length ? "Latest round. Up is better, left is cheaper. Hover a model for its breakdown." : "No tested model in this selection yet.";
+    if (!pts.length) return;
+    const xs = pts.map((m) => D.latest[m.id].cost_per_task);
+    const lo = Math.log10(Math.min(...xs) / 2), hi = Math.log10(Math.max(...xs) * 2);
+    const X = (v: number) => L + ((Math.log10(v) - lo) / (hi - lo || 1)) * (W - L - R - 140);
+    const Y = axisY(0.8, 1, METRIC.score.fmt);
+    for (const v of [0.001, 0.01, 0.1, 1, 10]) if (Math.log10(v) > lo && Math.log10(v) < hi) svg.append(el("text", { x: X(v), y: H - B + 24, class: "ax", "text-anchor": "middle" }, money(v)));
+    svg.append(el("text", { x: L, y: H - 12, class: "ax" }, "API-equivalent cost per task, log scale"));
+    pts.forEach((m, i) => {
+      const s = D.latest[m.id], g = el("g", { class: "pt", style: `--i:${i}` });
+      g.append(el("circle", { cx: X(s.cost_per_task), cy: Y(s.score), r: 26, fill: m.color, opacity: 0.12 }), el("circle", { cx: X(s.cost_per_task), cy: Y(s.score), r: 8, fill: m.color }),
+        el("text", { x: X(s.cost_per_task) + 16, y: Y(s.score) + 5, class: "lb" }, m.name));
+      hover(g, detail(m.id)); svg.append(g);
+    });
+  }
+  function bars(vis: any[]) {
+    const k = st.metric, f = METRIC[k];
+    const rows = vis.map((m) => ({ m, v: latestVal(m.id, k) })).filter((r) => r.v != null) as { m: any; v: number }[];
+    rows.sort((a, b) => (f.higher ? b.v - a.v : a.v - b.v));
+    note.textContent = rows.length ? `${f.label}, latest round. ${f.higher ? "Higher" : "Lower"} is better.` : "No data for this selection yet.";
+    if (!rows.length) return;
+    const hi = Math.max(...rows.map((r) => r.v)) * 1.12 || 1, lo = k === "score" ? Math.max(0, Math.min(...rows.map((r) => r.v)) - 0.1) : 0;
+    const Y = axisY(lo, hi, f.fmt);
+    const bw = Math.max(16, Math.min(70, (W - L - R) / rows.length - 28));
+    rows.forEach(({ m, v }, i) => {
+      const x = L + ((i + 0.5) * (W - L - R)) / rows.length;
+      const g = el("g", { class: "bar", style: `--i:${i}` });
+      g.append(el("rect", { x: x - bw / 2, y: Y(v), width: bw, height: Math.max(H - B - Y(v), 2), rx: 6, fill: m.color }),
+        el("text", { x, y: Y(v) - 10, class: "lb", "text-anchor": "middle" }, f.fmt(v)));
+      const cut = m.name.lastIndexOf(" "), two = rows.length > 6 && cut > 0;
+      g.append(el("text", { x, y: H - B + 22, class: "ax", "text-anchor": "middle" }, two ? m.name.slice(0, cut) : m.name));
+      if (two) g.append(el("text", { x, y: H - B + 40, class: "ax", "text-anchor": "middle" }, m.name.slice(cut + 1)));
+      hover(g, detail(m.id)); svg.append(g);
+    });
+  }
+  function time(vis: any[]) {
+    const k = st.metric, f = METRIC[k];
+    const ser = vis.map((m) => ({ m, s: series(m.id, k) })).filter((r) => r.s.length);
+    const dates = [...new Set(ser.flatMap((r) => r.s.map((p) => p.date)))].sort();
+    note.textContent = !ser.length ? "No data for this selection yet." : dates.length < 2 ? `${f.label}. One round so far: every new round adds a point, and the lines start at the second.` : `${f.label} across ${dates.length} ${k === "price" ? "snapshots" : "rounds"}.${k === "price" ? "" : " Only tasks that stayed identical count."}`;
+    if (!ser.length) return;
+    const vals = ser.flatMap((r) => r.s.map((p) => p.v));
+    let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * 0.15 || hi * 0.1 || 1; lo = Math.max(0, lo - pad); hi += pad;
+    const Y = axisY(lo, hi, f.fmt);
+    const X = (d: string) => dates.length < 2 ? L + (W - L - R - 240) / 2 : L + 20 + (dates.indexOf(d) / (dates.length - 1)) * (W - L - R - 260);
+    dates.forEach((d) => svg.append(el("text", { x: X(d), y: H - B + 24, class: "ax", "text-anchor": "middle" }, new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }))));
+    const labels: { y: number; x: number; text: string; color: string }[] = [];
+    ser.forEach(({ m, s }, i) => {
+      if (s.length > 1) svg.append(el("polyline", { points: s.map((p) => `${X(p.date)},${Y(p.v)}`).join(" "), fill: "none", stroke: m.color, "stroke-width": 2.5, class: "tl", pathLength: 1 }));
+      s.forEach((p) => { const c = el("circle", { cx: X(p.date), cy: Y(p.v), r: 7, fill: m.color, class: "pt", style: `--i:${i}` }); hover(c, `<b style="color:${m.color}">${m.name}</b><br>${new Date(p.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}: ${f.fmt(p.v)}`); svg.append(c); });
+      const last = s[s.length - 1];
+      labels.push({ y: Y(last.v) + 5, x: X(last.date) + 16, text: `${m.name} ${f.fmt(last.v)}`, color: m.color });
+    });
+    // end labels: keep their order, push apart to 19px, then pull the column back inside the plot
+    labels.sort((a, b) => a.y - b.y);
+    labels.forEach((l, i) => { if (i) l.y = Math.max(l.y, labels[i - 1].y + 19); });
+    for (let i = labels.length - 1; i >= 0; i--) labels[i].y = Math.min(labels[i].y, i === labels.length - 1 ? H - B : labels[i + 1].y - 19);
+    labels.forEach((l) => svg.append(el("text", { x: l.x, y: l.y, class: "lb sm", style: `fill:${l.color}` }, l.text)));
+  }
+
+  // controls
+  const chips = (key: "providers" | "families", values: string[], host: Element, colorOf?: (v: string) => string) => {
+    host.replaceChildren();
+    values.forEach((v) => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = v; b.setAttribute("aria-pressed", "false");
+      if (colorOf) b.style.setProperty("--c", colorOf(v));
+      b.onclick = () => { const s = st[key]; s.has(v) ? s.delete(v) : s.add(v); b.setAttribute("aria-pressed", String(s.has(v))); draw(); };
+      host.append(b);
+    });
+  };
+  chips("providers", [...new Set(D.models.map((m: any) => m.provider))] as string[], document.querySelector('[data-filter="provider"]')!);
+  chips("families", [...new Set(D.models.map((m: any) => m.family))] as string[], document.querySelector('[data-filter="family"]')!, (f) => D.models.find((m: any) => m.family === f).color);
+  document.querySelectorAll<HTMLButtonElement>("[data-view]").forEach((b) => (b.onclick = () => { st.view = b.dataset.view!; document.querySelectorAll("[data-view]").forEach((x) => x.classList.toggle("on", x === b)); draw(); }));
+  document.querySelectorAll<HTMLButtonElement>("[data-metric]").forEach((b) => (b.onclick = () => { st.metric = b.dataset.metric!; document.querySelectorAll("[data-metric]").forEach((x) => x.classList.toggle("on", x === b)); draw(); }));
+  (document.getElementById("latestOnly") as HTMLInputElement).onchange = (e) => { st.latest = (e.target as HTMLInputElement).checked; draw(); };
+  draw();
 </script>
 
 <style>
-  /* hero: the line, and the one thing that moves on its own: the model setting changing while nothing else does */
+  /* hero: the model setting changes while nothing else does */
   .lab-hero { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr); }
   .lab-hero h1 { max-width: 15ch; }
   .swapper { display: grid; gap: 14px; justify-items: start; padding-left: clamp(0px, 3vw, 48px); border-left: 1px solid var(--line); }
@@ -220,83 +377,100 @@ const nCycles = data.cycles.length;
   .swap b { position: absolute; left: 0; top: 0; font-weight: 500; color: var(--bright); opacity: 0; transform: translateY(100%); animation: swap 18s var(--ease) infinite; animation-delay: calc(var(--i) * 3s); white-space: nowrap; }
   @keyframes swap { 0% { opacity: 0; transform: translateY(100%); } 3%, 13% { opacity: 1; transform: none; } 16%, 100% { opacity: 0; transform: translateY(-100%); } }
 
-  /* heading wipe: the line rises out of a mask, bottom first */
+  /* heading wipe: the line rises out of a mask */
   .wipe { clip-path: inset(0 0 100% 0); transform: translateY(16px); transition: clip-path 1s var(--ease), transform 1s var(--ease); }
   .wipe.in { clip-path: inset(0 0 -0.25em 0); transform: none; }
   .wipe.small { font-size: clamp(1.6rem, 2.4vw, 2.4rem); max-width: 18ch; }
   p.quiet { color: var(--dim); font-size: 15px; }
 
-  /* the six slabs: they stack from the bottom up, in depth; the two that can change are lit in the chapter colour */
-  .slabs { display: grid; gap: 10px; }
-  .slab { display: grid; grid-template-columns: minmax(96px, 0.5fr) 1fr; align-items: baseline; gap: 16px; padding: 16px 22px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--bg) 70%, transparent); opacity: 0; transform: translateY(24px) scale(.97); transition: opacity .7s var(--ease), transform .7s var(--ease), border-color .6s; transition-delay: calc(var(--i) * 110ms); }
-  .slabs.in .slab { opacity: 1; transform: none; }
-  .slab b { font-weight: 500; color: var(--bright); font-size: 18px; }
-  .slab span { color: var(--dim); font-size: 15px; }
-  .slab.live { border-color: color-mix(in srgb, var(--cc) 55%, var(--line)); box-shadow: 0 16px 40px -28px var(--cc); }
-  .slab.live b { color: var(--cc); }
-
-  /* method: one vertical chain; the connector fills downward as each step arrives */
-  .chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
-  .chain li { position: relative; display: grid; gap: 4px; padding-left: 30px; opacity: 0; transform: translateY(18px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
-  .chain li:nth-child(2) { transition-delay: 140ms; } .chain li:nth-child(3) { transition-delay: 280ms; } .chain li:nth-child(4) { transition-delay: 420ms; } .chain li:nth-child(5) { transition-delay: 560ms; }
-  .chain li::before { content: ""; position: absolute; left: 0; top: 8px; width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--cc); background: var(--bg); }
-  .chain li + li::after { content: ""; position: absolute; left: 4px; top: -24px; width: 1px; height: 30px; background: var(--cc); transform: scaleY(0); transform-origin: top; transition: transform .5s var(--ease); transition-delay: inherit; }
-  .chain.in li { opacity: 1; transform: none; }
-  .chain.in li + li::after { transform: scaleY(1); }
-  .chain b { color: var(--bright); font-weight: 500; font-size: 19px; }
-  .chain span { color: var(--dim); font-size: 15px; }
-
-  /* models + tools */
-  .lab-pair { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: clamp(32px, 4vw, 72px); align-items: center; padding-block: clamp(64px, 11vh, 140px) 0; }
-  .prices { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; font-size: 14px; }
-  .prices li { display: grid; grid-template-columns: 10px 1fr auto auto; align-items: center; gap: 12px; color: var(--dim); }
-  .prices i { width: 7px; height: 7px; border-radius: 50%; }
-  .prices b { font-weight: 400; color: var(--text); }
-  .prices em { font-style: normal; font-variant-numeric: tabular-nums; color: var(--dim); }
   .viz svg { width: 100%; height: auto; display: block; overflow: visible; }
-  .viz :global(.gl) { stroke: var(--line); }
-  .viz :global(.ax) { fill: var(--dim); font-size: 12px; }
-  .viz :global(.lb) { fill: var(--bright); font-size: 15px; }
+  .viz :global(.ax) { fill: var(--dim); font-size: 13px; }
+  .viz :global(.lb) { fill: var(--bright); font-size: 16px; }
   .viz :global(.lb.off) { fill: var(--dim); }
-  .rel :global(.ln) { fill: none; stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s var(--ease); transition-delay: calc(var(--i) * 80ms); }
-  .rel :global(.ln.available), .rel :global(.ln.judge) { stroke-width: 1; opacity: .5; }
-  .rel.in :global(.ln) { stroke-dashoffset: 0; }
-  .viz :global(.nd), .viz :global(.pt) { opacity: 0; transform: translateY(10px); transition: opacity .6s var(--ease), transform .6s var(--ease); transition-delay: calc(300ms + var(--i) * 80ms); }
-  .viz.in :global(.nd), .viz.in :global(.pt) { opacity: 1; transform: none; }
 
-  /* results */
-  #results .stats b { font-size: 34px; }
-  .lab-grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: clamp(32px, 4vw, 64px); padding-block: clamp(64px, 10vh, 120px) 0; }
-  .lab-grid3 h3 { font-size: 15px; font-weight: 400; color: var(--dim); margin: 0 0 22px; }
-  .cols { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 14px; height: 220px; align-items: end; }
-  .cols > div { display: grid; grid-template-rows: auto 1fr auto; height: 100%; gap: 8px; text-align: center; }
-  .cols b { font-weight: 400; font-size: 13px; color: var(--bright); font-variant-numeric: tabular-nums; align-self: end; }
-  .cols i { align-self: end; justify-self: center; width: 14px; height: var(--h); border-radius: 7px 7px 2px 2px; background: var(--c); transform: scaleY(0); transform-origin: bottom; transition: transform 1s var(--ease); transition-delay: calc(var(--i) * 120ms); }
-  .cols span { font-size: 13px; color: var(--dim); }
-  .cols.in i { transform: scaleY(1); }
-  .cols.range i { position: relative; height: 100%; width: 2px; background: var(--line); transform: none; border-radius: 0; }
-  .cols.range i::after { content: ""; position: absolute; left: -5px; right: -5px; bottom: var(--lo); height: max(calc(var(--hi) - var(--lo)), 6px); border-radius: 6px; background: var(--c); transform: scaleY(0); transform-origin: bottom; transition: transform 1s var(--ease); transition-delay: calc(var(--i) * 120ms); }
-  .cols.range.in i::after { transform: scaleY(1); }
-  .dots { display: grid; gap: 14px; font-size: 13px; }
-  .drow { display: grid; grid-template-columns: 82px repeat(4, 1fr); align-items: center; gap: 6px; text-align: center; }
-  .drow > span:first-child { text-align: left; color: var(--text); }
-  .drow.head span { color: var(--dim); font-size: 12px; line-height: 1.2; }
-  .drow span { display: grid; justify-items: center; gap: 4px; }
-  .drow i { width: calc(10px + var(--s) * 18px); height: calc(10px + var(--s) * 18px); border-radius: 50%; background: var(--c); opacity: calc(var(--s) * 1.4 - .4); }
-  .drow small { color: var(--dim); font-variant-numeric: tabular-nums; }
-  .lab-note { padding: clamp(40px, 7vh, 72px) var(--pad) 0; color: var(--dim); font-size: 14px; max-width: calc(80ch + 2 * var(--pad)); }
-  .lab-lead { color: var(--dim); max-width: 64ch; }
-  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
+  /* the stack: slabs drop into place, lowest first; a signal rises through them; the top two keep changing */
+  .stack :global(.sl) { opacity: 0; transform: translateY(-40px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i) * 120ms); }
+  .stack.in :global(.sl) { opacity: 1; transform: none; }
+  .stack :global(.tp) { fill: color-mix(in srgb, var(--panel) 92%, transparent); stroke: var(--line); stroke-width: 1.2; transition: fill .4s, stroke .4s; }
+  .stack :global(.sd) { fill: var(--bg); stroke: var(--line); }
+  .stack :global(.sd.r) { fill: color-mix(in srgb, var(--bg) 70%, black); }
+  .stack :global(.live .tp) { stroke: var(--pink); fill: color-mix(in srgb, var(--pink) 10%, var(--panel)); }
+  .stack :global(.live .sd) { stroke: color-mix(in srgb, var(--pink) 50%, var(--line)); }
+  .stack :global(.sl:hover .tp) { fill: color-mix(in srgb, var(--cc) 22%, var(--panel)); stroke: var(--cc); }
+  .stack :global(.ld) { stroke: var(--line); }
+  .stack :global(.ln) { fill: var(--bright); font-size: 17px; font-weight: 500; }
+  .stack :global(.live .ln) { fill: var(--pink); }
+  .stack :global(.lw) { fill: var(--dim); font-size: 13.5px; }
+  .stack :global(.sw) { fill: var(--bright); font-size: 15px; opacity: 0; transform-box: fill-box; animation: swaptext 9.6s var(--ease) infinite; animation-delay: calc(var(--k) * 2.4s); }
+  .stack :global(.pulse) { fill: var(--pink); filter: drop-shadow(0 0 6px var(--pink)); }
+  @keyframes swaptext { 0% { opacity: 0; transform: translateY(10px); } 4%, 19% { opacity: 1; transform: none; } 23%, 100% { opacity: 0; transform: translateY(-10px); } }
+
+  /* the loop: the ring draws in, then a light goes round; each step glows as it passes */
+  .loop :global(.ring) { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.6s var(--ease); }
+  .loop.in :global(.ring) { stroke-dashoffset: 0; }
+  .loop :global(.node) { fill: var(--bg); stroke: var(--blue); stroke-width: 2; }
+  .loop :global(.halo) { fill: var(--blue); opacity: 0; animation: halo 12s linear infinite; animation-delay: var(--d); }
+  .loop :global(.orb) { fill: var(--bright); filter: drop-shadow(0 0 8px var(--blue)); }
+  .loop :global(.sn) { fill: var(--bright); font-size: 19px; font-weight: 500; }
+  .loop :global(.sw2) { fill: var(--dim); font-size: 13.5px; }
+  .loop :global(.c1) { fill: var(--bright); font-size: 34px; font-weight: 500; letter-spacing: -0.03em; }
+  .loop :global(.c2) { fill: var(--dim); font-size: 14px; }
+  .loop :global(.st) { opacity: 0; transform: translateY(12px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: .6s; }
+  .loop.in :global(.st) { opacity: 1; transform: none; }
+  @keyframes halo { 0% { opacity: .4; } 12% { opacity: 0; } 100% { opacity: 0; } }
+
+  /* tools → models */
+  .lab-pair { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.5fr); gap: clamp(32px, 4vw, 72px); align-items: center; padding-block: clamp(80px, 12vh, 160px) 0; }
+  .rel :global(.lk) { fill: none; stroke-width: 1.6; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s var(--ease); transition-delay: calc(var(--i) * 80ms); }
+  .rel :global(.lk.available), .rel :global(.lk.judge) { stroke-width: 1; opacity: .45; }
+  .rel.in :global(.lk) { stroke-dashoffset: 0; }
+  .rel :global(.nd) { opacity: 0; transform: translateY(10px); transition: opacity .6s var(--ease), transform .6s var(--ease); transition-delay: calc(300ms + var(--i) * 70ms); }
+  .rel.in :global(.nd) { opacity: 1; transform: none; }
+
+  /* metrics explorer */
+  .explorer { display: grid; gap: 18px; padding-top: clamp(28px, 5vh, 56px); }
+  .ctl { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; transition: opacity .3s; }
+  .seg.off { opacity: .25; pointer-events: none; }
+  .seg button, .chips :global(button) { font: inherit; font-size: 14px; color: var(--dim); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; cursor: pointer; transition: color .25s, border-color .25s, background .25s; }
+  .seg button:hover, .chips :global(button:hover) { color: var(--bright); }
+  .seg button.on { color: var(--bg); background: var(--bright); border-color: var(--bright); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips :global(button[aria-pressed="true"]) { color: var(--bright); border-color: var(--c, var(--amber)); background: color-mix(in srgb, var(--c, var(--amber)) 14%, transparent); }
+  .chips :global(button)::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; background: var(--c, var(--dim)); vertical-align: 1px; }
+  .filters { justify-content: flex-start; }
+  .tog { font-size: 14px; color: var(--dim); display: flex; gap: 8px; align-items: center; cursor: pointer; }
+  .tog input { accent-color: var(--amber); }
+  .seg button:focus-visible, .chips :global(button:focus-visible), .chart :global([tabindex]):focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .chart { position: relative; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding-block: 20px; overflow-x: auto; }
+  .chart svg { width: 100%; min-width: 560px; height: auto; display: block; overflow: visible; }
+  .chart :global(.gl) { stroke: var(--line); }
+  .chart :global(.ax) { fill: var(--dim); font-size: 14px; }
+  .chart :global(.lb) { fill: var(--bright); font-size: 16px; }
+  .chart :global(.lb.sm) { font-size: 14px; }
+  .chart :global(.pt), .chart :global(.bar) { cursor: pointer; animation: rise .7s var(--ease) both; animation-delay: calc(var(--i) * 70ms); }
+  .chart :global(.bar rect) { transform-box: fill-box; transform-origin: bottom; animation: grow .8s var(--ease) both; animation-delay: calc(var(--i) * 70ms); }
+  .chart :global(.tl) { stroke-dasharray: 1; animation: draw 1.2s var(--ease) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes grow { from { transform: scaleY(0); } }
+  @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  .tip { position: absolute; transform: translate(-50%, -100%); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 14px; line-height: 1.5; color: var(--text); pointer-events: none; max-width: 340px; box-shadow: 0 18px 40px -24px #000; z-index: 2; }
+  .tip :global(span) { color: var(--dim); font-size: 13px; }
+  .lab-note { padding: clamp(32px, 5vh, 56px) var(--pad) 0; color: var(--dim); font-size: 14px; max-width: calc(80ch + 2 * var(--pad)); }
 
   @media (max-width: 900px) {
     .lab-hero { grid-template-columns: 1fr; }
     .swapper { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 20px; }
     .lab-pair { grid-template-columns: 1fr; }
-    .slab { grid-template-columns: 1fr; gap: 2px; }
+    .viz :global(.lb) { font-size: 22px; } .viz :global(.ax) { font-size: 18px; }
+    .loop :global(.sn) { font-size: 30px; } .loop :global(.sw2) { display: none; } .loop :global(.c1) { font-size: 44px; } .loop :global(.c2) { font-size: 20px; }
+    .stack :global(.ln) { font-size: 26px; } .stack :global(.lw) { display: none; } .stack :global(.sw) { font-size: 22px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .wipe, .slab, .chain li, .viz :global(.nd), .viz :global(.pt), .cols i, .cols.range i::after { transition: none; clip-path: none; opacity: 1; transform: none; }
-    .rel :global(.ln) { stroke-dashoffset: 0; transition: none; }
-    .swap b { animation: none; } .swap b:first-child { opacity: 1; transform: none; }
+    .wipe, .stack :global(.sl), .loop :global(.st), .rel :global(.nd) { transition: none; clip-path: none; opacity: 1; transform: none; }
+    .rel :global(.lk), .loop :global(.ring) { stroke-dashoffset: 0; transition: none; }
+    .swap b, .stack :global(.sw), .loop :global(.halo), .chart :global(*) { animation: none !important; }
+    .swap b:first-child, .stack :global(.sw:first-of-type) { opacity: 1; transform: none; }
+    .stack :global(.pulse), .loop :global(.orb) { display: none; }
   }
 </style>
