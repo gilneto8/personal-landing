@@ -1,0 +1,255 @@
+---
+// Unlisted: no link from the site, noindex, kept out of the sitemap (Gil, 2026-11-25).
+// Data: src/data/model-bench.json, written by `python3 report.py --export` in the model-bench repo.
+// Charts are static SVG built here at build time; no client JS.
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/global.css";
+import "../../styles/home.css";
+import data from "../../data/model-bench.json";
+
+type Summ = { score: number; suite: Record<string, number>; trials: number; attempts: number; rounds: number[];
+  spread: number; cost_per_task: number; cost_per_solved: number | null; secs: number | null; errors: number; tokens_per_task: number };
+
+const cat = data.catalog;
+const models = cat.models as any[];
+const byId = Object.fromEntries(models.map((m) => [m.id, m]));
+const cycle = data.cycles[data.cycles.length - 1];
+const summ = cycle.summary as Record<string, Summ>;
+const tested = Object.keys(summ).sort((a, b) => summ[b].score - summ[a].score);
+const COLOR: Record<string, string> = {
+  "claude-fable-5-2": "var(--amber)", "claude-opus-5-5": "var(--blue)",
+  "claude-sonnet-5-5": "var(--lav)", "claude-haiku-5-5": "var(--teal)",
+};
+const col = (id: string) => COLOR[id] ?? "var(--pink)";
+const nm = (id: string) => byId[id]?.name ?? id;
+const pct = (v: number) => `${Math.round(v * 100)}%`;
+const usd = (v: number) => (v < 0.1 ? `$${v.toFixed(3)}` : `$${v.toFixed(2)}`);
+const SUITES = ["vault", "finance", "ops", "code"];
+const SUITE_LABEL: Record<string, string> = { vault: "Vault recall", finance: "Finance (PT)", ops: "Vault operations", code: "Code fixes" };
+const nTasks = Object.values(cycle.suites as Record<string, number>).reduce((a, b) => a + b, 0);
+const dateLabel = (d: string) => new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+// ── score against cost (log x) ──────────────────────────────────────────────────────────────
+function scatter(): string {
+  const W = 640, H = 320, L = 52, R = 24, T = 20, B = 48;
+  const xs = tested.map((m) => summ[m].cost_per_task);
+  const lo = Math.log10(Math.min(...xs) / 2), hi = Math.log10(Math.max(...xs) * 2);
+  const ylo = 0.8, yhi = 1.0;
+  const X = (v: number) => L + ((Math.log10(v) - lo) / (hi - lo)) * (W - L - R);
+  const Y = (v: number) => T + (1 - (v - ylo) / (yhi - ylo)) * (H - T - B);
+  let g = "";
+  for (const v of [0.8, 0.85, 0.9, 0.95, 1]) g += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" class="gl"/><text x="${L - 8}" y="${Y(v) + 4}" class="ax" text-anchor="end">${pct(v)}</text>`;
+  for (const v of [0.01, 0.03, 0.1, 0.3, 1]) if (Math.log10(v) > lo && Math.log10(v) < hi) g += `<line x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${H - B}" class="gl"/><text x="${X(v)}" y="${H - B + 18}" class="ax" text-anchor="middle">${usd(v)}</text>`;
+  g += `<text x="${(L + W - R) / 2}" y="${H - 8}" class="ax" text-anchor="middle">API-equivalent cost per task (log scale)</text>`;
+  for (const m of tested) {
+    const s = summ[m], x = X(s.cost_per_task), y = Y(s.score);
+    g += `<circle cx="${x}" cy="${y}" r="8" fill="${col(m)}"><title>${nm(m)}: ${pct(s.score)} at ${usd(s.cost_per_task)} per task</title></circle>`;
+    g += `<text x="${x + 13}" y="${y + 4}" class="lb">${nm(m)}</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Score against cost per task">${g}</svg>`;
+}
+
+// ── agent tools ↔ models ────────────────────────────────────────────────────────────────────
+function relations(): string {
+  const agents = Object.entries(cat.agents as Record<string, any>);
+  const W = 700, rowH = 40, H = Math.max(models.length, agents.length * 2) * rowH + 24;
+  const ay = (i: number) => 24 + (i + 0.5) * ((H - 24) / agents.length);
+  const my = (i: number) => 12 + (i + 0.5) * rowH;
+  let g = "";
+  models.forEach((m, i) => {
+    const ai = agents.findIndex(([k]) => k === m.agent);
+    const dash = m.status === "tested" ? "" : m.status === "judge" ? ' stroke-dasharray="2 5"' : ' stroke-dasharray="7 6"';
+    g += `<path d="M190 ${ay(ai)} C 300 ${ay(ai)}, 330 ${my(i)}, 420 ${my(i)}" fill="none" stroke="${m.status === "tested" ? col(m.id) : "var(--line)"}" stroke-width="${m.status === "tested" ? 2 : 1.5}"${dash}/>`;
+  });
+  // the neutral agent is meant to reach every model: one faint fan, drawn under the rest
+  const ni = agents.findIndex(([k]) => k === "neutral");
+  if (ni >= 0) models.forEach((_, i) => (g = `<path d="M190 ${ay(ni)} C 300 ${ay(ni)}, 330 ${my(i)}, 420 ${my(i)}" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="1 6" opacity=".7"/>` + g));
+  agents.forEach(([k, a], i) => {
+    g += `<rect x="8" y="${ay(i) - 22}" width="182" height="44" rx="10" class="node"/>`;
+    g += `<text x="20" y="${ay(i) - 3}" class="lb">${a.name.split(" (")[0]}</text><text x="20" y="${ay(i) + 13}" class="ax">${a.state}</text>`;
+  });
+  models.forEach((m, i) => {
+    g += `<circle cx="428" cy="${my(i)}" r="5" fill="${m.status === "tested" ? col(m.id) : "var(--dim)"}"/>`;
+    g += `<text x="442" y="${my(i) + 4}" class="lb">${m.name}</text>`;
+    g += `<text x="${W - 8}" y="${my(i) + 4}" class="ax" text-anchor="end">${m.status}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Which agent tool runs which model">${g}</svg>`;
+}
+
+// ── the agnostic stack ──────────────────────────────────────────────────────────────────────
+const STACK = [
+  ["Notes", "Markdown in git"],
+  ["Tools", "Python scripts: index, lint, search"],
+  ["Rules", "AGENTS.md and plain-text rules"],
+  ["Seam", "one env file + one adapter per agent tool"],
+  ["Agent tool", "Claude Code · Gemini CLI · neutral agent"],
+  ["Model", "one setting per role"],
+];
+function stack(): string {
+  const W = 640, h = 46, gap = 14, H = STACK.length * (h + gap);
+  let g = "";
+  STACK.forEach(([a, b], i) => {
+    const y = i * (h + gap), swap = i >= 4;
+    g += `<rect x="0" y="${y}" width="${W}" height="${h}" rx="10" class="${swap ? "node swap" : "node"}"/>`;
+    g += `<text x="18" y="${y + 28}" class="lb">${a}</text><text x="150" y="${y + 28}" class="ax">${b}</text>`;
+    g += `<text x="${W - 16}" y="${y + 28}" class="ax" text-anchor="end">${swap ? "swappable" : "portable"}</text>`;
+    if (i < STACK.length - 1) g += `<line x1="70" x2="70" y1="${y + h}" y2="${y + h + gap}" class="gl"/>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="The layers of the second brain">${g}</svg>`;
+}
+
+// ── trends ──────────────────────────────────────────────────────────────────────────────────
+const trend = data.trends as Record<string, { date: string; score: number; usd: number; tokens: number }[]>;
+const nCycles = data.cycles.length;
+function trendChart(key: "score" | "usd" | "tokens", fmt: (v: number) => string): string {
+  const series = Object.entries(trend).filter(([, p]) => p.length);
+  const dates = [...new Set(series.flatMap(([, p]) => p.map((q) => q.date)))].sort();
+  const W = 300, H = 170, L = 58, R = 12, T = 14, B = 28;
+  const vals = series.flatMap(([, p]) => p.map((q) => q[key]));
+  let lo = Math.min(...vals), hi = Math.max(...vals); if (hi === lo) { lo *= 0.9; hi = hi * 1.1 || 1; }
+  const X = (d: string) => dates.length < 2 ? (L + W - R) / 2 : L + (dates.indexOf(d) / (dates.length - 1)) * (W - L - R);
+  const Y = (v: number) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
+  let g = `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" class="gl"/>`;
+  g += `<text x="${L - 6}" y="${Y(hi) + 4}" class="ax" text-anchor="end">${fmt(hi)}</text><text x="${L - 6}" y="${Y(lo) + 4}" class="ax" text-anchor="end">${fmt(lo)}</text>`;
+  dates.forEach((d) => (g += `<text x="${X(d)}" y="${H - 8}" class="ax" text-anchor="middle">${dateLabel(d).slice(0, 6)}</text>`));
+  for (const [m, p] of series) {
+    if (p.length > 1) g += `<polyline fill="none" stroke="${col(m)}" stroke-width="2" points="${p.map((q) => `${X(q.date)},${Y(q[key])}`).join(" ")}"/>`;
+    p.forEach((q) => (g += `<circle cx="${X(q.date)}" cy="${Y(q[key])}" r="4" fill="${col(m)}"><title>${nm(m)} ${q.date}: ${fmt(q[key])}</title></circle>`));
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img">${g}</svg>`;
+}
+const maxSolved = Math.max(...tested.map((m) => summ[m].cost_per_solved ?? 0));
+---
+
+<Layout title="Model bench · Gil Neto" description="How my second brain stays independent of any one AI model, and how I test the latest models on my own work." noindex>
+<nav class="top" id="nav"><a href="/"><b>Gil Neto</b></a><ul><li><a href="/#vault">Second brain</a></li><li><a href="/#writing">Writing</a></li><li><a href="/work">Work with me</a></li></ul></nav>
+
+<section class="hero lab-hero">
+  <div class="copy">
+    <span class="kicker" style="color:var(--amber)">Lab · model bench</span>
+    <h1><span>Any model.</span> Measured on my own work.</h1>
+    <p>My second brain does not depend on one AI model. Its notes, tools and rules are plain files, and the model is a setting. To choose that setting, I test the newest models on tasks taken from my own notes, finances and code, and I keep every result so I can see a model get better, worse, cheaper or pricier over time.</p>
+  </div>
+</section>
+
+<section class="lab-block" id="agnostic">
+  <h2>How the brain stays model-agnostic</h2>
+  <div class="lab-grid">
+    <div class="lab-card">{/* diagram */}<Fragment set:html={stack()} /></div>
+    <div class="rows two">
+      <div class="row"><span class="what">Portable</span><span class="why">The notes are Markdown in git. The tools that index, check and search them are Python scripts with no model inside. The rules live in one AGENTS.md, a plain-text format several agent tools read.</span></div>
+      <div class="row"><span class="what">Swappable</span><span class="why">One environment file names the agent tool, its flags and the model for each role. One adapter file per agent tool maps neutral actions ("spawn a helper", "run a skill") to that tool's own names. Changing a model is a one-line edit.</span></div>
+      <div class="row"><span class="what">Where it stands</span><span class="why">Notes, tools and rules already move as they are. The scheduled night jobs still call one agent tool directly in 14 places. Moving them behind the seam is the next step.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="lab-block" id="method">
+  <h2>How a model is tested</h2>
+  <div class="rows">
+    <div class="row"><span class="when">01 · Freeze</span><span class="what">Tasks from my own material</span><span class="why">A versioned task set. The first one, bench-v1, has {nTasks} tasks: {cycle.suites.vault} vault recall, {cycle.suites.finance} finance questions answered in Portuguese, {cycle.suites.ops} vault operations, and {cycle.suites.code} real bug fixes from Damasqo Hub, former Cashew. The material is private, so no model has seen it in training.</span></div>
+    <div class="row"><span class="when">02 · Sandbox</span><span class="what">A fresh container per attempt</span><span class="why">The agent tool works inside a throwaway container, run by Harbor, an open-source benchmark runner. When the cycle ends, everything it created is removed, and the run checks that nothing is left.</span></div>
+    <div class="row"><span class="when">03 · Grade</span><span class="what">Tests and scripts first</span><span class="why">Code fixes are graded by the tests from the real fix commit. Facts and conventions are graded by scripts. A judge model only grades writing, and it comes from a company with no model in that cycle.</span></div>
+    <div class="row"><span class="when">04 · Record</span><span class="what">Score, cost, tokens, time</span><span class="why">Every attempt keeps its score, cost, tokens, time and the agent tool's version, plus each model's list price that day. Trends compare only tasks that stayed identical.</span></div>
+    <div class="row"><span class="when">05 · Decide</span><span class="what">A recommendation, never a switch</span><span class="why">The report recommends. Nothing changes automatically: I change a model myself, or it stays. No provider that trains on my data is used, and a key that runs out of credits is stopped, never retried.</span></div>
+  </div>
+</section>
+
+<section class="lab-block" id="models">
+  <h2>Models and the tools that run them</h2>
+  <div class="lab-grid">
+    <div class="lab-card"><Fragment set:html={relations()} /></div>
+    <div class="lab-card lab-table">
+      <table>
+        <thead><tr><th>Model</th><th>Company</th><th>Status</th><th>Price per 1M tokens<br />in / out</th></tr></thead>
+        <tbody>{models.map((m) => (
+          <tr><td><i class="dot" style={`background:${m.status === "tested" ? col(m.id) : "var(--dim)"}`}></i>{m.name}</td><td>{m.provider}</td><td><span class={`chip ${m.status}`}>{m.status}</span></td><td class="num">{m.price_in != null ? `$${m.price_in.toFixed(2)} / $${m.price_out.toFixed(2)}` : "–"}</td></tr>
+        ))}</tbody>
+      </table>
+      <p class="note">Solid line: tested. Dashed: available, not yet tested. Dotted: used as a judge. The faint fan is the neutral agent, planned to run every model with the same tools. Prices from OpenRouter's public model list on {dateLabel(data.exported)}.</p>
+    </div>
+  </div>
+</section>
+
+<section class="lab-block" id="results">
+  <h2>Results, bench-{cycle.bench}</h2>
+  <p class="lead">{dateLabel(cycle.date)} · {tested.length} models · {nTasks} tasks · {summ[tested[0]].attempts} attempts each · Claude Code {cycle.agent_version}</p>
+  <div class="kpis">{tested.map((m) => (
+    <div class="kpi"><span style={`color:${col(m)}`}>{nm(m)}</span><strong>{pct(summ[m].score)}</strong><small>{usd(summ[m].cost_per_task)} per task · median {Math.round(summ[m].secs ?? 0)} s</small></div>
+  ))}</div>
+  <div class="lab-grid">
+    <div><h3>Score against cost</h3><div class="lab-card"><Fragment set:html={scatter()} /></div></div>
+    <div><h3>Score by suite</h3><div class="lab-card lab-table">
+      <table class="heat"><thead><tr><th></th>{SUITES.map((x) => <th>{SUITE_LABEL[x]}</th>)}</tr></thead>
+      <tbody>{tested.map((m) => (<tr><td>{nm(m)}</td>{SUITES.map((x) => <td style={`--v:${summ[m].suite[x] ?? 0}`}>{summ[m].suite[x] != null ? pct(summ[m].suite[x]) : "–"}</td>)}</tr>))}</tbody></table>
+    </div></div>
+    <div><h3>Cost per solved task</h3><div class="lab-card">{tested.slice().sort((a, b) => (summ[a].cost_per_solved ?? 0) - (summ[b].cost_per_solved ?? 0)).map((m) => (
+      <div class="bar"><span>{nm(m)}</span><i style={`width:${(100 * (summ[m].cost_per_solved ?? 0)) / maxSolved}%;background:${col(m)}`}></i><b>{usd(summ[m].cost_per_solved ?? 0)}</b></div>
+    ))}</div></div>
+    <div><h3>Spread across attempts</h3><div class="lab-card">{tested.map((m) => {
+      const lo = Math.min(...summ[m].rounds), hi = Math.max(...summ[m].rounds);
+      return <div class="bar"><span>{nm(m)}</span><em><i style={`left:${(lo - 0.8) * 500}%;width:${Math.max((hi - lo) * 500, 1.5)}%;background:${col(m)}`}></i></em><b>{pct(lo)}–{pct(hi)}</b></div>;
+    })}<p class="note">Overall score of each attempt round, on an 80–100% scale.</p></div></div>
+  </div>
+  <div class="lab-card caveat">
+    <p><b>Read with care.</b> bench-v1 is a first draft. Most tasks are single lookups graded on key facts, so all four models land between 88% and 95%, and the attempt spread is up to 7 points. A grader bug of mine scored six vault-operation attempts of Haiku, Sonnet and Opus at zero; it was fixed during the run, before Fable's turn. The next task set adds multi-step recall, calculations, safety traps, code review and writing in my voice, where models should pull apart.</p>
+  </div>
+</section>
+
+<section class="lab-block" id="time">
+  <h2>Over time</h2>
+  <p class="lead">{nCycles < 2 ? "One cycle so far. Each new cycle adds a point, and the lines start at the second one." : `${nCycles} cycles.`} Only tasks that stayed identical between cycles count, so a new task set never looks like a model change.</p>
+  <div class="trend-grid">
+    <div><h3>Score</h3><div class="lab-card"><Fragment set:html={trendChart("score", pct)} /></div></div>
+    <div><h3>Cost per task</h3><div class="lab-card"><Fragment set:html={trendChart("usd", usd)} /></div></div>
+    <div><h3>Tokens per task</h3><div class="lab-card"><Fragment set:html={trendChart("tokens", (v) => `${Math.round(v / 1000)}k`)} /></div></div>
+  </div>
+  <p class="note">Cost is what the same run would cost on each company's API. The Claude runs used a subscription, so they were not billed per token.</p>
+</section>
+</Layout>
+
+<style>
+  .lab-hero { min-height: auto; padding-block: clamp(110px, 18vh, 180px) 40px; }
+  .lab-hero h1 span { color: var(--amber); }
+  .lab-block { padding-block: clamp(56px, 9vh, 96px) 0; }
+  .lab-block:last-of-type { padding-bottom: clamp(72px, 12vh, 140px); }
+  .lab-block h2 { margin-bottom: 28px; }
+  .lab-block h3 { font-size: 14px; font-weight: 500; color: var(--dim); margin: 0 0 10px; }
+  .lead { color: var(--dim); margin: -12px 0 24px; max-width: 70ch; }
+  .lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 24px; align-items: start; margin-top: 24px; }
+  .lab-grid > div, .trend-grid > div { min-width: 0; }
+  .trend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; }
+  .lab-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; overflow-x: auto; }
+  .lab-card svg { width: 100%; height: auto; display: block; }
+  .lab-card :global(.gl) { stroke: var(--line); }
+  .lab-card :global(.ax) { fill: var(--dim); font: 12px var(--font-mono); }
+  .lab-card :global(.lb) { fill: var(--bright); font-size: 14px; }
+  .lab-card :global(.node) { fill: var(--bg); stroke: var(--line); }
+  .lab-card :global(.node.swap) { stroke: var(--amber); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: 14px; }
+  .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .kpi span { font-weight: 500; }
+  .kpi strong { display: block; font-size: 34px; font-weight: 500; color: var(--bright); font-variant-numeric: tabular-nums; }
+  .kpi small { color: var(--dim); font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--dim); font-weight: 400; }
+  .num, .heat td { font-variant-numeric: tabular-nums; }
+  .heat td + td { text-align: center; background: rgb(255 181 71 / calc(var(--v) * 0.55)); color: var(--bright); }
+  .heat th + th { text-align: center; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+  .chip { font: 12px var(--font-mono); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--dim); }
+  .chip.tested { border-color: var(--teal); color: var(--teal); }
+  .chip.judge { border-color: var(--lav); color: var(--lav); }
+  .bar { display: grid; grid-template-columns: 96px 1fr 64px; align-items: center; gap: 10px; margin: 8px 0; font-size: 14px; }
+  .bar i { display: block; height: 12px; border-radius: 6px; }
+  .bar em { position: relative; display: block; height: 12px; background: var(--bg); border-radius: 6px; }
+  .bar em i { position: absolute; top: 0; }
+  .bar b { font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
+  .note { color: var(--dim); font-size: 13px; margin-top: 14px; max-width: 75ch; }
+  .caveat { margin-top: 24px; border-color: var(--amber); }
+  .caveat p { margin: 0; max-width: 80ch; }
+  .lab-block .rows { margin-top: 0; }
+  .rows.two .row { grid-template-columns: minmax(110px, 160px) 1fr; }
+  th { white-space: normal; }
+</style>

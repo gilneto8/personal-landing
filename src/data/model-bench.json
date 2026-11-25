@@ -1,0 +1,273 @@
+{
+ "exported": "2026-11-25",
+ "catalog": {
+  "_note": "Model catalog for the public page. status: tested | available | judge. Prices filled from OpenRouter's public list at export time.",
+  "agents": {
+   "claude-code": {
+    "name": "Claude Code",
+    "vendor": "Anthropic",
+    "state": "in use"
+   },
+   "gemini-cli": {
+    "name": "Gemini CLI",
+    "vendor": "Google",
+    "state": "wired, smoke-tested"
+   },
+   "neutral": {
+    "name": "Neutral agent (same tools for every model)",
+    "vendor": "open source",
+    "state": "planned"
+   }
+  },
+  "models": [
+   {
+    "id": "claude-fable-5-2",
+    "or": "anthropic/claude-fable-5.2",
+    "provider": "Anthropic",
+    "name": "Fable 5.2",
+    "agent": "claude-code",
+    "status": "tested",
+    "price_in": 8.0,
+    "price_out": 40.0
+   },
+   {
+    "id": "claude-opus-5-5",
+    "or": "anthropic/claude-opus-5.5",
+    "provider": "Anthropic",
+    "name": "Opus 5.5",
+    "agent": "claude-code",
+    "status": "tested",
+    "price_in": 4.0,
+    "price_out": 20.0
+   },
+   {
+    "id": "claude-sonnet-5-5",
+    "or": "anthropic/claude-sonnet-5.5",
+    "provider": "Anthropic",
+    "name": "Sonnet 5.5",
+    "agent": "claude-code",
+    "status": "tested",
+    "price_in": 2.0,
+    "price_out": 10.0
+   },
+   {
+    "id": "claude-haiku-5-5",
+    "or": "anthropic/claude-haiku-5.5",
+    "provider": "Anthropic",
+    "name": "Haiku 5.5",
+    "agent": "claude-code",
+    "status": "tested",
+    "price_in": 0.09999999999999999,
+    "price_out": 0.5
+   },
+   {
+    "id": "gemini-4-neon",
+    "or": "google/gemini-4-neon",
+    "provider": "Google",
+    "name": "Gemini 4 Neon",
+    "agent": "gemini-cli",
+    "status": "available",
+    "price_in": 3.0,
+    "price_out": 15.0
+   },
+   {
+    "id": "gemini-4-argon",
+    "or": "google/gemini-4-argon",
+    "provider": "Google",
+    "name": "Gemini 4 Argon",
+    "agent": "gemini-cli",
+    "status": "available",
+    "price_in": 2.0,
+    "price_out": 10.0
+   },
+   {
+    "id": "gemini-4-carbon",
+    "or": "google/gemini-4-carbon",
+    "provider": "Google",
+    "name": "Gemini 4 Carbon",
+    "agent": "gemini-cli",
+    "status": "available",
+    "price_in": 2.0,
+    "price_out": 10.0
+   },
+   {
+    "id": "gemini-4-hydrogen",
+    "or": "google/gemini-4-hydrogen",
+    "provider": "Google",
+    "name": "Gemini 4 Hydrogen",
+    "agent": "gemini-cli",
+    "status": "available",
+    "price_in": 1.5,
+    "price_out": 7.5
+   },
+   {
+    "id": "gemini-3.8-flash",
+    "or": "google/gemini-3.8-flash",
+    "provider": "Google",
+    "name": "Gemini 3.8 Flash",
+    "agent": "gemini-cli",
+    "status": "judge",
+    "price_in": 0.8250000000000001,
+    "price_out": 4.125
+   }
+  ]
+ },
+ "cycles": [
+  {
+   "cycle": "20261123T1851Z-v1",
+   "date": "2026-11-23",
+   "bench": "v1",
+   "suites": {
+    "vault": 6,
+    "finance": 5,
+    "ops": 3,
+    "code": 3
+   },
+   "agent_version": "2.1.330",
+   "summary": {
+    "claude-fable-5-2": {
+     "score": 0.9477450980392157,
+     "suite": {
+      "vault": 0.8889444444444444,
+      "finance": 0.9556,
+      "ops": 1.0,
+      "code": 1.0
+     },
+     "trials": 51,
+     "attempts": 3,
+     "rounds": [
+      0.9314117647058824,
+      0.9314117647058824,
+      0.9804117647058823
+     ],
+     "spread": 0.04899999999999993,
+     "cost_per_task": 0.5225958509803922,
+     "cost_total": 26.6523884,
+     "cost_per_solved": 0.5514097113892624,
+     "secs": 28.424322,
+     "errors": 0,
+     "tokens_per_task": 191165.88235294117
+    },
+    "claude-haiku-5-5": {
+     "score": 0.9281176470588235,
+     "suite": {
+      "vault": 0.8888888888888888,
+      "finance": 0.9556,
+      "ops": 0.8888888888888888,
+      "code": 1.0
+     },
+     "trials": 51,
+     "attempts": 3,
+     "rounds": [
+      0.951,
+      0.951,
+      0.8823529411764706
+     ],
+     "spread": 0.0686470588235294,
+     "cost_per_task": 0.008311460000000001,
+     "cost_total": 0.42388446,
+     "cost_per_solved": 0.008955179363670934,
+     "secs": 21.682212,
+     "errors": 1,
+     "tokens_per_task": 219230.54901960783
+    },
+    "claude-opus-5-5": {
+     "score": 0.8823529411764706,
+     "suite": {
+      "vault": 0.8888888888888888,
+      "finance": 1.0,
+      "ops": 0.7777777777777778,
+      "code": 0.7777777777777778
+     },
+     "trials": 51,
+     "attempts": 3,
+     "rounds": [
+      0.8823529411764706,
+      0.9117647058823529,
+      0.8529411764705882
+     ],
+     "spread": 0.05882352941176472,
+     "cost_per_task": 0.23561652549019607,
+     "cost_total": 12.0164428,
+     "cost_per_solved": 0.2670320622222222,
+     "secs": 27.934242,
+     "errors": 2,
+     "tokens_per_task": 189848.11764705883
+    },
+    "claude-sonnet-5-5": {
+     "score": 0.8921764705882353,
+     "suite": {
+      "vault": 0.9166666666666666,
+      "finance": 0.9334,
+      "ops": 0.6666666666666666,
+      "code": 1.0
+     },
+     "trials": 51,
+     "attempts": 3,
+     "rounds": [
+      0.8921764705882353,
+      0.8921764705882353,
+      0.8921764705882353
+     ],
+     "spread": 0.0,
+     "cost_per_task": 0.06703835882352942,
+     "cost_total": 3.4189563,
+     "cost_per_solved": 0.07514024526933474,
+     "secs": 16.924006,
+     "errors": 3,
+     "tokens_per_task": 123934.54901960785
+    }
+   }
+  }
+ ],
+ "trends": {
+  "claude-fable-5-2": [
+   {
+    "cycle": "20261123T1851Z-v1",
+    "date": "2026-11-23",
+    "agent": "2.1.330",
+    "score": 0.9477450980392157,
+    "usd": 0.5225958509803922,
+    "secs": 28.424322,
+    "tokens": 191165.88235294117,
+    "core": 17
+   }
+  ],
+  "claude-haiku-5-5": [
+   {
+    "cycle": "20261123T1851Z-v1",
+    "date": "2026-11-23",
+    "agent": "2.1.330",
+    "score": 0.9281176470588235,
+    "usd": 0.00831146,
+    "secs": 21.682212,
+    "tokens": 219230.54901960783,
+    "core": 17
+   }
+  ],
+  "claude-opus-5-5": [
+   {
+    "cycle": "20261123T1851Z-v1",
+    "date": "2026-11-23",
+    "agent": "2.1.330",
+    "score": 0.8823529411764706,
+    "usd": 0.23561652549019607,
+    "secs": 27.934242,
+    "tokens": 189848.11764705883,
+    "core": 17
+   }
+  ],
+  "claude-sonnet-5-5": [
+   {
+    "cycle": "20261123T1851Z-v1",
+    "date": "2026-11-23",
+    "agent": "2.1.330",
+    "score": 0.8921764705882353,
+    "usd": 0.06703835882352942,
+    "secs": 16.924006,
+    "tokens": 123934.54901960785,
+    "core": 17
+   }
+  ]
+ }
+}
